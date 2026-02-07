@@ -124,7 +124,51 @@
 
         .amount-input-container {
             position: relative;
+            margin-bottom: 12px;
+        }
+
+        .currency-selector {
+            display: flex;
+            gap: 8px;
             margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .currency-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid var(--ios-border);
+            border-radius: 10px;
+            background: var(--ios-bg);
+            color: var(--ios-text);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .currency-btn:active {
+            transform: scale(0.95);
+        }
+
+        .currency-btn.selected {
+            background: var(--ios-blue);
+            color: white;
+            border-color: var(--ios-blue);
+        }
+
+        .currency-symbol-large {
+            font-size: 20px;
+        }
+
+        .currency-code {
+            font-size: 11px;
+            opacity: 0.8;
+            font-weight: 500;
         }
 
         .currency-symbol {
@@ -163,24 +207,28 @@
 
         .categories {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
         }
 
         .category-btn {
-            padding: 16px;
+            padding: 14px;
             border: 1.5px solid var(--ios-border);
             border-radius: 12px;
             background: var(--ios-bg);
             color: var(--ios-text);
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+        }
+
+        .category-btn.full-width {
+            grid-column: 1 / -1;
         }
 
         .category-btn:active {
@@ -237,40 +285,67 @@
             transform: scale(0.98);
         }
 
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .submit-btn.success {
             background: var(--ios-green);
         }
 
         .success-message {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: rgba(0, 0, 0, 0.85);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--ios-green);
             color: white;
-            padding: 20px 30px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 500;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             z-index: 1000;
-            transition: transform 0.3s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            padding: 40px;
+            text-align: center;
         }
 
         .success-message.show {
-            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
         }
 
         .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: checkmarkPop 0.5s ease;
+        }
+
+        @keyframes checkmarkPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-amount {
             font-size: 48px;
-            margin-bottom: 8px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .success-category {
+            font-size: 24px;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .success-tap-hint {
+            font-size: 15px;
+            opacity: 0.7;
+            margin-top: auto;
         }
 
         .offline-indicator {
@@ -330,8 +405,8 @@
     </div>
 
     <div class="monthly-total">
-        <div class="monthly-total-label">This Month</div>
-        <div class="monthly-total-amount">₫1,247,500</div>
+        <div class="monthly-total-label" id="monthLabel">This Month</div>
+        <div class="monthly-total-amount">₫0</div>
     </div>
 
     <div class="queued-indicator" id="queuedIndicator">
@@ -342,8 +417,22 @@
     <form id="expenseForm">
         <div class="form-section">
             <label class="section-label">Amount</label>
+            <div class="currency-selector">
+                <button type="button" class="currency-btn selected" data-currency="VND" data-symbol="₫">
+                    <span class="currency-symbol-large">₫</span>
+                    <span class="currency-code">VND</span>
+                </button>
+                <button type="button" class="currency-btn" data-currency="EUR" data-symbol="€">
+                    <span class="currency-symbol-large">€</span>
+                    <span class="currency-code">EUR</span>
+                </button>
+                <button type="button" class="currency-btn" data-currency="USD" data-symbol="$">
+                    <span class="currency-symbol-large">$</span>
+                    <span class="currency-code">USD</span>
+                </button>
+            </div>
             <div class="amount-input-container">
-                <span class="currency-symbol">₫</span>
+                <span class="currency-symbol" id="currentSymbol">₫</span>
                 <input 
                     type="text" 
                     id="amount" 
@@ -383,7 +472,7 @@
                     <span class="category-icon">🏥</span>
                     <span>Health</span>
                 </button>
-                <button type="button" class="category-btn" data-category="Other">
+                <button type="button" class="category-btn full-width" data-category="Other">
                     <span class="category-icon">💡</span>
                     <span>Other</span>
                 </button>
@@ -405,17 +494,71 @@
 
     <div class="success-message" id="successMessage">
         <div class="success-icon">✓</div>
-        <div>Expense Added!</div>
+        <div class="success-amount" id="successAmount">₫0</div>
+        <div class="success-category" id="successCategory">Category</div>
+        <div class="success-tap-hint">Tap anywhere to continue</div>
     </div>
 
     <script>
         // ===== CONFIGURATION =====
-        // Replace this with your Google Apps Script Web App URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec';
+        // New Google Apps Script Web App URL applied below
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwejr23kXzWB2b6RjtKJQRatpAIGUAMcmnSxcUJweWxoNOFfzEdMryQB6ScCB3uIMN_/exec';
         // =========================
 
         // ===== OFFLINE QUEUE & GOOGLE SHEETS INTEGRATION =====
         
+        // Exchange rates storage
+        let exchangeRates = {
+            VND: 1,
+            EUR: 0.000037, // Default fallback rates
+            USD: 0.00004
+        };
+
+        // Fetch latest exchange rates
+        async function fetchExchangeRates() {
+            const cachedRates = localStorage.getItem('exchangeRates');
+            const cachedDate = localStorage.getItem('exchangeRatesDate');
+            const today = new Date().toDateString();
+
+            // Use cached rates if from today
+            if (cachedRates && cachedDate === today) {
+                exchangeRates = JSON.parse(cachedRates);
+                console.log('Using cached exchange rates');
+                return;
+            }
+
+            try {
+                // Free API - no signup required, 1500 requests/month
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/VND');
+                const data = await response.json();
+                
+                exchangeRates = {
+                    VND: 1,
+                    EUR: data.rates.EUR,
+                    USD: data.rates.USD
+                };
+
+                // Cache for today
+                localStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
+                localStorage.setItem('exchangeRatesDate', today);
+                
+                console.log('Exchange rates updated:', exchangeRates);
+            } catch (error) {
+                console.error('Failed to fetch exchange rates, using defaults:', error);
+            }
+        }
+
+        // Convert amount between currencies
+        function convertCurrency(amount, fromCurrency) {
+            const vndAmount = fromCurrency === 'VND' ? amount : amount / exchangeRates[fromCurrency];
+            
+            return {
+                VND: Math.round(vndAmount),
+                EUR: parseFloat((vndAmount * exchangeRates.EUR).toFixed(2)),
+                USD: parseFloat((vndAmount * exchangeRates.USD).toFixed(2))
+            };
+        }
+
         // Get offline queue from localStorage
         function getOfflineQueue() {
             const queue = localStorage.getItem('expenseQueue');
@@ -545,6 +688,27 @@
             localStorage.setItem('darkMode', isDark);
         });
 
+        // Currency selector
+        const currencyBtns = document.querySelectorAll('.currency-btn');
+        const currentSymbol = document.getElementById('currentSymbol');
+        let selectedCurrency = 'VND';
+
+        currencyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove selected from all
+                currencyBtns.forEach(b => b.classList.remove('selected'));
+                // Add selected to clicked
+                btn.classList.add('selected');
+                selectedCurrency = btn.dataset.currency;
+                currentSymbol.textContent = btn.dataset.symbol;
+                
+                // Haptic feedback
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            });
+        });
+
         // Amount input formatting with commas
         const amountInput = document.getElementById('amount');
         
@@ -604,41 +768,65 @@
                 navigator.vibrate([10, 50, 10]);
             }
 
-            // Change button to green with "Submitted" text
-            submitBtn.classList.add('success');
-            submitBtn.textContent = 'Submitted ✓';
-
-            // Show success message
-            successMessage.classList.add('show');
-            setTimeout(() => {
-                successMessage.classList.remove('show');
-            }, 1500);
-
             // Prepare expense data
             const rawAmount = amountInput.value.replace(/,/g, ''); // Remove commas before saving
+            const amountNum = parseFloat(rawAmount);
+            
+            // Convert to all three currencies
+            const convertedAmounts = convertCurrency(amountNum, selectedCurrency);
+            
             const expenseData = {
-                amount: parseInt(rawAmount, 10),
+                vnd: convertedAmounts.VND,
+                eur: convertedAmounts.EUR,
+                usd: convertedAmounts.USD,
                 category: selectedCategory,
                 note: noteInput.value,
                 timestamp: new Date().toISOString()
             };
 
+            // Update success screen with details (show in selected currency)
+            const symbols = { VND: '₫', EUR: '€', USD: '$' };
+            const displayAmount = selectedCurrency === 'VND' ? 
+                amountNum.toLocaleString('en-US') : 
+                amountNum.toFixed(2);
+            document.getElementById('successAmount').textContent = `${symbols[selectedCurrency]}${displayAmount}`;
+            document.getElementById('successCategory').textContent = selectedCategory;
+
+            // Show fullscreen success message
+            successMessage.classList.add('show');
+
             // Try to save to Google Sheets
             saveToGoogleSheets(expenseData);
 
-            // Clear form and reset
-            setTimeout(() => {
+            // Clear form and reset (happens after success screen is dismissed)
+            const clearForm = () => {
                 amountInput.value = '';
                 noteInput.value = '';
                 categoryBtns.forEach(b => b.classList.remove('selected'));
                 selectedCategory = null;
-                
-                // Reset button to original state
                 submitBtn.classList.remove('success');
                 submitBtn.textContent = 'Add Expense';
-                
                 amountInput.focus();
-            }, 1500);
+            };
+
+            // Auto-hide after 2 seconds OR tap to close
+            const autoHideTimeout = setTimeout(() => {
+                successMessage.classList.remove('show');
+                setTimeout(clearForm, 300);
+            }, 2000);
+
+            // Tap anywhere to close immediately
+            const closeOnTap = () => {
+                clearTimeout(autoHideTimeout);
+                successMessage.classList.remove('show');
+                setTimeout(clearForm, 300);
+                successMessage.removeEventListener('click', closeOnTap);
+            };
+            successMessage.addEventListener('click', closeOnTap);
+
+            // Change button to green with "Submitted" text
+            submitBtn.classList.add('success');
+            submitBtn.textContent = 'Submitted ✓';
         });
 
         // Auto-focus amount input on page load
@@ -663,7 +851,18 @@
         window.addEventListener('load', () => {
             loadMonthlyTotal();
             updateQueueIndicator();
+            updateMonthLabel();
+            fetchExchangeRates(); // Fetch latest exchange rates
         });
+
+        // Update month label to show current month
+        function updateMonthLabel() {
+            const monthLabel = document.getElementById('monthLabel');
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+            const currentMonth = new Date().getMonth();
+            monthLabel.textContent = `${monthNames[currentMonth]} Spending`;
+        }
     </script>
 </body>
 </html>
