@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Expenses">
+    <title>Cash Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --ios-blue: #007AFF;
+            --ios-gray: #8E8E93;
+            --ios-light-gray: #F2F2F7;
+            --ios-border: #C6C6C8;
+            --ios-green: #34C759;
+            --ios-bg: #FFFFFF;
+            --ios-text: #000000;
+            --ios-secondary-text: #3C3C43;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            background: var(--ios-bg);
+            color: var(--ios-text);
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(40px, env(safe-area-inset-bottom));
+            padding-left: 20px;
+            padding-right: 20px;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            --ios-bg: #000000;
+            --ios-text: #FFFFFF;
+            --ios-light-gray: #1C1C1E;
+            --ios-border: #38383A;
+            --ios-gray: #98989D;
+            --ios-secondary-text: #EBEBF5;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .dark-mode-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            background: var(--ios-light-gray);
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .dark-mode-toggle:active {
+            opacity: 0.6;
+        }
+
+        .monthly-total {
+            background: var(--ios-light-gray);
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .monthly-total-label {
+            font-size: 13px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .monthly-total-amount {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .form-section {
+            margin-bottom: 20px;
+        }
+
+        .section-label {
+            font-size: 13px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            padding-left: 4px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .amount-input-container {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--ios-gray);
+            pointer-events: none;
+        }
+
+        input[type="text"]#amount {
+            width: 100%;
+            font-size: 28px;
+            font-weight: 500;
+            padding: 16px 20px 16px 50px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+            -webkit-appearance: none;
+            appearance: none;
+            text-align: center;
+        }
+
+        input[type="text"]#amount:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
+        }
+
+        input[type="text"]#amount::placeholder {
+            text-align: center;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .category-btn {
+            padding: 16px;
+            border: 1.5px solid var(--ios-border);
+            border-radius: 12px;
+            background: var(--ios-bg);
+            color: var(--ios-text);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .category-btn:active {
+            transform: scale(0.95);
+        }
+
+        .category-btn.selected {
+            background: var(--ios-blue);
+            color: white;
+            border-color: var(--ios-blue);
+        }
+
+        .category-icon {
+            font-size: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            font-size: 17px;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--ios-gray);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-blue);
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 24px;
+        }
+
+        .submit-btn:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .submit-btn.success {
+            background: var(--ios-green);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .success-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: env(safe-area-inset-top);
+            left: 0;
+            right: 0;
+            background: #FF3B30;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .offline-indicator.show {
+            transform: translateY(0);
+        }
+
+        .queued-indicator {
+            background: var(--ios-light-gray);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--ios-gray);
+        }
+
+        .queued-indicator.show {
+            display: flex;
+        }
+
+        .queued-count {
+            background: var(--ios-blue);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator" id="offlineIndicator">
+        📡 Offline - expenses will sync when online
+    </div>
+
+    <div class="header">
+        <h1>Expenses</h1>
+        <button class="dark-mode-toggle" id="darkModeToggle">🌙</button>
+    </div>
+
+    <div class="monthly-total">
+        <div class="monthly-total-label">This Month</div>
+        <div class="monthly-total-amount">₫1,247,500</div>
+    </div>
+
+    <div class="queued-indicator" id="queuedIndicator">
+        <span class="queued-count">3</span>
+        <span>expenses waiting to sync</span>
+    </div>
+
+    <form id="expenseForm">
+        <div class="form-section">
+            <label class="section-label">Amount</label>
+            <div class="amount-input-container">
+                <span class="currency-symbol">₫</span>
+                <input 
+                    type="text" 
+                    id="amount" 
+                    inputmode="numeric"
+                    placeholder="0"
+                    autocomplete="off"
+                    autofocus
+                    required
+                >
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label class="section-label">Category</label>
+            <div class="categories">
+                <button type="button" class="category-btn" data-category="Food">
+                    <span class="category-icon">🍔</span>
+                    <span>Food</span>
+                </button>
+                <button type="button" class="category-btn" data-category="Transport">
+                    <span class="category-icon">🚗</span>
+                    <span>Transport</span>
+                </button>
+                <button type="button" class="category-btn" data-category="Shopping">
+                    <span class="category-icon">🛍️</span>
+                    <span>Shopping</span>
+                </button>
+                <button type="button" class="category-btn" data-category="Bills">
+                    <span class="category-icon">📄</span>
+                    <span>Bills</span>
+                </button>
+                <button type="button" class="category-btn" data-category="Entertainment">
+                    <span class="category-icon">🎬</span>
+                    <span>Entertainment</span>
+                </button>
+                <button type="button" class="category-btn" data-category="Health">
+                    <span class="category-icon">🏥</span>
+                    <span>Health</span>
+                </button>
+                <button type="button" class="category-btn" data-category="Other">
+                    <span class="category-icon">💡</span>
+                    <span>Other</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <label class="section-label">Note (Optional)</label>
+            <input 
+                type="text" 
+                id="note" 
+                placeholder="Add a note..."
+                autocomplete="off"
+            >
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Add Expense</button>
+    </form>
+
+    <div class="success-message" id="successMessage">
+        <div class="success-icon">✓</div>
+        <div>Expense Added!</div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        // Replace this with your Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec';
+        // =========================
+
+        // ===== OFFLINE QUEUE & GOOGLE SHEETS INTEGRATION =====
+        
+        // Get offline queue from localStorage
+        function getOfflineQueue() {
+            const queue = localStorage.getItem('expenseQueue');
+            return queue ? JSON.parse(queue) : [];
+        }
+
+        // Save offline queue to localStorage
+        function saveOfflineQueue(queue) {
+            localStorage.setItem('expenseQueue', JSON.stringify(queue));
+            updateQueueIndicator();
+        }
+
+        // Update queued expenses indicator
+        function updateQueueIndicator() {
+            const queue = getOfflineQueue();
+            const indicator = document.getElementById('queuedIndicator');
+            const countElement = indicator.querySelector('.queued-count');
+            
+            if (queue.length > 0) {
+                countElement.textContent = queue.length;
+                indicator.classList.add('show');
+            } else {
+                indicator.classList.remove('show');
+            }
+        }
+
+        // Save expense to Google Sheets
+        async function saveToGoogleSheets(expenseData) {
+            // Check if we have a valid Google Script URL
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                console.log('Google Sheets not configured. Data:', expenseData);
+                alert('Please configure your Google Script URL in the HTML file');
+                return;
+            }
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Google Apps Script requires this
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(expenseData)
+                });
+
+                console.log('Expense saved to Google Sheets');
+                
+                // Update monthly total after successful save
+                setTimeout(() => {
+                    loadMonthlyTotal();
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+                
+                // Add to offline queue
+                const queue = getOfflineQueue();
+                queue.push(expenseData);
+                saveOfflineQueue(queue);
+                
+                console.log('Added to offline queue');
+            }
+        }
+
+        // Sync offline queue when back online
+        async function syncOfflineQueue() {
+            const queue = getOfflineQueue();
+            
+            if (queue.length === 0) return;
+            
+            console.log(`Syncing ${queue.length} queued expenses...`);
+            
+            const synced = [];
+            
+            for (const expense of queue) {
+                try {
+                    await saveToGoogleSheets(expense);
+                    synced.push(expense);
+                } catch (error) {
+                    console.error('Failed to sync expense:', error);
+                    break; // Stop syncing if one fails
+                }
+            }
+            
+            // Remove synced expenses from queue
+            if (synced.length > 0) {
+                const remainingQueue = queue.filter(e => !synced.includes(e));
+                saveOfflineQueue(remainingQueue);
+                console.log(`Synced ${synced.length} expenses`);
+            }
+        }
+
+        // Load monthly total from Google Sheets
+        async function loadMonthlyTotal() {
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                return;
+            }
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    const totalElement = document.querySelector('.monthly-total-amount');
+                    const formattedTotal = data.monthlyTotal.toLocaleString('en-US');
+                    totalElement.textContent = `₫${formattedTotal}`;
+                }
+            } catch (error) {
+                console.error('Error loading monthly total:', error);
+            }
+        }
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            darkModeToggle.textContent = '☀️';
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        // Amount input formatting with commas
+        const amountInput = document.getElementById('amount');
+        
+        // Format number with commas as user types
+        amountInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/,/g, ''); // Remove existing commas
+            
+            // Only allow numbers
+            if (!/^\d*$/.test(value)) {
+                value = value.replace(/\D/g, '');
+            }
+            
+            // Add commas for thousands
+            if (value) {
+                value = parseInt(value, 10).toLocaleString('en-US');
+            }
+            
+            e.target.value = value;
+        });
+
+        // Category selection
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        let selectedCategory = null;
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove selected class from all buttons
+                categoryBtns.forEach(b => b.classList.remove('selected'));
+                // Add selected class to clicked button
+                btn.classList.add('selected');
+                selectedCategory = btn.dataset.category;
+                // Haptic feedback
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            });
+        });
+
+        // Form submission
+        const form = document.getElementById('expenseForm');
+        const successMessage = document.getElementById('successMessage');
+        const noteInput = document.getElementById('note');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate
+            if (!amountInput.value || !selectedCategory) {
+                alert('Please enter an amount and select a category');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate([10, 50, 10]);
+            }
+
+            // Change button to green with "Submitted" text
+            submitBtn.classList.add('success');
+            submitBtn.textContent = 'Submitted ✓';
+
+            // Show success message
+            successMessage.classList.add('show');
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 1500);
+
+            // Prepare expense data
+            const rawAmount = amountInput.value.replace(/,/g, ''); // Remove commas before saving
+            const expenseData = {
+                amount: parseInt(rawAmount, 10),
+                category: selectedCategory,
+                note: noteInput.value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Try to save to Google Sheets
+            saveToGoogleSheets(expenseData);
+
+            // Clear form and reset
+            setTimeout(() => {
+                amountInput.value = '';
+                noteInput.value = '';
+                categoryBtns.forEach(b => b.classList.remove('selected'));
+                selectedCategory = null;
+                
+                // Reset button to original state
+                submitBtn.classList.remove('success');
+                submitBtn.textContent = 'Add Expense';
+                
+                amountInput.focus();
+            }, 1500);
+        });
+
+        // Auto-focus amount input on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                amountInput.focus();
+            }, 100);
+        });
+
+        // Offline detection
+        const offlineIndicator = document.getElementById('offlineIndicator');
+        window.addEventListener('offline', () => {
+            offlineIndicator.classList.add('show');
+        });
+        window.addEventListener('online', () => {
+            offlineIndicator.classList.remove('show');
+            // Try to sync queued expenses
+            syncOfflineQueue();
+        });
+
+        // Load monthly total on page load
+        window.addEventListener('load', () => {
+            loadMonthlyTotal();
+            updateQueueIndicator();
+        });
+    </script>
+</body>
+</html>
