@@ -47,6 +47,11 @@
             --ios-border: #38383A;
             --ios-gray: #98989D;
             --ios-secondary-text: #EBEBF5;
+            --ios-modal-bg: #2c2c2e;
+        }
+
+        body:not(.dark-mode) {
+            --ios-modal-bg: #ffffff;
         }
 
         .header {
@@ -319,7 +324,7 @@
         }
 
         .modal {
-            background: var(--ios-bg);
+            background: var(--ios-modal-bg);
             border-radius: 16px;
             padding: 24px;
             max-width: 400px;
@@ -603,6 +608,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
+            max-width: 100%;
         }
 
         .category-btn {
@@ -671,7 +677,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 24px;
+            margin-top: 12px;
+            margin-bottom: 40px;
         }
 
         .submit-btn:active {
@@ -1269,7 +1276,7 @@
 
         // Load monthly total from Google Sheets
         async function loadMonthlyTotal() {
-            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE' || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec') {
                 return;
             }
 
@@ -1278,13 +1285,154 @@
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    const totalElement = document.querySelector('.monthly-total-amount');
-                    const formattedTotal = data.monthlyTotal.toLocaleString('en-US');
-                    totalElement.textContent = `₫${formattedTotal}`;
+                    // Update main page total
+                    const mainTotalElement = document.getElementById('totalAmount');
+                    const mainCurrenciesElement = document.getElementById('totalCurrencies');
+                    
+                    if (mainTotalElement && data.totalEUR !== undefined) {
+                        mainTotalElement.textContent = `€${data.totalEUR.toFixed(2)}`;
+                        mainCurrenciesElement.textContent = `₫${Math.round(data.totalVND).toLocaleString('en-US')} | $${data.totalUSD.toFixed(2)}`;
+                    }
+                    
+                    // Update history page total
+                    const historyTotalElement = document.getElementById('historyTotalAmount');
+                    const historyCurrenciesElement = document.getElementById('historyTotalCurrencies');
+                    
+                    if (historyTotalElement && data.totalEUR !== undefined) {
+                        historyTotalElement.textContent = `€${data.totalEUR.toFixed(2)}`;
+                        historyCurrenciesElement.textContent = `₫${Math.round(data.totalVND).toLocaleString('en-US')} | $${data.totalUSD.toFixed(2)}`;
+                    }
                 }
             } catch (error) {
                 console.error('Error loading monthly total:', error);
             }
+        }
+
+        // Load transaction history from Google Sheets
+        async function loadTransactionHistory() {
+            if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE' || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec') {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getTransactions`);
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.transactions) {
+                    displayTransactions(data.transactions);
+                }
+            } catch (error) {
+                console.error('Error loading transaction history:', error);
+            }
+        }
+
+        // Display transactions in history page
+        function displayTransactions(transactions) {
+            const transactionList = document.getElementById('transactionList');
+            
+            if (!transactions || transactions.length === 0) {
+                transactionList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <div>No expenses yet</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Category icons mapping
+            const categoryIcons = {
+                'Food': '🍔',
+                'Transport': '🚗',
+                'Shopping': '🛍️',
+                'Bills': '📄',
+                'Entertainment': '🎬',
+                'Health': '🏥',
+                'Other': '💡'
+            };
+
+            // Format and display each transaction
+            const transactionHTML = transactions.map(transaction => {
+                const date = new Date(transaction.timestamp);
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const transactionDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                
+                let dateStr;
+                if (transactionDate.getTime() === today.getTime()) {
+                    dateStr = 'Today';
+                } else if (transactionDate.getTime() === yesterday.getTime()) {
+                    dateStr = 'Yesterday';
+                } else {
+                    dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+                
+                const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+                const icon = categoryIcons[transaction.category] || '💡';
+                
+                const noteHTML = transaction.note ? 
+                    `<div class="transaction-note">${transaction.note}</div>` : '';
+                
+                return `
+                    <div class="transaction-item" data-transaction='${JSON.stringify(transaction)}'>
+                        <div class="transaction-left">
+                            <div class="transaction-date-time">${dateStr}, ${timeStr}</div>
+                            <div class="transaction-category">
+                                <span>${icon}</span>
+                                <span>${transaction.category}</span>
+                            </div>
+                        </div>
+                        <div class="transaction-right">
+                            <div class="transaction-amount-main">€${transaction.eur.toFixed(2)}</div>
+                            ${noteHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            transactionList.innerHTML = transactionHTML;
+            
+            // Re-attach double-tap listeners to new transaction items
+            attachTransactionListeners();
+            
+            // Update scroll gradient
+            setTimeout(updateScrollGradient, 100);
+        }
+
+        // Attach double-tap listeners to transaction items
+        function attachTransactionListeners() {
+            const transactionItems = document.querySelectorAll('.transaction-item');
+            let lastTapTime = 0;
+            let lastTappedItem = null;
+            
+            transactionItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapGap = currentTime - lastTapTime;
+                    
+                    if (tapGap < 300 && tapGap > 0 && lastTappedItem === item) {
+                        // Double tap detected
+                        e.preventDefault();
+                        if (navigator.vibrate) navigator.vibrate(50);
+                        
+                        try {
+                            const transactionData = JSON.parse(item.dataset.transaction);
+                            openEditModal(item, transactionData);
+                        } catch (error) {
+                            console.error('Error parsing transaction data:', error);
+                        }
+                        
+                        lastTapTime = 0;
+                        lastTappedItem = null;
+                    } else {
+                        // First tap
+                        lastTapTime = currentTime;
+                        lastTappedItem = item;
+                    }
+                });
+            });
         }
 
         // Dark mode toggle
@@ -1313,6 +1461,8 @@
         historyBtn.addEventListener('click', () => {
             mainPage.classList.remove('active');
             historyPage.classList.add('active');
+            // Load transaction history
+            loadTransactionHistory();
             // Haptic feedback
             if (navigator.vibrate) {
                 navigator.vibrate(10);
@@ -1379,55 +1529,42 @@
             });
         });
 
-        // Double-tap edit functionality for transaction items
-        let lastTapTime = 0;
-        let lastTappedItem = null;
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const transactionItems = document.querySelectorAll('.transaction-item');
+        function openEditModal(item, transactionData) {
+            manualEntryModal.classList.add('show');
             
-            transactionItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapGap = currentTime - lastTapTime;
-                    
-                    if (tapGap < 300 && tapGap > 0 && lastTappedItem === item) {
-                        // Double tap detected
-                        e.preventDefault();
-                        if (navigator.vibrate) navigator.vibrate(50);
-                        openEditModal(item);
-                        lastTapTime = 0;
-                        lastTappedItem = null;
+            if (transactionData) {
+                // Fill with real transaction data
+                const date = new Date(transactionData.timestamp);
+                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                manualDate.value = date.toISOString().slice(0, 16);
+                
+                // Set amount based on EUR value
+                manualAmount.value = transactionData.eur.toFixed(2);
+                
+                // Set currency to EUR (default for editing)
+                modalCurrencyBtns.forEach(btn => {
+                    if (btn.dataset.currency === 'EUR') {
+                        btn.classList.add('selected');
+                        modalSelectedCurrency = 'EUR';
                     } else {
-                        // First tap
-                        lastTapTime = currentTime;
-                        lastTappedItem = item;
+                        btn.classList.remove('selected');
                     }
                 });
-            });
-        });
-
-        function openEditModal(item) {
-            manualEntryModal.classList.add('show');
-            // Set default datetime to now
-            const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-            manualDate.value = now.toISOString().slice(0, 16);
-            
-            // Pre-fill with demo data (in production, this would be real data)
-            const amountText = item.querySelector('.transaction-amount-main').textContent;
-            manualAmount.value = amountText.replace(/[€$₫]/g, '').trim();
-            
-            const categoryText = item.querySelector('.transaction-category span:nth-child(2)').textContent;
-            modalCategoryBtns.forEach(btn => {
-                if (btn.dataset.category === categoryText) {
-                    btn.click();
+                
+                // Set category
+                modalCategoryBtns.forEach(btn => {
+                    if (btn.dataset.category === transactionData.category) {
+                        btn.classList.add('selected');
+                        modalSelectedCategory = transactionData.category;
+                    } else {
+                        btn.classList.remove('selected');
+                    }
+                });
+                
+                // Set note
+                if (transactionData.note) {
+                    manualNote.value = transactionData.note;
                 }
-            });
-            
-            const noteElement = item.querySelector('.transaction-note');
-            if (noteElement) {
-                manualNote.value = noteElement.textContent;
             }
         }
 
