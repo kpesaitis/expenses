@@ -54,19 +54,24 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 24px;
-            position: relative;
+        }
+
+        .header-left,
+        .header-right {
+            display: flex;
+            gap: 8px;
+            min-width: 44px;
         }
 
         h1 {
             font-size: 34px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+            flex: 1;
+            text-align: center;
         }
 
-        .dark-mode-toggle {
+        .header-btn {
             width: 44px;
             height: 44px;
             border-radius: 22px;
@@ -80,8 +85,404 @@
             transition: background 0.2s ease;
         }
 
-        .dark-mode-toggle:active {
+        .header-btn:active {
             opacity: 0.6;
+        }
+
+        /* History Page Styles */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-header h2 {
+            font-size: 34px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            flex: 1;
+            text-align: center;
+        }
+
+        .add-entry-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            background: var(--ios-blue);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-weight: 300;
+        }
+
+        .add-entry-btn:active {
+            transform: scale(0.95);
+        }
+
+        .monthly-total {
+            padding: 16px 0;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .monthly-total-label {
+            font-size: 13px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .monthly-total-amount {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .monthly-total-currencies {
+            font-size: 13px;
+            color: var(--ios-gray);
+            margin-top: 4px;
+        }
+
+        .history-total {
+            padding: 16px 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .history-total-label {
+            font-size: 13px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .history-total-amount {
+            font-size: 32px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .history-total-currencies {
+            font-size: 13px;
+            color: var(--ios-gray);
+            margin-top: 4px;
+        }
+
+        .transaction-list-container {
+            position: relative;
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 100px;
+        }
+
+        .transaction-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .scroll-gradient {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(to top, var(--ios-bg) 30%, transparent 100%);
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .scroll-gradient.hidden {
+            opacity: 0;
+        }
+
+        .transaction-item {
+            background: var(--ios-light-gray);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .transaction-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .transaction-item.pressing {
+            transform: scale(0.96);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .transaction-left {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .transaction-date-time {
+            font-size: 13px;
+            color: var(--ios-gray);
+            font-weight: 500;
+        }
+
+        .transaction-category {
+            font-size: 13px;
+            color: var(--ios-gray);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .transaction-right {
+            text-align: right;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            align-items: flex-end;
+        }
+
+        .transaction-amount-main {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .transaction-note {
+            font-size: 12px;
+            color: var(--ios-gray);
+            opacity: 0.8;
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--ios-gray);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Manual Entry Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--ios-bg);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: background 0.3s ease;
+        }
+
+        .modal.success {
+            background: var(--ios-blue);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 400px;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-field {
+            margin-bottom: 16px;
+        }
+
+        .modal-label {
+            font-size: 13px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .modal-input {
+            width: 100%;
+            font-size: 17px;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+        }
+
+        .modal-amount-container {
+            margin-top: 12px;
+        }
+
+        .modal-amount-input {
+            width: 100%;
+            font-size: 42px;
+            font-weight: 600;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+            text-align: center;
+        }
+
+        .modal-amount-input:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
+        }
+
+        .modal-categories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .modal-categories .category-btn {
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .modal-categories .category-btn .category-icon {
+            font-size: 18px;
+        }
+
+        .modal-categories .category-btn.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .modal-input:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-cancel {
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+        }
+
+        .modal-btn-save {
+            background: var(--ios-blue);
+            color: white;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Modal Success State */
+        .modal-success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .modal-success-amount {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-success-category {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .modal-success-date {
+            font-size: 15px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .modal-success-note {
+            font-size: 15px;
+            opacity: 0.7;
+            margin-top: 12px;
+            font-style: italic;
+        }
+
+        .modal-success-hint {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 24px;
         }
 
         .monthly-total {
@@ -172,21 +573,14 @@
         }
 
         .currency-symbol {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 22px;
-            font-weight: 500;
-            color: var(--ios-gray);
-            pointer-events: none;
+            display: none;
         }
 
         input[type="text"]#amount {
             width: 100%;
             font-size: 28px;
             font-weight: 500;
-            padding: 16px 20px 16px 50px;
+            padding: 16px 20px;
             border: none;
             border-radius: 12px;
             background: var(--ios-light-gray);
@@ -283,6 +677,11 @@
         .submit-btn:active {
             opacity: 0.8;
             transform: scale(0.98);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .submit-btn.success {
@@ -399,40 +798,28 @@
         📡 Offline - expenses will sync when online
     </div>
 
-    <div class="header">
-        <h1>Expenses</h1>
-        <button class="dark-mode-toggle" id="darkModeToggle">🌙</button>
-    </div>
+    <!-- Main Expense Entry Page -->
+    <div class="page active" id="mainPage">
+        <div class="header">
+            <div class="header-left">
+                <button class="header-btn" id="historyBtn" title="Transaction History">📋</button>
+            </div>
+            <h1>Expenses</h1>
+            <div class="header-right">
+                <button class="header-btn" id="darkModeToggle">🌙</button>
+            </div>
+        </div>
 
-    <div class="monthly-total">
-        <div class="monthly-total-label" id="monthLabel">This Month</div>
-        <div class="monthly-total-amount">₫0</div>
-    </div>
+        <div class="monthly-total">
+            <div class="monthly-total-label" id="monthLabel">This Month</div>
+            <div class="monthly-total-amount" id="totalAmount">€0</div>
+            <div class="monthly-total-currencies" id="totalCurrencies">₫0 | $0</div>
+        </div>
 
-    <div class="queued-indicator" id="queuedIndicator">
-        <span class="queued-count">3</span>
-        <span>expenses waiting to sync</span>
-    </div>
-
-    <form id="expenseForm">
+        <form id="expenseForm">
         <div class="form-section">
             <label class="section-label">Amount</label>
-            <div class="currency-selector">
-                <button type="button" class="currency-btn selected" data-currency="VND" data-symbol="₫">
-                    <span class="currency-symbol-large">₫</span>
-                    <span class="currency-code">VND</span>
-                </button>
-                <button type="button" class="currency-btn" data-currency="EUR" data-symbol="€">
-                    <span class="currency-symbol-large">€</span>
-                    <span class="currency-code">EUR</span>
-                </button>
-                <button type="button" class="currency-btn" data-currency="USD" data-symbol="$">
-                    <span class="currency-symbol-large">$</span>
-                    <span class="currency-code">USD</span>
-                </button>
-            </div>
             <div class="amount-input-container">
-                <span class="currency-symbol" id="currentSymbol">₫</span>
                 <input 
                     type="text" 
                     id="amount" 
@@ -442,6 +829,20 @@
                     autofocus
                     required
                 >
+            </div>
+            <div class="currency-selector">
+                <button type="button" class="currency-btn" data-currency="VND" data-symbol="₫">
+                    <span class="currency-symbol-large">₫</span>
+                    <span class="currency-code">VND</span>
+                </button>
+                <button type="button" class="currency-btn selected" data-currency="EUR" data-symbol="€">
+                    <span class="currency-symbol-large">€</span>
+                    <span class="currency-code">EUR</span>
+                </button>
+                <button type="button" class="currency-btn" data-currency="USD" data-symbol="$">
+                    <span class="currency-symbol-large">$</span>
+                    <span class="currency-code">USD</span>
+                </button>
             </div>
         </div>
 
@@ -491,6 +892,221 @@
 
         <button type="submit" class="submit-btn" id="submitBtn">Add Expense</button>
     </form>
+    </div>
+    <!-- End Main Page -->
+
+    <!-- History Page -->
+    <div class="page" id="historyPage">
+        <div class="history-header">
+            <div class="header-left">
+                <button class="header-btn" id="backBtn">‹</button>
+            </div>
+            <h2>History</h2>
+            <div class="header-right">
+                <button class="add-entry-btn" id="addEntryBtn">+</button>
+            </div>
+        </div>
+
+        <div class="history-total">
+            <div class="history-total-label" id="historyMonthLabel">This Month</div>
+            <div class="history-total-amount" id="historyTotalAmount">€0</div>
+            <div class="history-total-currencies" id="historyTotalCurrencies">₫0 | $0</div>
+        </div>
+
+        <div class="queued-indicator" id="queuedIndicator" style="margin-bottom: 16px;">
+            <span class="queued-count">3</span>
+            <span>expenses waiting to sync</span>
+        </div>
+
+        <div class="transaction-list-container" id="transactionContainer">
+            <div class="transaction-list" id="transactionList">
+                <!-- Demo transactions - will be replaced with real data -->
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Today, 10:30 AM</div>
+                        <div class="transaction-category">
+                            <span>🍔</span>
+                            <span>Food</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€50.00</div>
+                        <div class="transaction-note">Lunch at cafe</div>
+                    </div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Yesterday, 2:15 PM</div>
+                        <div class="transaction-category">
+                            <span>🚗</span>
+                            <span>Transport</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€1.85</div>
+                    </div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Mar 6, 6:00 PM</div>
+                        <div class="transaction-category">
+                            <span>🛍️</span>
+                            <span>Shopping</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€18.52</div>
+                        <div class="transaction-note">New shoes</div>
+                    </div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Mar 5, 8:45 AM</div>
+                        <div class="transaction-category">
+                            <span>🏥</span>
+                            <span>Health</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€92.50</div>
+                    </div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Mar 4, 12:30 PM</div>
+                        <div class="transaction-category">
+                            <span>📄</span>
+                            <span>Bills</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€74.00</div>
+                    </div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Mar 3, 7:30 PM</div>
+                        <div class="transaction-category">
+                            <span>🎬</span>
+                            <span>Entertainment</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€25.00</div>
+                        <div class="transaction-note">Movie tickets</div>
+                    </div>
+                </div>
+
+                <div class="transaction-item">
+                    <div class="transaction-left">
+                        <div class="transaction-date-time">Mar 2, 1:00 PM</div>
+                        <div class="transaction-category">
+                            <span>🍔</span>
+                            <span>Food</span>
+                        </div>
+                    </div>
+                    <div class="transaction-right">
+                        <div class="transaction-amount-main">€15.50</div>
+                    </div>
+                </div>
+
+                <!-- Empty state (shown when no transactions) -->
+                <!-- <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div>No expenses yet</div>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="scroll-gradient" id="scrollGradient"></div>
+    </div>
+    <!-- End History Page -->
+
+    <!-- Manual Entry Modal -->
+    <div class="modal-overlay" id="manualEntryModal">
+        <div class="modal" id="modalContent">
+            <div class="modal-header">Add Past Entry</div>
+            
+            <div class="modal-field">
+                <label class="modal-label">Date & Time</label>
+                <input type="datetime-local" class="modal-input" id="manualDate">
+            </div>
+
+            <div class="modal-field">
+                <label class="modal-label">Amount</label>
+                <div class="modal-amount-container">
+                    <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="numeric">
+                </div>
+            </div>
+
+            <div class="modal-field" style="margin-bottom: 20px;">
+                <div class="currency-selector">
+                    <button type="button" class="currency-btn modal-currency-btn" data-currency="VND" data-symbol="₫">
+                        <span class="currency-symbol-large">₫</span>
+                        <span class="currency-code">VND</span>
+                    </button>
+                    <button type="button" class="currency-btn modal-currency-btn selected" data-currency="EUR" data-symbol="€">
+                        <span class="currency-symbol-large">€</span>
+                        <span class="currency-code">EUR</span>
+                    </button>
+                    <button type="button" class="currency-btn modal-currency-btn" data-currency="USD" data-symbol="$">
+                        <span class="currency-symbol-large">$</span>
+                        <span class="currency-code">USD</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label class="modal-label">Category</label>
+                <div class="modal-categories">
+                    <button type="button" class="category-btn modal-category-btn" data-category="Food">
+                        <span class="category-icon">🍔</span>
+                        <span>Food</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Transport">
+                        <span class="category-icon">🚗</span>
+                        <span>Transport</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Shopping">
+                        <span class="category-icon">🛍️</span>
+                        <span>Shopping</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Bills">
+                        <span class="category-icon">📄</span>
+                        <span>Bills</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Entertainment">
+                        <span class="category-icon">🎬</span>
+                        <span>Entertainment</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Health">
+                        <span class="category-icon">🏥</span>
+                        <span>Health</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn full-width" data-category="Other">
+                        <span class="category-icon">💡</span>
+                        <span>Other</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label class="modal-label">Note (Optional)</label>
+                <input type="text" class="modal-input" id="manualNote" placeholder="Add a note...">
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancel</button>
+                <button class="modal-btn modal-btn-save" id="modalSave">Save</button>
+            </div>
+        </div>
+    </div>
+    <!-- End Manual Entry Modal -->
 
     <div class="success-message" id="successMessage">
         <div class="success-icon">✓</div>
@@ -501,8 +1117,8 @@
 
     <script>
         // ===== CONFIGURATION =====
-        // New Google Apps Script Web App URL applied below
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwejr23kXzWB2b6RjtKJQRatpAIGUAMcmnSxcUJweWxoNOFfzEdMryQB6ScCB3uIMN_/exec';
+        // Replace this with your Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec';
         // =========================
 
         // ===== OFFLINE QUEUE & GOOGLE SHEETS INTEGRATION =====
@@ -688,10 +1304,336 @@
             localStorage.setItem('darkMode', isDark);
         });
 
+        // Page navigation
+        const mainPage = document.getElementById('mainPage');
+        const historyPage = document.getElementById('historyPage');
+        const historyBtn = document.getElementById('historyBtn');
+        const backBtn = document.getElementById('backBtn');
+
+        historyBtn.addEventListener('click', () => {
+            mainPage.classList.remove('active');
+            historyPage.classList.add('active');
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            historyPage.classList.remove('active');
+            mainPage.classList.add('active');
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+        });
+
+        // Manual entry modal
+        const manualEntryModal = document.getElementById('manualEntryModal');
+        const modalContent = document.getElementById('modalContent');
+        const addEntryBtn = document.getElementById('addEntryBtn');
+        const modalCancel = document.getElementById('modalCancel');
+        const modalSave = document.getElementById('modalSave');
+        const manualDate = document.getElementById('manualDate');
+        const manualAmount = document.getElementById('manualAmount');
+        const manualNote = document.getElementById('manualNote');
+        
+        // Add comma formatting to modal amount
+        manualAmount.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/,/g, '');
+            if (!/^\d*\.?\d*$/.test(value)) {
+                value = value.replace(/[^\d.]/g, '');
+            }
+            if (value && !value.includes('.')) {
+                const num = parseInt(value, 10);
+                if (!isNaN(num)) {
+                    value = num.toLocaleString('en-US');
+                }
+            }
+            e.target.value = value;
+        });
+        
+        // Modal currency selector
+        const modalCurrencyBtns = document.querySelectorAll('.modal-currency-btn');
+        let modalSelectedCurrency = 'EUR';
+
+        modalCurrencyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modalCurrencyBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                modalSelectedCurrency = btn.dataset.currency;
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        });
+
+        // Modal category selector
+        const modalCategoryBtns = document.querySelectorAll('.modal-category-btn');
+        let modalSelectedCategory = null;
+
+        modalCategoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                modalCategoryBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                modalSelectedCategory = btn.dataset.category;
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        });
+
+        // Double-tap edit functionality for transaction items
+        let lastTapTime = 0;
+        let lastTappedItem = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const transactionItems = document.querySelectorAll('.transaction-item');
+            
+            transactionItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const currentTime = new Date().getTime();
+                    const tapGap = currentTime - lastTapTime;
+                    
+                    if (tapGap < 300 && tapGap > 0 && lastTappedItem === item) {
+                        // Double tap detected
+                        e.preventDefault();
+                        if (navigator.vibrate) navigator.vibrate(50);
+                        openEditModal(item);
+                        lastTapTime = 0;
+                        lastTappedItem = null;
+                    } else {
+                        // First tap
+                        lastTapTime = currentTime;
+                        lastTappedItem = item;
+                    }
+                });
+            });
+        });
+
+        function openEditModal(item) {
+            manualEntryModal.classList.add('show');
+            // Set default datetime to now
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            manualDate.value = now.toISOString().slice(0, 16);
+            
+            // Pre-fill with demo data (in production, this would be real data)
+            const amountText = item.querySelector('.transaction-amount-main').textContent;
+            manualAmount.value = amountText.replace(/[€$₫]/g, '').trim();
+            
+            const categoryText = item.querySelector('.transaction-category span:nth-child(2)').textContent;
+            modalCategoryBtns.forEach(btn => {
+                if (btn.dataset.category === categoryText) {
+                    btn.click();
+                }
+            });
+            
+            const noteElement = item.querySelector('.transaction-note');
+            if (noteElement) {
+                manualNote.value = noteElement.textContent;
+            }
+        }
+
+        // Open modal
+        addEntryBtn.addEventListener('click', () => {
+            manualEntryModal.classList.add('show');
+            const now = new Date();
+            now.setMinutes(now.setMinutes() - now.getTimezoneOffset());
+            manualDate.value = now.toISOString().slice(0, 16);
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+
+        // Close modal
+        modalCancel.addEventListener('click', () => {
+            manualEntryModal.classList.remove('show');
+            modalContent.classList.remove('success');
+            // Reset form
+            manualAmount.value = '';
+            manualNote.value = '';
+            modalCategoryBtns.forEach(b => b.classList.remove('selected'));
+            modalSelectedCategory = null;
+        });
+
+        // Save manual entry with blue success screen
+        modalSave.addEventListener('click', () => {
+            if (!manualAmount.value || !modalSelectedCategory) {
+                alert('Please enter an amount and select a category');
+                return;
+            }
+
+            const rawAmount = manualAmount.value.replace(/,/g, '');
+            const amountNum = parseFloat(rawAmount);
+            const convertedAmounts = convertCurrency(amountNum, modalSelectedCurrency);
+
+            const expenseData = {
+                vnd: convertedAmounts.VND,
+                eur: convertedAmounts.EUR,
+                usd: convertedAmounts.USD,
+                category: modalSelectedCategory,
+                note: manualNote.value,
+                timestamp: new Date(manualDate.value).toISOString()
+            };
+
+            console.log('Manual entry:', expenseData);
+            saveToGoogleSheets(expenseData);
+
+            // Show blue success screen
+            const symbols = { VND: '₫', EUR: '€', USD: '$' };
+            const displayAmount = modalSelectedCurrency === 'VND' ? 
+                amountNum.toLocaleString('en-US') : 
+                amountNum.toFixed(2);
+            
+            const dateObj = new Date(manualDate.value);
+            const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            
+            modalContent.innerHTML = `
+                <div class="modal-success-icon">✓</div>
+                <div class="modal-success-amount">${symbols[modalSelectedCurrency]}${displayAmount}</div>
+                <div class="modal-success-category">${modalSelectedCategory}</div>
+                <div class="modal-success-date">${dateStr}, ${timeStr}</div>
+                ${manualNote.value ? `<div class="modal-success-note">"${manualNote.value}"</div>` : ''}
+                <div class="modal-success-hint">Tap to close</div>
+            `;
+            modalContent.classList.add('success');
+
+            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+
+            // Auto-close after 5 seconds
+            const autoClose = setTimeout(() => {
+                closeSuccessModal();
+            }, 5000);
+
+            // Tap to close
+            const closeOnTap = () => {
+                clearTimeout(autoClose);
+                closeSuccessModal();
+                modalContent.removeEventListener('click', closeOnTap);
+            };
+            modalContent.addEventListener('click', closeOnTap);
+        });
+
+        function closeSuccessModal() {
+            manualEntryModal.classList.remove('show');
+            setTimeout(() => {
+                modalContent.classList.remove('success');
+                modalContent.innerHTML = `
+                    <div class="modal-header">Add Past Entry</div>
+                    
+                    <div class="modal-field">
+                        <label class="modal-label">Date & Time</label>
+                        <input type="datetime-local" class="modal-input" id="manualDate">
+                    </div>
+
+                    <div class="modal-field">
+                        <label class="modal-label">Amount</label>
+                        <div class="modal-amount-container">
+                            <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="numeric">
+                        </div>
+                    </div>
+
+                    <div class="modal-field">
+                        <label class="modal-label">Currency</label>
+                        <div class="currency-selector">
+                            <button type="button" class="currency-btn modal-currency-btn" data-currency="VND" data-symbol="₫">
+                                <span class="currency-symbol-large">₫</span>
+                                <span class="currency-code">VND</span>
+                            </button>
+                            <button type="button" class="currency-btn modal-currency-btn selected" data-currency="EUR" data-symbol="€">
+                                <span class="currency-symbol-large">€</span>
+                                <span class="currency-code">EUR</span>
+                            </button>
+                            <button type="button" class="currency-btn modal-currency-btn" data-currency="USD" data-symbol="$">
+                                <span class="currency-symbol-large">$</span>
+                                <span class="currency-code">USD</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-field">
+                        <label class="modal-label">Category</label>
+                        <div class="modal-categories">
+                            <button type="button" class="category-btn modal-category-btn" data-category="Food">
+                                <span class="category-icon">🍔</span>
+                                <span>Food</span>
+                            </button>
+                            <button type="button" class="category-btn modal-category-btn" data-category="Transport">
+                                <span class="category-icon">🚗</span>
+                                <span>Transport</span>
+                            </button>
+                            <button type="button" class="category-btn modal-category-btn" data-category="Shopping">
+                                <span class="category-icon">🛍️</span>
+                                <span>Shopping</span>
+                            </button>
+                            <button type="button" class="category-btn modal-category-btn" data-category="Bills">
+                                <span class="category-icon">📄</span>
+                                <span>Bills</span>
+                            </button>
+                            <button type="button" class="category-btn modal-category-btn" data-category="Entertainment">
+                                <span class="category-icon">🎬</span>
+                                <span>Entertainment</span>
+                            </button>
+                            <button type="button" class="category-btn modal-category-btn" data-category="Health">
+                                <span class="category-icon">🏥</span>
+                                <span>Health</span>
+                            </button>
+                            <button type="button" class="category-btn modal-category-btn full-width" data-category="Other">
+                                <span class="category-icon">💡</span>
+                                <span>Other</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-field">
+                        <label class="modal-label">Note (Optional)</label>
+                        <input type="text" class="modal-input" id="manualNote" placeholder="Add a note...">
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancel</button>
+                        <button class="modal-btn modal-btn-save" id="modalSave">Save</button>
+                    </div>
+                `;
+                // Reset form
+                manualAmount.value = '';
+                manualNote.value = '';
+                modalSelectedCategory = null;
+            }, 300);
+        }
+
+        // Close modal when clicking outside
+        manualEntryModal.addEventListener('click', (e) => {
+            if (e.target === manualEntryModal) {
+                modalCancel.click();
+            }
+        });
+
+        // Scroll gradient handler
+        const transactionContainer = document.getElementById('transactionContainer');
+        const scrollGradient = document.getElementById('scrollGradient');
+
+        function updateScrollGradient() {
+            if (!transactionContainer) return;
+            
+            const scrollTop = transactionContainer.scrollTop;
+            const scrollHeight = transactionContainer.scrollHeight;
+            const clientHeight = transactionContainer.clientHeight;
+            
+            // Hide gradient if scrolled to bottom (within 20px threshold)
+            if (scrollTop + clientHeight >= scrollHeight - 20) {
+                scrollGradient.classList.add('hidden');
+            } else {
+                scrollGradient.classList.remove('hidden');
+            }
+        }
+
+        if (transactionContainer) {
+            transactionContainer.addEventListener('scroll', updateScrollGradient);
+            // Initial check
+            setTimeout(updateScrollGradient, 100);
+        }
+
         // Currency selector
-        const currencyBtns = document.querySelectorAll('.currency-btn');
+        const currencyBtns = document.querySelectorAll('.currency-btn:not(.modal-currency-btn)');
         const currentSymbol = document.getElementById('currentSymbol');
-        let selectedCurrency = 'VND';
+        let selectedCurrency = 'EUR';
 
         currencyBtns.forEach(btn => {
             btn.addEventListener('click', () => {
