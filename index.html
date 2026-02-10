@@ -7,36 +7,39 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Expenses">
     <title>Cash Tracker</title>
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            vertical-align: middle;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        :root {
-            --ios-blue: #007AFF;
-            --ios-gray: #8E8E93;
-            --ios-light-gray: #F2F2F7;
-            --ios-border: #C6C6C8;
-            --ios-green: #34C759;
-            --ios-bg: #FFFFFF;
-            --ios-text: #000000;
-            --ios-secondary-text: #3C3C43;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
             background: var(--ios-bg);
             color: var(--ios-text);
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            padding-top: max(20px, env(safe-area-inset-top));
-            padding-bottom: max(40px, env(safe-area-inset-bottom));
-            padding-left: 20px;
-            padding-right: 20px;
+            padding: 20px;
+            max-width: 480px;
+            margin: 0 auto;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
+            --ios-bg: #FFFFFF;
+            --ios-text: #000000;
+            --ios-light-gray: #F2F2F7;
+            --ios-border: #C6C6C8;
+            --ios-blue: #007AFF;
+            --ios-gray: #8E8E93;
+            --ios-green: #34C759;
+            --ios-red: #FF3B30;
+            --ios-modal-bg: #FFFFFF;
             transition: background 0.3s ease, color 0.3s ease;
         }
 
@@ -46,34 +49,40 @@
             --ios-light-gray: #1C1C1E;
             --ios-border: #38383A;
             --ios-gray: #98989D;
-            --ios-secondary-text: #EBEBF5;
             --ios-modal-bg: #2c2c2e;
-        }
-
-        body:not(.dark-mode) {
-            --ios-modal-bg: #ffffff;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
 
         .header-left,
         .header-right {
             display: flex;
             gap: 8px;
-            min-width: 44px;
+            min-width: 88px;
         }
 
-        h1 {
+        .header-left {
+            justify-content: flex-start;
+        }
+
+        .header-right {
+            justify-content: flex-end;
+        }
+
+        .header-center {
+            flex: 1;
+            text-align: center;
+        }
+
+        h1, h2 {
             font-size: 34px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            flex: 1;
-            text-align: center;
         }
 
         .header-btn {
@@ -82,95 +91,31 @@
             border-radius: 22px;
             background: var(--ios-light-gray);
             border: none;
-            font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
+            color: var(--ios-text);
         }
 
         .header-btn:active {
             opacity: 0.6;
         }
 
-        /* History Page Styles */
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .history-header h2 {
-            font-size: 34px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            flex: 1;
-            text-align: center;
-        }
-
         .add-entry-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 22px;
             background: var(--ios-blue);
             color: white;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            font-weight: 300;
         }
 
-        .add-entry-btn:active {
-            transform: scale(0.95);
-        }
-
-        .monthly-total {
-            padding: 16px 0;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .monthly-total-label {
-            font-size: 13px;
-            color: var(--ios-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .monthly-total-amount {
-            font-size: 32px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-
-        .monthly-total-currencies {
-            font-size: 13px;
-            color: var(--ios-gray);
-            margin-top: 4px;
-        }
-
+        .monthly-total,
         .history-total {
-            padding: 16px 0;
+            padding: 12px 0;
             margin-bottom: 20px;
             text-align: center;
         }
 
+        .monthly-total-label,
         .history-total-label {
             font-size: 13px;
             color: var(--ios-gray);
@@ -180,18 +125,242 @@
             font-weight: 500;
         }
 
+        .monthly-total-amount,
         .history-total-amount {
             font-size: 32px;
             font-weight: 600;
             letter-spacing: -0.5px;
         }
 
+        .monthly-total-currencies,
         .history-total-currencies {
             font-size: 13px;
             color: var(--ios-gray);
             margin-top: 4px;
         }
 
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .form-section {
+            margin-bottom: 16px;
+        }
+
+        .section-label {
+            font-size: 13px;
+            color: var(--ios-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            font-weight: 500;
+            text-align: center !important;
+            display: block;
+            width: 100%;
+        }
+
+        input[type="text"],
+        input[type="datetime-local"] {
+            width: 100%;
+            font-size: 17px;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-light-gray);
+            color: var(--ios-text);
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]#note {
+            text-align: center;
+        }
+
+        input[type="text"]::placeholder {
+            text-align: center;
+            opacity: 0.5;
+        }
+
+        input[type="text"]:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
+        }
+
+        input[type="text"]:focus::placeholder {
+            opacity: 0.3;
+        }
+
+        input[type="text"]:focus,
+        input[type="datetime-local"]:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
+        }
+
+        input[type="text"]#amount {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .currency-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .currency-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid var(--ios-border);
+            border-radius: 12px;
+            background: var(--ios-bg);
+            color: var(--ios-text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .currency-btn:active {
+            transform: scale(0.95);
+        }
+
+        .currency-btn.selected {
+            background: var(--ios-blue);
+            color: white;
+            border-color: var(--ios-blue);
+        }
+
+        .currency-symbol-large {
+            font-size: 18px;
+        }
+
+        .currency-code {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .category-btn {
+            padding: 10px 6px;
+            border: 1.5px solid var(--ios-border);
+            border-radius: 12px;
+            background: var(--ios-bg);
+            color: var(--ios-text);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .category-btn:active {
+            transform: scale(0.95);
+        }
+
+        .category-btn.selected {
+            background: var(--ios-blue);
+            color: white;
+            border-color: var(--ios-blue);
+        }
+
+        .category-btn.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .category-icon {
+            font-size: 24px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--ios-blue);
+            color: white;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+            margin-bottom: 40px;
+        }
+
+        .submit-btn:active {
+            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--ios-green);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 3000;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: successPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .success-amount {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .success-category {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .success-tap-hint {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 24px;
+        }
+
+        /* Transaction History */
         .transaction-list-container {
             position: relative;
             max-height: calc(100vh - 280px);
@@ -227,69 +396,45 @@
             background: var(--ios-light-gray);
             border-radius: 12px;
             padding: 12px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
             cursor: pointer;
             transition: all 0.15s ease;
-            position: relative;
         }
 
         .transaction-item:active {
             transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            opacity: 0.8;
         }
 
-        .transaction-item.pressing {
-            transform: scale(0.96);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-        }
-
-        .transaction-left {
-            flex: 1;
-            min-width: 0;
+        .transaction-header {
             display: flex;
-            flex-direction: column;
-            gap: 4px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
-        .transaction-date-time {
+        .transaction-date-category {
             font-size: 13px;
             color: var(--ios-gray);
             font-weight: 500;
         }
 
-        .transaction-category {
-            font-size: 13px;
-            color: var(--ios-gray);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .transaction-right {
-            text-align: right;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            align-items: flex-end;
-        }
-
         .transaction-amount-main {
             font-size: 20px;
             font-weight: 600;
+            text-align: right;
+        }
+
+        .transaction-currencies {
+            font-size: 12px;
+            color: var(--ios-gray);
+            text-align: right;
+            margin-top: 2px;
         }
 
         .transaction-note {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--ios-gray);
-            opacity: 0.8;
-            max-width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            margin-top: 4px;
         }
 
         .empty-state {
@@ -304,7 +449,7 @@
             opacity: 0.5;
         }
 
-        /* Manual Entry Modal */
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -331,25 +476,48 @@
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            transition: background 0.3s ease;
+            position: relative;
         }
 
-        .modal.success {
-            background: var(--ios-blue);
-            color: white;
+        .modal-top-bar {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            min-height: 400px;
+            margin-bottom: 20px;
         }
 
         .modal-header {
             font-size: 20px;
             font-weight: 600;
-            margin-bottom: 20px;
             text-align: center;
+            flex: 1;
+        }
+
+        .modal-delete-btn,
+        .modal-close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            border: none;
+            background: transparent;
+            color: var(--ios-gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .modal-delete-btn {
+            color: var(--ios-red);
+        }
+
+        .modal-delete-btn:active,
+        .modal-close-btn:active {
+            opacity: 0.6;
+            transform: scale(0.9);
         }
 
         .modal-field {
@@ -361,10 +529,11 @@
             color: var(--ios-gray);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 16px;
             display: block;
             font-weight: 500;
-            text-align: center;
+            text-align: center !important;
+            width: 100%;
         }
 
         .modal-input {
@@ -377,8 +546,9 @@
             color: var(--ios-text);
         }
 
-        .modal-amount-container {
-            margin-top: 12px;
+        .modal-input:focus {
+            outline: 2px solid var(--ios-blue);
+            outline-offset: -2px;
         }
 
         .modal-amount-input {
@@ -398,6 +568,13 @@
             outline-offset: -2px;
         }
 
+        .modal-currency-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+        }
+
         .modal-categories {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -406,20 +583,7 @@
 
         .modal-categories .category-btn {
             padding: 10px;
-            font-size: 14px;
-        }
-
-        .modal-categories .category-btn .category-icon {
-            font-size: 18px;
-        }
-
-        .modal-categories .category-btn.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .modal-input:focus {
-            outline: 2px solid var(--ios-blue);
-            outline-offset: -2px;
+            font-size: 13px;
         }
 
         .modal-buttons {
@@ -453,367 +617,46 @@
             transform: scale(0.98);
         }
 
-        /* Modal Success State */
-        .modal-success-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
-
-        .modal-success-amount {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .modal-success-category {
-            font-size: 20px;
-            opacity: 0.9;
-            margin-bottom: 4px;
-        }
-
-        .modal-success-date {
-            font-size: 15px;
-            opacity: 0.8;
-            margin-bottom: 4px;
-        }
-
-        .modal-success-note {
-            font-size: 15px;
-            opacity: 0.7;
-            margin-top: 12px;
-            font-style: italic;
-        }
-
-        .modal-success-hint {
-            font-size: 13px;
-            opacity: 0.7;
-            margin-top: 24px;
-        }
-
-        .monthly-total {
-            background: var(--ios-light-gray);
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .monthly-total-label {
-            font-size: 13px;
-            color: var(--ios-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-
-        .monthly-total-amount {
-            font-size: 32px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-        }
-
-        .form-section {
-            margin-bottom: 20px;
-        }
-
-        .section-label {
-            font-size: 13px;
-            color: var(--ios-gray);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            padding-left: 4px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        .amount-input-container {
-            position: relative;
-            margin-bottom: 12px;
-        }
-
-        .currency-selector {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-            justify-content: center;
-        }
-
-        .currency-btn {
-            flex: 1;
-            padding: 10px;
-            border: 1.5px solid var(--ios-border);
-            border-radius: 10px;
-            background: var(--ios-bg);
-            color: var(--ios-text);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .currency-btn:active {
-            transform: scale(0.95);
-        }
-
-        .currency-btn.selected {
-            background: var(--ios-blue);
-            color: white;
-            border-color: var(--ios-blue);
-        }
-
-        .currency-symbol-large {
-            font-size: 20px;
-        }
-
-        .currency-code {
-            font-size: 11px;
-            opacity: 0.8;
-            font-weight: 500;
-        }
-
-        .currency-symbol {
-            display: none;
-        }
-
-        input[type="text"]#amount {
-            width: 100%;
-            font-size: 28px;
-            font-weight: 500;
-            padding: 16px 20px;
-            border: none;
-            border-radius: 12px;
-            background: var(--ios-light-gray);
-            color: var(--ios-text);
-            -webkit-appearance: none;
-            appearance: none;
-            text-align: center;
-        }
-
-        input[type="text"]#amount:focus {
-            outline: 2px solid var(--ios-blue);
-            outline-offset: -2px;
-        }
-
-        input[type="text"]#amount::placeholder {
-            text-align: center;
-        }
-
-        .categories {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            max-width: 100%;
-        }
-
-        .category-btn {
-            padding: 14px;
-            border: 1.5px solid var(--ios-border);
-            border-radius: 12px;
-            background: var(--ios-bg);
-            color: var(--ios-text);
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .category-btn.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .category-btn:active {
-            transform: scale(0.95);
-        }
-
-        .category-btn.selected {
-            background: var(--ios-blue);
-            color: white;
-            border-color: var(--ios-blue);
-        }
-
-        .category-icon {
-            font-size: 20px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            font-size: 17px;
-            padding: 14px 16px;
-            border: none;
-            border-radius: 12px;
-            background: var(--ios-light-gray);
-            color: var(--ios-text);
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        input[type="text"]:focus {
-            outline: 2px solid var(--ios-blue);
-            outline-offset: -2px;
-        }
-
-        input[type="text"]::placeholder {
-            color: var(--ios-gray);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            background: var(--ios-blue);
-            color: white;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 12px;
-            margin-bottom: 40px;
-        }
-
-        .submit-btn:active {
-            opacity: 0.8;
-            transform: scale(0.98);
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .submit-btn.success {
-            background: var(--ios-green);
-        }
-
-        .success-message {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--ios-green);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            pointer-events: none;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .success-message.show {
-            opacity: 1;
-            transform: scale(1);
-            pointer-events: auto;
-        }
-
-        .success-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: checkmarkPop 0.5s ease;
-        }
-
-        @keyframes checkmarkPop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .success-amount {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            letter-spacing: -1px;
-        }
-
-        .success-category {
-            font-size: 24px;
-            font-weight: 500;
-            opacity: 0.9;
-            margin-bottom: 40px;
-        }
-
-        .success-tap-hint {
-            font-size: 15px;
-            opacity: 0.7;
-            margin-top: auto;
-        }
-
-        .offline-indicator {
-            position: fixed;
-            top: env(safe-area-inset-top);
-            left: 0;
-            right: 0;
-            background: #FF3B30;
-            color: white;
-            padding: 8px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: 500;
-            transform: translateY(-100%);
-            transition: transform 0.3s ease;
-            z-index: 100;
-        }
-
-        .offline-indicator.show {
-            transform: translateY(0);
-        }
-
         .queued-indicator {
-            background: var(--ios-light-gray);
-            padding: 12px 16px;
-            border-radius: 10px;
+            background: #FFF3CD;
+            border: 1px solid #FFE69C;
+            color: #856404;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
             margin-bottom: 16px;
             display: none;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: var(--ios-gray);
         }
 
         .queued-indicator.show {
-            display: flex;
+            display: block;
         }
 
         .queued-count {
-            background: var(--ios-blue);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
             font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="offline-indicator" id="offlineIndicator">
-        📡 Offline - expenses will sync when online
-    </div>
-
     <!-- Main Expense Entry Page -->
     <div class="page active" id="mainPage">
         <div class="header">
             <div class="header-left">
-                <button class="header-btn" id="historyBtn" title="Transaction History">📋</button>
+                <button class="header-btn" id="historyBtn" title="History">
+                    <span class="material-symbols-outlined">history</span>
+                </button>
             </div>
-            <h1>Expenses</h1>
+            <div class="header-center">
+                <h1>Expenses</h1>
+            </div>
             <div class="header-right">
-                <button class="header-btn" id="darkModeToggle">🌙</button>
+                <button class="header-btn" id="refreshBtn" title="Refresh">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button class="header-btn" id="darkModeToggle" title="Dark Mode">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
             </div>
         </div>
 
@@ -824,9 +667,8 @@
         </div>
 
         <form id="expenseForm">
-        <div class="form-section">
-            <label class="section-label">Amount</label>
-            <div class="amount-input-container">
+            <div class="form-section">
+                <label class="section-label">Amount</label>
                 <input 
                     type="text" 
                     id="amount" 
@@ -836,81 +678,88 @@
                     autofocus
                     required
                 >
+                <div class="currency-selector">
+                    <button type="button" class="currency-btn" data-currency="VND" data-symbol="₫">
+                        <span class="currency-symbol-large">₫</span>
+                        <span class="currency-code">VND</span>
+                    </button>
+                    <button type="button" class="currency-btn selected" data-currency="EUR" data-symbol="€">
+                        <span class="currency-symbol-large">€</span>
+                        <span class="currency-code">EUR</span>
+                    </button>
+                    <button type="button" class="currency-btn" data-currency="USD" data-symbol="$">
+                        <span class="currency-symbol-large">$</span>
+                        <span class="currency-code">USD</span>
+                    </button>
+                </div>
             </div>
-            <div class="currency-selector">
-                <button type="button" class="currency-btn" data-currency="VND" data-symbol="₫">
-                    <span class="currency-symbol-large">₫</span>
-                    <span class="currency-code">VND</span>
-                </button>
-                <button type="button" class="currency-btn selected" data-currency="EUR" data-symbol="€">
-                    <span class="currency-symbol-large">€</span>
-                    <span class="currency-code">EUR</span>
-                </button>
-                <button type="button" class="currency-btn" data-currency="USD" data-symbol="$">
-                    <span class="currency-symbol-large">$</span>
-                    <span class="currency-code">USD</span>
-                </button>
+
+            <div class="form-section">
+                <label class="section-label">Category</label>
+                <div class="categories">
+                    <button type="button" class="category-btn" data-category="Food">
+                        <span class="material-symbols-outlined category-icon">restaurant</span>
+                        <span>Food</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Transport">
+                        <span class="material-symbols-outlined category-icon">directions_car</span>
+                        <span>Transport</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Shopping">
+                        <span class="material-symbols-outlined category-icon">shopping_bag</span>
+                        <span>Shopping</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Bills">
+                        <span class="material-symbols-outlined category-icon">receipt_long</span>
+                        <span>Bills</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Entertainment">
+                        <span class="material-symbols-outlined category-icon">movie</span>
+                        <span>Entertainment</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Health">
+                        <span class="material-symbols-outlined category-icon">local_hospital</span>
+                        <span>Health</span>
+                    </button>
+                    <button type="button" class="category-btn full-width" data-category="Other">
+                        <span class="material-symbols-outlined category-icon">lightbulb</span>
+                        <span>Other</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div class="form-section">
-            <label class="section-label">Category</label>
-            <div class="categories">
-                <button type="button" class="category-btn" data-category="Food">
-                    <span class="category-icon">🍔</span>
-                    <span>Food</span>
-                </button>
-                <button type="button" class="category-btn" data-category="Transport">
-                    <span class="category-icon">🚗</span>
-                    <span>Transport</span>
-                </button>
-                <button type="button" class="category-btn" data-category="Shopping">
-                    <span class="category-icon">🛍️</span>
-                    <span>Shopping</span>
-                </button>
-                <button type="button" class="category-btn" data-category="Bills">
-                    <span class="category-icon">📄</span>
-                    <span>Bills</span>
-                </button>
-                <button type="button" class="category-btn" data-category="Entertainment">
-                    <span class="category-icon">🎬</span>
-                    <span>Entertainment</span>
-                </button>
-                <button type="button" class="category-btn" data-category="Health">
-                    <span class="category-icon">🏥</span>
-                    <span>Health</span>
-                </button>
-                <button type="button" class="category-btn full-width" data-category="Other">
-                    <span class="category-icon">💡</span>
-                    <span>Other</span>
-                </button>
+            <div class="form-section">
+                <label class="section-label">Note (Optional)</label>
+                <input 
+                    type="text" 
+                    id="note" 
+                    placeholder="Add a note..."
+                    autocomplete="off"
+                >
             </div>
-        </div>
 
-        <div class="form-section">
-            <label class="section-label">Note (Optional)</label>
-            <input 
-                type="text" 
-                id="note" 
-                placeholder="Add a note..."
-                autocomplete="off"
-            >
-        </div>
-
-        <button type="submit" class="submit-btn" id="submitBtn">Add Expense</button>
-    </form>
+            <button type="submit" class="submit-btn" id="submitBtn">Add Expense</button>
+        </form>
     </div>
-    <!-- End Main Page -->
 
     <!-- History Page -->
     <div class="page" id="historyPage">
-        <div class="history-header">
+        <div class="header">
             <div class="header-left">
-                <button class="header-btn" id="backBtn">‹</button>
+                <button class="header-btn" id="backBtn" title="Back">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
             </div>
-            <h2>History</h2>
+            <div class="header-center">
+                <h2>History</h2>
+            </div>
             <div class="header-right">
-                <button class="add-entry-btn" id="addEntryBtn">+</button>
+                <button class="header-btn" id="refreshHistoryBtn" title="Refresh">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button class="add-entry-btn header-btn" id="addEntryBtn" title="Add Entry">
+                    <span class="material-symbols-outlined">add</span>
+                </button>
             </div>
         </div>
 
@@ -920,124 +769,45 @@
             <div class="history-total-currencies" id="historyTotalCurrencies">₫0 | $0</div>
         </div>
 
-        <div class="queued-indicator" id="queuedIndicator" style="margin-bottom: 16px;">
-            <span class="queued-count">3</span>
-            <span>expenses waiting to sync</span>
+        <div class="queued-indicator" id="queuedIndicator">
+            <span class="queued-count" id="queuedCount">0</span>
+            <span> expenses waiting to sync</span>
         </div>
 
         <div class="transaction-list-container" id="transactionContainer">
             <div class="transaction-list" id="transactionList">
-                <!-- Demo transactions - will be replaced with real data -->
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Today, 10:30 AM</div>
-                        <div class="transaction-category">
-                            <span>🍔</span>
-                            <span>Food</span>
-                        </div>
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <span class="material-symbols-outlined" style="font-size: 64px;">inbox</span>
                     </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€50.00</div>
-                        <div class="transaction-note">Lunch at cafe</div>
-                    </div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Yesterday, 2:15 PM</div>
-                        <div class="transaction-category">
-                            <span>🚗</span>
-                            <span>Transport</span>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€1.85</div>
-                    </div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Mar 6, 6:00 PM</div>
-                        <div class="transaction-category">
-                            <span>🛍️</span>
-                            <span>Shopping</span>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€18.52</div>
-                        <div class="transaction-note">New shoes</div>
-                    </div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Mar 5, 8:45 AM</div>
-                        <div class="transaction-category">
-                            <span>🏥</span>
-                            <span>Health</span>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€92.50</div>
-                    </div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Mar 4, 12:30 PM</div>
-                        <div class="transaction-category">
-                            <span>📄</span>
-                            <span>Bills</span>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€74.00</div>
-                    </div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Mar 3, 7:30 PM</div>
-                        <div class="transaction-category">
-                            <span>🎬</span>
-                            <span>Entertainment</span>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€25.00</div>
-                        <div class="transaction-note">Movie tickets</div>
-                    </div>
-                </div>
-
-                <div class="transaction-item">
-                    <div class="transaction-left">
-                        <div class="transaction-date-time">Mar 2, 1:00 PM</div>
-                        <div class="transaction-category">
-                            <span>🍔</span>
-                            <span>Food</span>
-                        </div>
-                    </div>
-                    <div class="transaction-right">
-                        <div class="transaction-amount-main">€15.50</div>
-                    </div>
-                </div>
-
-                <!-- Empty state (shown when no transactions) -->
-                <!-- <div class="empty-state">
-                    <div class="empty-icon">📭</div>
                     <div>No expenses yet</div>
-                </div> -->
+                </div>
             </div>
         </div>
 
         <div class="scroll-gradient" id="scrollGradient"></div>
     </div>
-    <!-- End History Page -->
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        <div class="success-icon">✓</div>
+        <div class="success-amount" id="successAmount">€0</div>
+        <div class="success-category" id="successCategory">Category</div>
+        <div class="success-tap-hint">Tap anywhere to continue</div>
+    </div>
 
     <!-- Manual Entry Modal -->
     <div class="modal-overlay" id="manualEntryModal">
         <div class="modal" id="modalContent">
-            <div class="modal-header">Add Past Entry</div>
+            <div class="modal-top-bar">
+                <button class="modal-delete-btn" id="modalDelete" style="visibility: hidden;">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+                <div class="modal-header">Add Entry</div>
+                <button class="modal-close-btn" id="modalClose">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
             
             <div class="modal-field">
                 <label class="modal-label">Date & Time</label>
@@ -1046,13 +816,8 @@
 
             <div class="modal-field">
                 <label class="modal-label">Amount</label>
-                <div class="modal-amount-container">
-                    <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="numeric">
-                </div>
-            </div>
-
-            <div class="modal-field" style="margin-bottom: 20px;">
-                <div class="currency-selector">
+                <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="numeric">
+                <div class="modal-currency-selector">
                     <button type="button" class="currency-btn modal-currency-btn" data-currency="VND" data-symbol="₫">
                         <span class="currency-symbol-large">₫</span>
                         <span class="currency-code">VND</span>
@@ -1072,31 +837,31 @@
                 <label class="modal-label">Category</label>
                 <div class="modal-categories">
                     <button type="button" class="category-btn modal-category-btn" data-category="Food">
-                        <span class="category-icon">🍔</span>
+                        <span class="material-symbols-outlined category-icon">restaurant</span>
                         <span>Food</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Transport">
-                        <span class="category-icon">🚗</span>
+                        <span class="material-symbols-outlined category-icon">directions_car</span>
                         <span>Transport</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Shopping">
-                        <span class="category-icon">🛍️</span>
+                        <span class="material-symbols-outlined category-icon">shopping_bag</span>
                         <span>Shopping</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Bills">
-                        <span class="category-icon">📄</span>
+                        <span class="material-symbols-outlined category-icon">receipt_long</span>
                         <span>Bills</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Entertainment">
-                        <span class="category-icon">🎬</span>
+                        <span class="material-symbols-outlined category-icon">movie</span>
                         <span>Entertainment</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Health">
-                        <span class="category-icon">🏥</span>
+                        <span class="material-symbols-outlined category-icon">local_hospital</span>
                         <span>Health</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn full-width" data-category="Other">
-                        <span class="category-icon">💡</span>
+                        <span class="material-symbols-outlined category-icon">lightbulb</span>
                         <span>Other</span>
                     </button>
                 </div>
@@ -1113,27 +878,15 @@
             </div>
         </div>
     </div>
-    <!-- End Manual Entry Modal -->
-
-    <div class="success-message" id="successMessage">
-        <div class="success-icon">✓</div>
-        <div class="success-amount" id="successAmount">₫0</div>
-        <div class="success-category" id="successCategory">Category</div>
-        <div class="success-tap-hint">Tap anywhere to continue</div>
-    </div>
 
     <script>
         // ===== CONFIGURATION =====
-        // Replace this with your Google Apps Script Web App URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG6X4Vt8IDC8lgrxCB_7WMbX-denJ1FEr4YCQUw7qQoCRL5Qak4URlIBqRBZGtBg2J/exec';
-        // =========================
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec';
 
-        // ===== OFFLINE QUEUE & GOOGLE SHEETS INTEGRATION =====
-        
         // Exchange rates storage
         let exchangeRates = {
             VND: 1,
-            EUR: 0.000037, // Default fallback rates
+            EUR: 0.000037,
             USD: 0.00004
         };
 
@@ -1141,17 +894,15 @@
         async function fetchExchangeRates() {
             const cachedRates = localStorage.getItem('exchangeRates');
             const cachedDate = localStorage.getItem('exchangeRatesDate');
+            
             const today = new Date().toDateString();
-
-            // Use cached rates if from today
+            
             if (cachedRates && cachedDate === today) {
                 exchangeRates = JSON.parse(cachedRates);
-                console.log('Using cached exchange rates');
                 return;
             }
-
+            
             try {
-                // Free API - no signup required, 1500 requests/month
                 const response = await fetch('https://api.exchangerate-api.com/v4/latest/VND');
                 const data = await response.json();
                 
@@ -1160,261 +911,281 @@
                     EUR: data.rates.EUR,
                     USD: data.rates.USD
                 };
-
-                // Cache for today
+                
                 localStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
                 localStorage.setItem('exchangeRatesDate', today);
-                
-                console.log('Exchange rates updated:', exchangeRates);
             } catch (error) {
-                console.error('Failed to fetch exchange rates, using defaults:', error);
+                console.error('Error fetching exchange rates:', error);
             }
         }
 
-        // Convert amount between currencies
+        // Convert currency
         function convertCurrency(amount, fromCurrency) {
-            const vndAmount = fromCurrency === 'VND' ? amount : amount / exchangeRates[fromCurrency];
+            const vndAmount = amount / exchangeRates[fromCurrency];
             
             return {
                 VND: Math.round(vndAmount),
-                EUR: parseFloat((vndAmount * exchangeRates.EUR).toFixed(2)),
-                USD: parseFloat((vndAmount * exchangeRates.USD).toFixed(2))
+                EUR: vndAmount * exchangeRates.EUR,
+                USD: vndAmount * exchangeRates.USD
             };
         }
 
-        // Get offline queue from localStorage
-        function getOfflineQueue() {
-            const queue = localStorage.getItem('expenseQueue');
-            return queue ? JSON.parse(queue) : [];
+        // Category icons mapping
+        const categoryIcons = {
+            'Food': 'restaurant',
+            'Transport': 'directions_car',
+            'Shopping': 'shopping_bag',
+            'Bills': 'receipt_long',
+            'Entertainment': 'movie',
+            'Health': 'local_hospital',
+            'Other': 'lightbulb'
+        };
+
+        // Dark mode
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        
+        if (localStorage.getItem('darkMode') === 'true') {
+            body.classList.add('dark-mode');
+            darkModeToggle.querySelector('.material-symbols-outlined').textContent = 'light_mode';
         }
 
-        // Save offline queue to localStorage
-        function saveOfflineQueue(queue) {
-            localStorage.setItem('expenseQueue', JSON.stringify(queue));
-            updateQueueIndicator();
-        }
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            darkModeToggle.querySelector('.material-symbols-outlined').textContent = isDark ? 'light_mode' : 'dark_mode';
+            localStorage.setItem('darkMode', isDark);
+        });
 
-        // Update queued expenses indicator
-        function updateQueueIndicator() {
-            const queue = getOfflineQueue();
-            const indicator = document.getElementById('queuedIndicator');
-            const countElement = indicator.querySelector('.queued-count');
-            
-            if (queue.length > 0) {
-                countElement.textContent = queue.length;
-                indicator.classList.add('show');
-            } else {
-                indicator.classList.remove('show');
+        // Page navigation
+        const mainPage = document.getElementById('mainPage');
+        const historyPage = document.getElementById('historyPage');
+        const historyBtn = document.getElementById('historyBtn');
+        const backBtn = document.getElementById('backBtn');
+
+        historyBtn.addEventListener('click', () => {
+            mainPage.classList.remove('active');
+            historyPage.classList.add('active');
+            loadTransactionHistory();
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+
+        backBtn.addEventListener('click', () => {
+            historyPage.classList.remove('active');
+            mainPage.classList.add('active');
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+
+        // Refresh buttons
+        const refreshBtn = document.getElementById('refreshBtn');
+        const refreshHistoryBtn = document.getElementById('refreshHistoryBtn');
+
+        refreshBtn.addEventListener('click', async () => {
+            refreshBtn.querySelector('.material-symbols-outlined').style.animation = 'spin 0.5s linear';
+            setTimeout(() => {
+                refreshBtn.querySelector('.material-symbols-outlined').style.animation = '';
+            }, 500);
+            await loadMonthlyTotal();
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+
+        refreshHistoryBtn.addEventListener('click', async () => {
+            refreshHistoryBtn.querySelector('.material-symbols-outlined').style.animation = 'spin 0.5s linear';
+            setTimeout(() => {
+                refreshHistoryBtn.querySelector('.material-symbols-outlined').style.animation = '';
+            }, 500);
+            await loadMonthlyTotal();
+            await loadTransactionHistory();
+            if (navigator.vibrate) navigator.vibrate(10);
+        });
+
+        // Add spin animation
+        const style = document.createElement('style');
+        style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+        document.head.appendChild(style);
+
+        // Currency selector
+        const currencyBtns = document.querySelectorAll('.currency-btn:not(.modal-currency-btn)');
+        let selectedCurrency = 'EUR';
+
+        currencyBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                currencyBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedCurrency = btn.dataset.currency;
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        });
+
+        // Category selector
+        const categoryBtns = document.querySelectorAll('.category-btn:not(.modal-category-btn)');
+        let selectedCategory = null;
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedCategory = btn.dataset.category;
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+        });
+
+        // Amount input formatting
+        const amountInput = document.getElementById('amount');
+        amountInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/,/g, '');
+            if (!/^\d*\.?\d*$/.test(value)) {
+                value = value.replace(/[^\d.]/g, '');
             }
-        }
+            if (value && !value.includes('.')) {
+                const num = parseInt(value, 10);
+                if (!isNaN(num)) {
+                    value = num.toLocaleString('en-US');
+                }
+            }
+            e.target.value = value;
+        });
 
-        // Save expense to Google Sheets
-        async function saveToGoogleSheets(expenseData) {
-            console.log('💾 Saving expense to Google Sheets...');
-            console.log('📦 Data to save:', expenseData);
-            console.log('📍 Google Script URL:', GOOGLE_SCRIPT_URL);
+        // Form submission
+        const expenseForm = document.getElementById('expenseForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        expenseForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            // Check if we have a valid Google Script URL
+            const rawAmount = amountInput.value.replace(/,/g, '');
+            const amountNum = parseFloat(rawAmount);
+            
+            if (!amountNum || !selectedCategory) {
+                alert('Please enter an amount and select a category');
+                return;
+            }
+
+            const convertedAmounts = convertCurrency(amountNum, selectedCurrency);
+            
+            const expenseData = {
+                timestamp: new Date().toISOString(),
+                vnd: convertedAmounts.VND,
+                eur: convertedAmounts.EUR,
+                usd: convertedAmounts.USD,
+                category: selectedCategory,
+                note: document.getElementById('note').value
+            };
+
+            await saveToGoogleSheets(expenseData);
+
+            // Show success message
+            const successMessage = document.getElementById('successMessage');
+            const successAmount = document.getElementById('successAmount');
+            const successCategory = document.getElementById('successCategory');
+            
+            const symbols = { VND: '₫', EUR: '€', USD: '$' };
+            const displayAmount = selectedCurrency === 'VND' ? 
+                amountNum.toLocaleString('en-US') : 
+                amountNum.toFixed(2);
+            
+            successAmount.textContent = `${symbols[selectedCurrency]}${displayAmount}`;
+            successCategory.textContent = selectedCategory;
+            successMessage.classList.add('show');
+
+            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+                
+                // Clear form
+                amountInput.value = '';
+                document.getElementById('note').value = '';
+                categoryBtns.forEach(b => b.classList.remove('selected'));
+                selectedCategory = null;
+                amountInput.focus();
+            }, 2000);
+        });
+
+        // Save to Google Sheets
+        async function saveToGoogleSheets(expenseData) {
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
-                console.error('❌ Google Sheets not configured');
-                alert('Please configure your Google Script URL in the HTML file');
+                console.error('Google Script URL not configured');
                 return;
             }
 
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Google Apps Script requires this
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(expenseData)
                 });
 
-                console.log('✅ Expense saved to Google Sheets (mode: no-cors, no response available)');
-                
-                // Update monthly total after successful save
-                setTimeout(() => {
-                    console.log('🔄 Reloading monthly total...');
-                    loadMonthlyTotal();
-                }, 1000);
-
+                setTimeout(() => loadMonthlyTotal(), 500);
             } catch (error) {
-                console.error('❌ Error saving to Google Sheets:', error);
-                
-                // Add to offline queue
-                const queue = getOfflineQueue();
-                queue.push(expenseData);
-                saveOfflineQueue(queue);
-                
-                console.log('📥 Added to offline queue');
+                console.error('Error saving:', error);
             }
         }
 
-        // Sync offline queue when back online
-        async function syncOfflineQueue() {
-            const queue = getOfflineQueue();
-            
-            if (queue.length === 0) return;
-            
-            console.log(`Syncing ${queue.length} queued expenses...`);
-            
-            const synced = [];
-            
-            for (const expense of queue) {
-                try {
-                    await saveToGoogleSheets(expense);
-                    synced.push(expense);
-                } catch (error) {
-                    console.error('Failed to sync expense:', error);
-                    break; // Stop syncing if one fails
-                }
-            }
-            
-            // Remove synced expenses from queue
-            if (synced.length > 0) {
-                const remainingQueue = queue.filter(e => !synced.includes(e));
-                saveOfflineQueue(remainingQueue);
-                console.log(`Synced ${synced.length} expenses`);
-            }
-        }
-
-        // Load monthly total from Google Sheets
+        // Load monthly total
         async function loadMonthlyTotal() {
-            console.log('🔍 Loading monthly total...');
-            console.log('📍 Google Script URL:', GOOGLE_SCRIPT_URL);
-            
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
-                console.error('❌ Google Script URL not configured');
                 return;
             }
 
             try {
-                console.log('📡 Fetching monthly total from:', GOOGLE_SCRIPT_URL);
                 const response = await fetch(GOOGLE_SCRIPT_URL);
-                console.log('📥 Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
                 const data = await response.json();
-                console.log('📦 Monthly total data:', data);
                 
                 if (data.status === 'success') {
-                    // Update main page total
                     const mainTotalElement = document.getElementById('totalAmount');
                     const mainCurrenciesElement = document.getElementById('totalCurrencies');
                     
                     if (mainTotalElement && data.totalEUR !== undefined) {
                         mainTotalElement.textContent = `€${data.totalEUR.toFixed(2)}`;
                         mainCurrenciesElement.textContent = `₫${Math.round(data.totalVND).toLocaleString('en-US')} | $${data.totalUSD.toFixed(2)}`;
-                        console.log('✅ Updated main page total');
                     }
                     
-                    // Update history page total
                     const historyTotalElement = document.getElementById('historyTotalAmount');
                     const historyCurrenciesElement = document.getElementById('historyTotalCurrencies');
                     
                     if (historyTotalElement && data.totalEUR !== undefined) {
                         historyTotalElement.textContent = `€${data.totalEUR.toFixed(2)}`;
                         historyCurrenciesElement.textContent = `₫${Math.round(data.totalVND).toLocaleString('en-US')} | $${data.totalUSD.toFixed(2)}`;
-                        console.log('✅ Updated history page total');
                     }
-                } else {
-                    console.error('❌ Invalid response format:', data);
                 }
             } catch (error) {
-                console.error('❌ Error loading monthly total:', error);
+                console.error('Error loading monthly total:', error);
             }
         }
 
-        // Load transaction history from Google Sheets
+        // Load transaction history
         async function loadTransactionHistory() {
-            console.log('🔍 Loading transaction history...');
-            console.log('📍 Google Script URL:', GOOGLE_SCRIPT_URL);
-            
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
-                console.error('❌ Google Script URL not configured');
-                showHistoryError('Google Script URL not configured. Please update the HTML file.');
                 return;
             }
 
-            // Show loading state
             const transactionList = document.getElementById('transactionList');
-            transactionList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">⏳</div>
-                    <div>Loading expenses...</div>
-                </div>
-            `;
+            transactionList.innerHTML = '<div class="empty-state"><div class="empty-icon"><span class="material-symbols-outlined" style="font-size: 64px;">hourglass_empty</span></div><div>Loading...</div></div>';
 
             try {
-                const url = `${GOOGLE_SCRIPT_URL}?action=getTransactions`;
-                console.log('📡 Fetching from:', url);
-                
-                const response = await fetch(url);
-                console.log('📥 Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getTransactions`);
                 const data = await response.json();
-                console.log('📦 Received data:', data);
                 
                 if (data.status === 'success' && data.transactions) {
-                    console.log('✅ Found', data.transactions.length, 'transactions');
                     displayTransactions(data.transactions);
-                } else {
-                    console.error('❌ Invalid response format:', data);
-                    showHistoryError('Invalid response from Google Sheets. Check console for details.');
                 }
             } catch (error) {
-                console.error('❌ Error loading transaction history:', error);
-                showHistoryError(`Failed to load expenses: ${error.message}`);
+                console.error('Error loading history:', error);
+                transactionList.innerHTML = '<div class="empty-state"><div class="empty-icon"><span class="material-symbols-outlined" style="font-size: 64px;">error</span></div><div>Error loading expenses</div></div>';
             }
         }
 
-        // Show error message in history page
-        function showHistoryError(message) {
-            const transactionList = document.getElementById('transactionList');
-            transactionList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">⚠️</div>
-                    <div style="color: #ff3b30; font-weight: 600; margin-bottom: 8px;">Error</div>
-                    <div style="font-size: 14px;">${message}</div>
-                    <div style="font-size: 13px; margin-top: 12px; opacity: 0.7;">Check browser console (F12) for details</div>
-                </div>
-            `;
-        }
-
-        // Display transactions in history page
+        // Display transactions
         function displayTransactions(transactions) {
             const transactionList = document.getElementById('transactionList');
             
             if (!transactions || transactions.length === 0) {
-                transactionList.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📭</div>
-                        <div>No expenses yet</div>
-                    </div>
-                `;
+                transactionList.innerHTML = '<div class="empty-state"><div class="empty-icon"><span class="material-symbols-outlined" style="font-size: 64px;">inbox</span></div><div>No expenses yet</div></div>';
                 return;
             }
 
-            // Category icons mapping
-            const categoryIcons = {
-                'Food': '🍔',
-                'Transport': '🚗',
-                'Shopping': '🛍️',
-                'Bills': '📄',
-                'Entertainment': '🎬',
-                'Health': '🏥',
-                'Other': '💡'
-            };
-
-            // Format and display each transaction
             const transactionHTML = transactions.map(transaction => {
                 const date = new Date(transaction.timestamp);
                 const now = new Date();
@@ -1433,125 +1204,82 @@
                 }
                 
                 const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-                const icon = categoryIcons[transaction.category] || '💡';
                 
                 const noteHTML = transaction.note ? 
                     `<div class="transaction-note">${transaction.note}</div>` : '';
                 
                 return `
-                    <div class="transaction-item" data-transaction='${JSON.stringify(transaction)}'>
-                        <div class="transaction-left">
-                            <div class="transaction-date-time">${dateStr}, ${timeStr}</div>
-                            <div class="transaction-category">
-                                <span>${icon}</span>
-                                <span>${transaction.category}</span>
+                    <div class="transaction-item" data-transaction='${JSON.stringify(transaction).replace(/'/g, "&#39;")}'>
+                        <div class="transaction-header">
+                            <div class="transaction-date-category">${dateStr}, ${timeStr} [${transaction.category}]</div>
+                            <div>
+                                <div class="transaction-amount-main">€${transaction.eur.toFixed(2)}</div>
+                                <div class="transaction-currencies">₫${Math.round(transaction.vnd).toLocaleString('en-US')} | $${transaction.usd.toFixed(2)}</div>
                             </div>
                         </div>
-                        <div class="transaction-right">
-                            <div class="transaction-amount-main">€${transaction.eur.toFixed(2)}</div>
-                            ${noteHTML}
-                        </div>
+                        ${noteHTML}
                     </div>
                 `;
             }).join('');
             
             transactionList.innerHTML = transactionHTML;
-            
-            // Re-attach double-tap listeners to new transaction items
             attachTransactionListeners();
-            
-            // Update scroll gradient
             setTimeout(updateScrollGradient, 100);
         }
 
-        // Attach double-tap listeners to transaction items
+        // Attach transaction click listeners
         function attachTransactionListeners() {
             const transactionItems = document.querySelectorAll('.transaction-item');
-            let lastTapTime = 0;
-            let lastTappedItem = null;
             
             transactionItems.forEach(item => {
-                item.addEventListener('click', (e) => {
-                    const currentTime = new Date().getTime();
-                    const tapGap = currentTime - lastTapTime;
-                    
-                    if (tapGap < 300 && tapGap > 0 && lastTappedItem === item) {
-                        // Double tap detected
-                        e.preventDefault();
-                        if (navigator.vibrate) navigator.vibrate(50);
-                        
-                        try {
-                            const transactionData = JSON.parse(item.dataset.transaction);
-                            openEditModal(item, transactionData);
-                        } catch (error) {
-                            console.error('Error parsing transaction data:', error);
-                        }
-                        
-                        lastTapTime = 0;
-                        lastTappedItem = null;
-                    } else {
-                        // First tap
-                        lastTapTime = currentTime;
-                        lastTappedItem = item;
+                item.addEventListener('click', () => {
+                    try {
+                        const transactionData = JSON.parse(item.dataset.transaction);
+                        openEditModal(transactionData);
+                    } catch (error) {
+                        console.error('Error parsing transaction:', error);
                     }
                 });
             });
         }
 
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const body = document.body;
-        
-        // Load dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            body.classList.add('dark-mode');
-            darkModeToggle.textContent = '☀️';
+        // Scroll gradient
+        const transactionContainer = document.getElementById('transactionContainer');
+        const scrollGradient = document.getElementById('scrollGradient');
+
+        function updateScrollGradient() {
+            if (!transactionContainer) return;
+            
+            const scrollTop = transactionContainer.scrollTop;
+            const scrollHeight = transactionContainer.scrollHeight;
+            const clientHeight = transactionContainer.clientHeight;
+            
+            if (scrollTop + clientHeight >= scrollHeight - 20) {
+                scrollGradient.classList.add('hidden');
+            } else {
+                scrollGradient.classList.remove('hidden');
+            }
         }
 
-        darkModeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', isDark);
-        });
+        if (transactionContainer) {
+            transactionContainer.addEventListener('scroll', updateScrollGradient);
+        }
 
-        // Page navigation
-        const mainPage = document.getElementById('mainPage');
-        const historyPage = document.getElementById('historyPage');
-        const historyBtn = document.getElementById('historyBtn');
-        const backBtn = document.getElementById('backBtn');
-
-        historyBtn.addEventListener('click', () => {
-            mainPage.classList.remove('active');
-            historyPage.classList.add('active');
-            // Load transaction history
-            loadTransactionHistory();
-            // Haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        });
-
-        backBtn.addEventListener('click', () => {
-            historyPage.classList.remove('active');
-            mainPage.classList.add('active');
-            // Haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        });
-
-        // Manual entry modal
+        // Modal
         const manualEntryModal = document.getElementById('manualEntryModal');
         const modalContent = document.getElementById('modalContent');
         const addEntryBtn = document.getElementById('addEntryBtn');
+        const modalClose = document.getElementById('modalClose');
         const modalCancel = document.getElementById('modalCancel');
         const modalSave = document.getElementById('modalSave');
+        const modalDelete = document.getElementById('modalDelete');
         const manualDate = document.getElementById('manualDate');
         const manualAmount = document.getElementById('manualAmount');
         const manualNote = document.getElementById('manualNote');
         
-        // Add comma formatting to modal amount
+        let currentEditingTransaction = null;
+
+        // Modal amount formatting
         manualAmount.addEventListener('input', (e) => {
             let value = e.target.value.replace(/,/g, '');
             if (!/^\d*\.?\d*$/.test(value)) {
@@ -1565,7 +1293,7 @@
             }
             e.target.value = value;
         });
-        
+
         // Modal currency selector
         const modalCurrencyBtns = document.querySelectorAll('.modal-currency-btn');
         let modalSelectedCurrency = 'EUR';
@@ -1592,419 +1320,150 @@
             });
         });
 
-        function openEditModal(item, transactionData) {
-            manualEntryModal.classList.add('show');
-            
-            if (transactionData) {
-                // Fill with real transaction data
-                const date = new Date(transactionData.timestamp);
-                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-                manualDate.value = date.toISOString().slice(0, 16);
-                
-                // Set amount based on EUR value
-                manualAmount.value = transactionData.eur.toFixed(2);
-                
-                // Set currency to EUR (default for editing)
-                modalCurrencyBtns.forEach(btn => {
-                    if (btn.dataset.currency === 'EUR') {
-                        btn.classList.add('selected');
-                        modalSelectedCurrency = 'EUR';
-                    } else {
-                        btn.classList.remove('selected');
-                    }
-                });
-                
-                // Set category
-                modalCategoryBtns.forEach(btn => {
-                    if (btn.dataset.category === transactionData.category) {
-                        btn.classList.add('selected');
-                        modalSelectedCategory = transactionData.category;
-                    } else {
-                        btn.classList.remove('selected');
-                    }
-                });
-                
-                // Set note
-                if (transactionData.note) {
-                    manualNote.value = transactionData.note;
-                }
-            }
-        }
-
-        // Open modal
+        // Open modal for new entry
         addEntryBtn.addEventListener('click', () => {
+            currentEditingTransaction = null;
+            resetModal();
             manualEntryModal.classList.add('show');
-            const now = new Date();
-            now.setMinutes(now.setMinutes() - now.getTimezoneOffset());
-            manualDate.value = now.toISOString().slice(0, 16);
+            modalDelete.style.visibility = 'hidden';
             if (navigator.vibrate) navigator.vibrate(10);
         });
 
-        // Close modal
-        modalCancel.addEventListener('click', () => {
-            manualEntryModal.classList.remove('show');
-            modalContent.classList.remove('success');
-            // Reset form
+        // Open modal for editing
+        function openEditModal(transactionData) {
+            currentEditingTransaction = transactionData;
+            resetModal();
+            
+            const date = new Date(transactionData.timestamp);
+            date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+            manualDate.value = date.toISOString().slice(0, 16);
+            
+            manualAmount.value = transactionData.eur.toFixed(2);
+            
+            modalCurrencyBtns.forEach(btn => {
+                if (btn.dataset.currency === 'EUR') {
+                    btn.classList.add('selected');
+                    modalSelectedCurrency = 'EUR';
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+            
+            modalCategoryBtns.forEach(btn => {
+                if (btn.dataset.category === transactionData.category) {
+                    btn.classList.add('selected');
+                    modalSelectedCategory = transactionData.category;
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+            
+            if (transactionData.note) {
+                manualNote.value = transactionData.note;
+            }
+            
+            modalDelete.style.visibility = 'visible';
+            manualEntryModal.classList.add('show');
+            if (navigator.vibrate) navigator.vibrate(10);
+        }
+
+        // Reset modal
+        function resetModal() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            manualDate.value = now.toISOString().slice(0, 16);
             manualAmount.value = '';
             manualNote.value = '';
+            
+            modalCurrencyBtns.forEach((btn, i) => {
+                if (btn.dataset.currency === 'EUR') {
+                    btn.classList.add('selected');
+                    modalSelectedCurrency = 'EUR';
+                } else {
+                    btn.classList.remove('selected');
+                }
+            });
+            
             modalCategoryBtns.forEach(b => b.classList.remove('selected'));
             modalSelectedCategory = null;
+        }
+
+        // Close modal
+        function closeModal() {
+            manualEntryModal.classList.remove('show');
+            currentEditingTransaction = null;
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        modalCancel.addEventListener('click', closeModal);
+
+        manualEntryModal.addEventListener('click', (e) => {
+            if (e.target === manualEntryModal) {
+                closeModal();
+            }
         });
 
-        // Save manual entry with blue success screen
-        modalSave.addEventListener('click', () => {
-            if (!manualAmount.value || !modalSelectedCategory) {
+        // Save modal
+        modalSave.addEventListener('click', async () => {
+            const rawAmount = manualAmount.value.replace(/,/g, '');
+            const amountNum = parseFloat(rawAmount);
+            
+            if (!amountNum || !modalSelectedCategory) {
                 alert('Please enter an amount and select a category');
                 return;
             }
 
-            const rawAmount = manualAmount.value.replace(/,/g, '');
-            const amountNum = parseFloat(rawAmount);
             const convertedAmounts = convertCurrency(amountNum, modalSelectedCurrency);
-
+            
             const expenseData = {
+                timestamp: new Date(manualDate.value).toISOString(),
                 vnd: convertedAmounts.VND,
                 eur: convertedAmounts.EUR,
                 usd: convertedAmounts.USD,
                 category: modalSelectedCategory,
-                note: manualNote.value,
-                timestamp: new Date(manualDate.value).toISOString()
+                note: manualNote.value
             };
 
-            console.log('Manual entry:', expenseData);
-            saveToGoogleSheets(expenseData);
-
-            // Show blue success screen
-            const symbols = { VND: '₫', EUR: '€', USD: '$' };
-            const displayAmount = modalSelectedCurrency === 'VND' ? 
-                amountNum.toLocaleString('en-US') : 
-                amountNum.toFixed(2);
+            await saveToGoogleSheets(expenseData);
+            closeModal();
             
-            const dateObj = new Date(manualDate.value);
-            const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            const timeStr = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            setTimeout(async () => {
+                await loadMonthlyTotal();
+                await loadTransactionHistory();
+            }, 500);
             
-            modalContent.innerHTML = `
-                <div class="modal-success-icon">✓</div>
-                <div class="modal-success-amount">${symbols[modalSelectedCurrency]}${displayAmount}</div>
-                <div class="modal-success-category">${modalSelectedCategory}</div>
-                <div class="modal-success-date">${dateStr}, ${timeStr}</div>
-                ${manualNote.value ? `<div class="modal-success-note">"${manualNote.value}"</div>` : ''}
-                <div class="modal-success-hint">Tap to close</div>
-            `;
-            modalContent.classList.add('success');
-
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-
-            // Auto-close after 5 seconds
-            const autoClose = setTimeout(() => {
-                closeSuccessModal();
-            }, 5000);
-
-            // Tap to close
-            const closeOnTap = () => {
-                clearTimeout(autoClose);
-                closeSuccessModal();
-                modalContent.removeEventListener('click', closeOnTap);
-            };
-            modalContent.addEventListener('click', closeOnTap);
         });
 
-        function closeSuccessModal() {
-            manualEntryModal.classList.remove('show');
-            setTimeout(() => {
-                modalContent.classList.remove('success');
-                modalContent.innerHTML = `
-                    <div class="modal-header">Add Past Entry</div>
-                    
-                    <div class="modal-field">
-                        <label class="modal-label">Date & Time</label>
-                        <input type="datetime-local" class="modal-input" id="manualDate">
-                    </div>
-
-                    <div class="modal-field">
-                        <label class="modal-label">Amount</label>
-                        <div class="modal-amount-container">
-                            <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="numeric">
-                        </div>
-                    </div>
-
-                    <div class="modal-field">
-                        <label class="modal-label">Currency</label>
-                        <div class="currency-selector">
-                            <button type="button" class="currency-btn modal-currency-btn" data-currency="VND" data-symbol="₫">
-                                <span class="currency-symbol-large">₫</span>
-                                <span class="currency-code">VND</span>
-                            </button>
-                            <button type="button" class="currency-btn modal-currency-btn selected" data-currency="EUR" data-symbol="€">
-                                <span class="currency-symbol-large">€</span>
-                                <span class="currency-code">EUR</span>
-                            </button>
-                            <button type="button" class="currency-btn modal-currency-btn" data-currency="USD" data-symbol="$">
-                                <span class="currency-symbol-large">$</span>
-                                <span class="currency-code">USD</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="modal-field">
-                        <label class="modal-label">Category</label>
-                        <div class="modal-categories">
-                            <button type="button" class="category-btn modal-category-btn" data-category="Food">
-                                <span class="category-icon">🍔</span>
-                                <span>Food</span>
-                            </button>
-                            <button type="button" class="category-btn modal-category-btn" data-category="Transport">
-                                <span class="category-icon">🚗</span>
-                                <span>Transport</span>
-                            </button>
-                            <button type="button" class="category-btn modal-category-btn" data-category="Shopping">
-                                <span class="category-icon">🛍️</span>
-                                <span>Shopping</span>
-                            </button>
-                            <button type="button" class="category-btn modal-category-btn" data-category="Bills">
-                                <span class="category-icon">📄</span>
-                                <span>Bills</span>
-                            </button>
-                            <button type="button" class="category-btn modal-category-btn" data-category="Entertainment">
-                                <span class="category-icon">🎬</span>
-                                <span>Entertainment</span>
-                            </button>
-                            <button type="button" class="category-btn modal-category-btn" data-category="Health">
-                                <span class="category-icon">🏥</span>
-                                <span>Health</span>
-                            </button>
-                            <button type="button" class="category-btn modal-category-btn full-width" data-category="Other">
-                                <span class="category-icon">💡</span>
-                                <span>Other</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="modal-field">
-                        <label class="modal-label">Note (Optional)</label>
-                        <input type="text" class="modal-input" id="manualNote" placeholder="Add a note...">
-                    </div>
-
-                    <div class="modal-buttons">
-                        <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancel</button>
-                        <button class="modal-btn modal-btn-save" id="modalSave">Save</button>
-                    </div>
-                `;
-                // Reset form
-                manualAmount.value = '';
-                manualNote.value = '';
-                modalSelectedCategory = null;
-            }, 300);
-        }
-
-        // Close modal when clicking outside
-        manualEntryModal.addEventListener('click', (e) => {
-            if (e.target === manualEntryModal) {
-                modalCancel.click();
-            }
-        });
-
-        // Scroll gradient handler
-        const transactionContainer = document.getElementById('transactionContainer');
-        const scrollGradient = document.getElementById('scrollGradient');
-
-        function updateScrollGradient() {
-            if (!transactionContainer) return;
+        // Delete transaction
+        modalDelete.addEventListener('click', async () => {
+            if (!currentEditingTransaction) return;
             
-            const scrollTop = transactionContainer.scrollTop;
-            const scrollHeight = transactionContainer.scrollHeight;
-            const clientHeight = transactionContainer.clientHeight;
+            if (!confirm('Delete this expense?')) return;
             
-            // Hide gradient if scrolled to bottom (within 20px threshold)
-            if (scrollTop + clientHeight >= scrollHeight - 20) {
-                scrollGradient.classList.add('hidden');
-            } else {
-                scrollGradient.classList.remove('hidden');
-            }
-        }
-
-        if (transactionContainer) {
-            transactionContainer.addEventListener('scroll', updateScrollGradient);
-            // Initial check
-            setTimeout(updateScrollGradient, 100);
-        }
-
-        // Currency selector
-        const currencyBtns = document.querySelectorAll('.currency-btn:not(.modal-currency-btn)');
-        const currentSymbol = document.getElementById('currentSymbol');
-        let selectedCurrency = 'EUR';
-
-        currencyBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove selected from all
-                currencyBtns.forEach(b => b.classList.remove('selected'));
-                // Add selected to clicked
-                btn.classList.add('selected');
-                selectedCurrency = btn.dataset.currency;
-                currentSymbol.textContent = btn.dataset.symbol;
-                
-                // Haptic feedback
-                if (navigator.vibrate) {
-                    navigator.vibrate(10);
-                }
-            });
-        });
-
-        // Amount input formatting with commas
-        const amountInput = document.getElementById('amount');
-        
-        // Format number with commas as user types
-        amountInput.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/,/g, ''); // Remove existing commas
+            // This is a placeholder - you'll need to implement delete in Google Script
+            console.log('Delete transaction:', currentEditingTransaction);
+            alert('Delete functionality requires updating the Google Apps Script. For now, please delete from the spreadsheet directly.');
             
-            // Only allow numbers
-            if (!/^\d*$/.test(value)) {
-                value = value.replace(/\D/g, '');
-            }
-            
-            // Add commas for thousands
-            if (value) {
-                value = parseInt(value, 10).toLocaleString('en-US');
-            }
-            
-            e.target.value = value;
+            closeModal();
         });
 
-        // Category selection
-        const categoryBtns = document.querySelectorAll('.category-btn');
-        let selectedCategory = null;
-
-        categoryBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove selected class from all buttons
-                categoryBtns.forEach(b => b.classList.remove('selected'));
-                // Add selected class to clicked button
-                btn.classList.add('selected');
-                selectedCategory = btn.dataset.category;
-                // Haptic feedback
-                if (navigator.vibrate) {
-                    navigator.vibrate(10);
-                }
-            });
-        });
-
-        // Form submission
-        const form = document.getElementById('expenseForm');
-        const successMessage = document.getElementById('successMessage');
-        const noteInput = document.getElementById('note');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Validate
-            if (!amountInput.value || !selectedCategory) {
-                alert('Please enter an amount and select a category');
-                return;
-            }
-
-            const submitBtn = document.getElementById('submitBtn');
-
-            // Haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate([10, 50, 10]);
-            }
-
-            // Prepare expense data
-            const rawAmount = amountInput.value.replace(/,/g, ''); // Remove commas before saving
-            const amountNum = parseFloat(rawAmount);
-            
-            // Convert to all three currencies
-            const convertedAmounts = convertCurrency(amountNum, selectedCurrency);
-            
-            const expenseData = {
-                vnd: convertedAmounts.VND,
-                eur: convertedAmounts.EUR,
-                usd: convertedAmounts.USD,
-                category: selectedCategory,
-                note: noteInput.value,
-                timestamp: new Date().toISOString()
-            };
-
-            // Update success screen with details (show in selected currency)
-            const symbols = { VND: '₫', EUR: '€', USD: '$' };
-            const displayAmount = selectedCurrency === 'VND' ? 
-                amountNum.toLocaleString('en-US') : 
-                amountNum.toFixed(2);
-            document.getElementById('successAmount').textContent = `${symbols[selectedCurrency]}${displayAmount}`;
-            document.getElementById('successCategory').textContent = selectedCategory;
-
-            // Show fullscreen success message
-            successMessage.classList.add('show');
-
-            // Try to save to Google Sheets
-            saveToGoogleSheets(expenseData);
-
-            // Clear form and reset (happens after success screen is dismissed)
-            const clearForm = () => {
-                amountInput.value = '';
-                noteInput.value = '';
-                categoryBtns.forEach(b => b.classList.remove('selected'));
-                selectedCategory = null;
-                submitBtn.classList.remove('success');
-                submitBtn.textContent = 'Add Expense';
-                amountInput.focus();
-            };
-
-            // Auto-hide after 2 seconds OR tap to close
-            const autoHideTimeout = setTimeout(() => {
-                successMessage.classList.remove('show');
-                setTimeout(clearForm, 300);
-            }, 2000);
-
-            // Tap anywhere to close immediately
-            const closeOnTap = () => {
-                clearTimeout(autoHideTimeout);
-                successMessage.classList.remove('show');
-                setTimeout(clearForm, 300);
-                successMessage.removeEventListener('click', closeOnTap);
-            };
-            successMessage.addEventListener('click', closeOnTap);
-
-            // Change button to green with "Submitted" text
-            submitBtn.classList.add('success');
-            submitBtn.textContent = 'Submitted ✓';
-        });
-
-        // Auto-focus amount input on page load
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                amountInput.focus();
-            }, 100);
-        });
-
-        // Offline detection
-        const offlineIndicator = document.getElementById('offlineIndicator');
-        window.addEventListener('offline', () => {
-            offlineIndicator.classList.add('show');
-        });
-        window.addEventListener('online', () => {
-            offlineIndicator.classList.remove('show');
-            // Try to sync queued expenses
-            syncOfflineQueue();
-        });
-
-        // Load monthly total on page load
-        window.addEventListener('load', () => {
-            loadMonthlyTotal();
-            updateQueueIndicator();
-            updateMonthLabel();
-            fetchExchangeRates(); // Fetch latest exchange rates
-        });
-
-        // Update month label to show current month
+        // Update month label
         function updateMonthLabel() {
-            const monthLabel = document.getElementById('monthLabel');
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
-            const currentMonth = new Date().getMonth();
-            monthLabel.textContent = `${monthNames[currentMonth]} Spending`;
+            const currentMonth = monthNames[new Date().getMonth()];
+            
+            document.getElementById('monthLabel').textContent = `${currentMonth} Spending`;
+            document.getElementById('historyMonthLabel').textContent = `${currentMonth} Spending`;
         }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            updateMonthLabel();
+            loadMonthlyTotal();
+            fetchExchangeRates();
+        });
     </script>
 </body>
 </html>
