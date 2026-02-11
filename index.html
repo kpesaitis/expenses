@@ -16,6 +16,10 @@
             user-select: none;
             -webkit-user-select: none;
         }
+
+        .header-btn .material-symbols-outlined {
+            font-size: 28px;
+        }
         
         * {
             margin: 0;
@@ -29,6 +33,7 @@
             background: #FFFFFF;
             color: #000000;
             padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
             padding-bottom: env(safe-area-inset-bottom);
             max-width: 480px;
             margin: 0 auto;
@@ -757,7 +762,7 @@
         <div class="header">
             <div class="header-left">
                 <button class="header-btn" id="historyBtn" title="History">
-                    <span class="material-symbols-outlined">history</span>
+                    <span class="material-symbols-outlined">account_balance</span>
                 </button>
                 <button class="header-btn" id="statsBtn" title="Stats">
                     <span class="material-symbols-outlined">bar_chart</span>
