@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Expenses">
     <title>Cash Tracker</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
@@ -29,10 +29,19 @@
             background: #FFFFFF;
             color: #000000;
             padding: 20px;
+            padding-bottom: env(safe-area-inset-bottom);
             max-width: 480px;
             margin: 0 auto;
             min-height: 100vh;
             transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* iOS Input Fix - Force editability */
+        input[type="text"] {
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-touch-callout: default;
+            pointer-events: auto;
         }
 
         /* Loading Bar */
@@ -362,15 +371,13 @@
 
         .scroll-gradient.hidden { opacity: 0; }
 
+        /* NEW HISTORY ROW LAYOUT */
         .transaction-item {
             background: #F2F2F7;
             border-radius: 12px;
             padding: 12px 14px;
             cursor: pointer;
             transition: all 0.15s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
         }
 
         .transaction-item:active {
@@ -378,40 +385,58 @@
             opacity: 0.8;
         }
 
-        .transaction-left {
-            flex: 1;
+        .transaction-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
-        .transaction-right {
-            text-align: right;
-            flex-shrink: 0;
-            margin-left: 12px;
+        .transaction-category {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #000000;
+        }
+
+        .transaction-category-emoji {
+            font-size: 20px;
+        }
+
+        .transaction-amount-primary {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .transaction-row-2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .transaction-time {
             font-size: 13px;
-            color: #000000;
-            font-weight: 500;
-            margin-bottom: 4px;
+            color: #8E8E93;
         }
 
-        .transaction-note {
-            font-size: 13px;
-            color: #000000;
-            margin-top: 4px;
-        }
-
-        .transaction-amount-main {
-            font-size: 20px;
-            font-weight: 600;
-            color: #000000;
-            margin-bottom: 2px;
-        }
-
-        .transaction-currencies {
+        .transaction-currencies-secondary {
             font-size: 12px;
-            color: #000000;
-            margin-top: 2px;
+            color: #8E8E93;
+        }
+
+        .transaction-note-divider {
+            height: 1px;
+            background: #E5E5EA;
+            margin: 8px 0 6px 0;
+        }
+
+        .transaction-note-text {
+            font-size: 12px;
+            color: #8E8E93;
+            font-style: italic;
         }
 
         .empty-state {
@@ -469,9 +494,8 @@
         }
 
         .switch-btn.active {
-            background: #FFFFFF;
-            color: #000000;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: #007AFF;
+            color: #FFFFFF;
         }
 
         .switch-btn:active { opacity: 0.6; }
@@ -764,7 +788,6 @@
                     inputmode="decimal"
                     placeholder="0"
                     autocomplete="off"
-                    autofocus
                     required
                 >
                 <div class="currency-selector">
@@ -802,12 +825,12 @@
                         <span class="category-icon">📄</span>
                         <span>Bills</span>
                     </button>
-                    <button type="button" class="category-btn" data-category="Entertainment">
-                        <span class="category-icon">🎬</span>
-                        <span>Entertainment</span>
+                    <button type="button" class="category-btn" data-category="Fun">
+                        <span class="category-icon">🎉</span>
+                        <span>Fun</span>
                     </button>
                     <button type="button" class="category-btn" data-category="Health">
-                        <span class="category-icon">🏥</span>
+                        <span class="category-icon">💊</span>
                         <span>Health</span>
                     </button>
                     <button type="button" class="category-btn full-width" data-category="Other">
@@ -899,12 +922,13 @@
         </div>
 
         <div class="monthly-total">
-            <div class="monthly-total-label" id="statsMonthLabel">This Month</div>
+            <div class="monthly-total-label" id="statsMonthLabel">February Spending</div>
             <div class="monthly-total-amount" id="statsTotalAmount">€0</div>
+            <div class="monthly-total-currencies" id="statsTotalCurrencies">₫0 | $0</div>
         </div>
 
         <div class="chart-container">
-            <div class="chart-canvas-container">
+            <div class="chart-canvas-container" id="statsChartContainer">
                 <canvas id="pieChart" style="max-height: 220px; max-width: 220px;"></canvas>
                 <canvas id="barChart" class="hidden" style="max-height: 300px;"></canvas>
             </div>
@@ -928,7 +952,7 @@
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background: #F44336;"></span>
-                    <span>Entertainment</span>
+                    <span>Fun</span>
                 </div>
                 <div class="legend-item">
                     <span class="legend-color" style="background: #9C27B0;"></span>
@@ -942,7 +966,10 @@
         </div>
 
         <div class="category-list" id="categoryList">
-            <!-- Categories will be populated by JavaScript -->
+            <!-- Loading state -->
+            <div class="empty-state">
+                <div class="loading-dots">Loading stats</div>
+            </div>
         </div>
     </div>
 
@@ -1009,12 +1036,12 @@
                         <span class="category-icon">📄</span>
                         <span>Bills</span>
                     </button>
-                    <button type="button" class="category-btn modal-category-btn" data-category="Entertainment">
-                        <span class="category-icon">🎬</span>
-                        <span>Entertainment</span>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Fun">
+                        <span class="category-icon">🎉</span>
+                        <span>Fun</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Health">
-                        <span class="category-icon">🏥</span>
+                        <span class="category-icon">💊</span>
                         <span>Health</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn full-width" data-category="Other">
@@ -1038,15 +1065,15 @@
 
     <script>
         // ===== CONFIGURATION =====
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcM-gFjqg7f7l_a-udN56LbP4mXQw5y2fjWDev47E5xLJ4YwK9sS7AgUYeUUMWFVZi/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzfHObXer7tZ6zRs_bKNon2-R0ip4dTsTAwTxUg9Y3flTdKQ9947CWvrgsHWjPB5D328w/exec';
 
-        // Category colors
+        // Category colors (Fun instead of Entertainment)
         const CATEGORY_COLORS = {
             'Food': '#2196F3',
             'Transport': '#9C27B0',
             'Shopping': '#00BCD4',
             'Bills': '#FF6B35',
-            'Entertainment': '#F44336',
+            'Fun': '#F44336',
             'Health': '#4CAF50',
             'Other': '#FFC107'
         };
@@ -1056,8 +1083,8 @@
             'Transport': '🚗',
             'Shopping': '🛍️',
             'Bills': '📄',
-            'Entertainment': '🎬',
-            'Health': '🏥',
+            'Fun': '🎉',
+            'Health': '💊',
             'Other': '💡'
         };
 
@@ -1160,7 +1187,7 @@
                 if (!historyCache) loadTransactionHistory();
             } else if (pageName === 'stats') {
                 statsPage.classList.add('active');
-                if (!statsCache) loadStatsData();
+                loadStatsData(); // ALWAYS load stats data when opening page
             } else {
                 mainPage.classList.add('active');
             }
@@ -1229,6 +1256,13 @@
 
         // Amount input
         const amountInput = document.getElementById('amount');
+        
+        // iOS Input Fix - Force keyboard on touch
+        amountInput.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            setTimeout(() => amountInput.focus(), 50);
+        }, { passive: true });
+
         amountInput.addEventListener('input', (e) => {
             let value = e.target.value.replace(/,/g, '');
             if (!/^\d*\.?\d*$/.test(value)) {
@@ -1271,13 +1305,13 @@
             historyCache = null;
             statsCache = null;
             
-            // Show success
+            // Show success with EMOJI
             const successMessage = document.getElementById('successMessage');
             const symbols = { VND: '₫', EUR: '€', USD: '$' };
             const displayAmount = selectedCurrency === 'VND' ? amountNum.toLocaleString('en-US') : amountNum.toFixed(2);
             
             document.getElementById('successAmount').textContent = `${symbols[selectedCurrency]}${displayAmount}`;
-            document.getElementById('successCategory').textContent = selectedCategory;
+            document.getElementById('successCategory').textContent = `${CATEGORY_EMOJIS[selectedCategory]} ${selectedCategory}`;
             successMessage.classList.add('show');
 
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
@@ -1288,7 +1322,11 @@
                 document.getElementById('note').value = '';
                 categoryBtns.forEach(b => b.classList.remove('selected'));
                 selectedCategory = null;
-                amountInput.focus();
+                
+                // iOS fix: force focus after delay
+                setTimeout(() => {
+                    if (amountInput) amountInput.focus();
+                }, 100);
             }, 2000);
 
             hideLoadingBar();
@@ -1331,12 +1369,11 @@
             const elements = [
                 { amount: document.getElementById('totalAmount'), currencies: document.getElementById('totalCurrencies') },
                 { amount: document.getElementById('historyTotalAmount'), currencies: document.getElementById('historyTotalCurrencies') },
-                { amount: document.getElementById('statsTotalAmount'), currencies: null }
+                { amount: document.getElementById('statsTotalAmount'), currencies: document.getElementById('statsTotalCurrencies') }
             ];
 
             elements.forEach(el => {
                 if (el.amount) {
-                    // Remove loading animation
                     el.amount.classList.remove('loading');
                     el.amount.textContent = `€${eur.toFixed(2)}`;
                 }
@@ -1382,7 +1419,7 @@
             }
         }
 
-        // Display transactions
+        // Display transactions with NEW LAYOUT
         function displayTransactions(transactions) {
             const transactionList = document.getElementById('transactionList');
             
@@ -1406,18 +1443,31 @@
                 
                 const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                 
-                const noteHTML = t.note ? `<div class="transaction-note">${t.note}</div>` : '';
+                const categoryEmoji = CATEGORY_EMOJIS[t.category] || '💡';
+                
+                // NEW LAYOUT: Row 1 = emoji+category | amount, Row 2 = time | currencies, Note (if exists)
+                let noteHTML = '';
+                if (t.note) {
+                    noteHTML = `
+                        <div class="transaction-note-divider"></div>
+                        <div class="transaction-note-text">"${t.note}"</div>
+                    `;
+                }
                 
                 return `
                     <div class="transaction-item" data-transaction='${JSON.stringify(t).replace(/'/g, "&#39;")}'>
-                        <div class="transaction-left">
+                        <div class="transaction-row-1">
+                            <div class="transaction-category">
+                                <span class="transaction-category-emoji">${categoryEmoji}</span>
+                                <span>${t.category}</span>
+                            </div>
+                            <div class="transaction-amount-primary">€${t.eur.toFixed(2)}</div>
+                        </div>
+                        <div class="transaction-row-2">
                             <div class="transaction-time">${dateStr}, ${timeStr}</div>
-                            ${noteHTML}
+                            <div class="transaction-currencies-secondary">₫${Math.round(t.vnd).toLocaleString('en-US')} | $${t.usd.toFixed(2)}</div>
                         </div>
-                        <div class="transaction-right">
-                            <div class="transaction-amount-main">€${t.eur.toFixed(2)}</div>
-                            <div class="transaction-currencies">₫${Math.round(t.vnd).toLocaleString('en-US')} | $${t.usd.toFixed(2)}</div>
-                        </div>
+                        ${noteHTML}
                     </div>
                 `;
             }).join('');
@@ -1462,9 +1512,15 @@
             transactionContainer.addEventListener('scroll', updateScrollGradient);
         }
 
-        // Load stats data
+        // Load stats data - FIXED TO LOAD REAL DATA
         async function loadStatsData() {
             if (!GOOGLE_SCRIPT_URL) return;
+
+            const categoryList = document.getElementById('categoryList');
+            const statsChartContainer = document.getElementById('statsChartContainer');
+            
+            // Show loading animation
+            categoryList.innerHTML = '<div class="empty-state"><div class="loading-dots">Loading stats</div></div>';
 
             try {
                 const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getStats`);
@@ -1473,13 +1529,16 @@
                 if (data.status === 'success' && data.stats) {
                     statsCache = data.stats;
                     displayStats(data.stats);
+                } else {
+                    categoryList.innerHTML = '<div class="empty-state"><div class="empty-icon"><span class="material-symbols-outlined" style="font-size: 64px;">error</span></div><div>Error loading stats</div></div>';
                 }
             } catch (error) {
                 console.error('Stats load failed:', error);
+                categoryList.innerHTML = '<div class="empty-state"><div class="empty-icon"><span class="material-symbols-outlined" style="font-size: 64px;">error</span></div><div>Error loading stats</div></div>';
             }
         }
 
-        // Display stats
+        // Display stats - with REAL DATA
         let pieChart = null;
         let barChart = null;
 
@@ -1648,7 +1707,7 @@
             pieBtn.classList.remove('active');
         });
 
-        // Modal
+        // Modal - CRITICAL FIX: UPDATE instead of duplicate!
         const manualEntryModal = document.getElementById('manualEntryModal');
         const addEntryBtn = document.getElementById('addEntryBtn');
         const modalClose = document.getElementById('modalClose');
@@ -1660,6 +1719,11 @@
         const manualNote = document.getElementById('manualNote');
         
         let currentEditingTransaction = null;
+
+        manualAmount.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            setTimeout(() => manualAmount.focus(), 50);
+        }, { passive: true });
 
         manualAmount.addEventListener('input', (e) => {
             let value = e.target.value.replace(/,/g, '');
@@ -1772,6 +1836,7 @@
             if (e.target === manualEntryModal) closeModal();
         });
 
+        // CRITICAL FIX: UPDATE instead of creating duplicate!
         modalSave.addEventListener('click', async () => {
             const rawAmount = manualAmount.value.replace(/,/g, '');
             const amountNum = parseFloat(rawAmount);
@@ -1792,19 +1857,41 @@
                 note: manualNote.value
             };
 
+            // CRITICAL: Check if editing or creating new
+            if (currentEditingTransaction) {
+                // UPDATE existing transaction
+                expenseData.action = 'update';
+                expenseData.originalTimestamp = currentEditingTransaction.timestamp;
+            } else {
+                // ADD new transaction
+                expenseData.action = 'add';
+            }
+
             showLoadingBar();
-            await saveToGoogleSheets(expenseData);
-            historyCache = null;
-            statsCache = null;
-            closeModal();
             
-            setTimeout(async () => {
-                await loadMonthlyTotal();
-                await loadTransactionHistory();
-                hideLoadingBar();
-            }, 300);
-            
-            if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(expenseData)
+                });
+                
+                historyCache = null;
+                statsCache = null;
+                closeModal();
+                
+                setTimeout(async () => {
+                    await loadMonthlyTotal();
+                    await loadTransactionHistory();
+                    hideLoadingBar();
+                }, 500);
+                
+                if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+            } catch (error) {
+                console.error('Save failed:', error);
+                hideLoadingBar(false);
+            }
         });
 
         modalDelete.addEventListener('click', async () => {
@@ -1858,11 +1945,25 @@
             loadMonthlyTotal();
             fetchExchangeRates();
             
-            // Try to focus amount input on iOS
-            setTimeout(() => {
-                if (amountInput) amountInput.focus();
-            }, 300);
+            // iOS input fix: Multiple attempts to make keyboard appear
+            const tryFocus = () => {
+                if (amountInput) {
+                    amountInput.focus();
+                    amountInput.click();
+                }
+            };
+            
+            setTimeout(tryFocus, 100);
+            setTimeout(tryFocus, 300);
+            setTimeout(tryFocus, 500);
         });
+
+        // iOS fix: Try to make inputs work on any page interaction
+        document.addEventListener('touchstart', function() {
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                document.activeElement.focus();
+            }
+        }, { passive: true, once: true });
     </script>
 </body>
 </html>
