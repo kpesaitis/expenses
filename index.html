@@ -1870,45 +1870,39 @@
             }
         });
 
-   modalDelete.addEventListener('click', async () => {
-    if (!currentEditingTransaction) return;
-    
-    // DEBUG: Show what we're sending
-    const timestampToDelete = currentEditingTransaction.timestamp;
-    console.log('Trying to delete timestamp:', timestampToDelete);
-    console.log('Timestamp type:', typeof timestampToDelete);
-    alert('DEBUG: Trying to delete: ' + timestampToDelete);
-    
-    if (!confirm('Delete this expense? This cannot be undone.')) return;
-    
-    showLoadingBar();
-    
-    try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'delete',
-                timestamp: timestampToDelete
-            })
+        modalDelete.addEventListener('click', async () => {
+            if (!currentEditingTransaction) return;
+            
+            if (!confirm('Delete this expense? This cannot be undone.')) return;
+            
+            showLoadingBar();
+            
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        timestamp: currentEditingTransaction.timestamp
+                    })
+                });
+                
+                historyCache = null;
+                statsCache = null;
+                closeModal();
+                
+                setTimeout(async () => {
+                    await loadMonthlyTotal();
+                    await loadTransactionHistory();
+                    hideLoadingBar();
+                }, 500);
+            } catch (error) {
+                console.error('Delete failed:', error);
+                alert('Failed to delete. Please try again.');
+                hideLoadingBar(false);
+            }
         });
-        
-        historyCache = null;
-        statsCache = null;
-        closeModal();
-        
-        setTimeout(async () => {
-            await loadMonthlyTotal();
-            await loadTransactionHistory();
-            hideLoadingBar();
-        }, 500);
-    } catch (error) {
-        console.error('Delete failed:', error);
-        alert('Failed to delete. Please try again.');
-        hideLoadingBar(false);
-    }
-});
 
         function updateMonthLabel() {
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
