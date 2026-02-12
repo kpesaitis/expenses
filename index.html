@@ -41,7 +41,7 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* iOS Input Fix - Force editability */
+        /* iOS Input Fix */
         input[type="text"] {
             -webkit-user-select: text;
             user-select: text;
@@ -152,7 +152,6 @@
             margin-top: 4px;
         }
 
-        /* Loading animation for €0 */
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
@@ -161,18 +160,11 @@
         .loading { animation: pulse 1.5s ease-in-out infinite; }
 
         /* Pages */
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
+        .page { display: none; }
+        .page.active { display: block; }
 
         /* Forms */
-        .form-section {
-            margin-bottom: 16px;
-        }
+        .form-section { margin-bottom: 16px; }
 
         .section-label {
             font-size: 13px;
@@ -197,9 +189,7 @@
             -webkit-appearance: none;
         }
 
-        input[type="text"]#note {
-            text-align: center;
-        }
+        input[type="text"]#note { text-align: center; }
 
         input[type="text"]::placeholder {
             text-align: center;
@@ -252,7 +242,7 @@
         .currency-symbol-large { font-size: 18px; }
         .currency-code { font-size: 11px; opacity: 0.8; }
 
-        /* Categories */
+        /* Categories - 3x3 grid */
         .categories {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -282,7 +272,6 @@
             color: white;
             border-color: #007AFF;
         }
-        .category-btn.full-width { grid-column: 1 / -1; }
         .category-icon { font-size: 24px; }
 
         /* Submit Button */
@@ -379,7 +368,7 @@
 
         .scroll-gradient.hidden { opacity: 0; }
 
-        /* NEW HISTORY ROW LAYOUT */
+        /* History Row Layout */
         .transaction-item {
             background: #F2F2F7;
             border-radius: 12px;
@@ -409,9 +398,7 @@
             color: #000000;
         }
 
-        .transaction-category-emoji {
-            font-size: 20px;
-        }
+        .transaction-category-emoji { font-size: 20px; }
 
         .transaction-amount-primary {
             font-size: 20px;
@@ -521,27 +508,6 @@
             margin-bottom: 12px;
         }
 
-        .chart-legend {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            padding-top: 12px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 12px;
-        }
-
-        .legend-color {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
         .category-list {
             display: flex;
             flex-direction: column;
@@ -567,9 +533,7 @@
             min-width: 120px;
         }
 
-        .category-emoji {
-            font-size: 20px;
-        }
+        .category-emoji { font-size: 20px; }
 
         .category-center {
             font-size: 15px;
@@ -586,9 +550,7 @@
             padding-right: 8px;
         }
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         /* Modal */
         .modal-overlay {
@@ -654,9 +616,7 @@
             transform: scale(0.9);
         }
 
-        .modal-field {
-            margin-bottom: 14px;
-        }
+        .modal-field { margin-bottom: 14px; }
 
         .modal-label {
             font-size: 13px;
@@ -709,9 +669,10 @@
             font-size: 12px;
         }
 
+        /* Modal categories - 3x3 grid */
         .modal-categories {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 6px;
         }
 
@@ -817,13 +778,17 @@
             <div class="form-section">
                 <label class="section-label">Category</label>
                 <div class="categories">
-                    <button type="button" class="category-btn" data-category="Food">
+                    <button type="button" class="category-btn" data-category="Take Out">
                         <span class="category-icon">🍔</span>
-                        <span>Food</span>
+                        <span>Take Out</span>
                     </button>
-                    <button type="button" class="category-btn" data-category="Transport">
-                        <span class="category-icon">🚗</span>
-                        <span>Transport</span>
+                    <button type="button" class="category-btn" data-category="Groceries">
+                        <span class="category-icon">🛒</span>
+                        <span>Groceries</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Travel">
+                        <span class="category-icon">✈️</span>
+                        <span>Travel</span>
                     </button>
                     <button type="button" class="category-btn" data-category="Shopping">
                         <span class="category-icon">🛍️</span>
@@ -841,7 +806,11 @@
                         <span class="category-icon">💊</span>
                         <span>Health</span>
                     </button>
-                    <button type="button" class="category-btn full-width" data-category="Other">
+                    <button type="button" class="category-btn" data-category="Savings">
+                        <span class="category-icon">💰</span>
+                        <span>Savings</span>
+                    </button>
+                    <button type="button" class="category-btn" data-category="Other">
                         <span class="category-icon">💡</span>
                         <span>Other</span>
                     </button>
@@ -942,7 +911,6 @@
         </div>
 
         <div class="category-list" id="categoryList">
-            <!-- Loading state -->
             <div class="empty-state">
                 <div class="loading-dots">Loading stats</div>
             </div>
@@ -996,13 +964,17 @@
             <div class="modal-field">
                 <label class="modal-label">Category</label>
                 <div class="modal-categories">
-                    <button type="button" class="category-btn modal-category-btn" data-category="Food">
+                    <button type="button" class="category-btn modal-category-btn" data-category="Take Out">
                         <span class="category-icon">🍔</span>
-                        <span>Food</span>
+                        <span>Take Out</span>
                     </button>
-                    <button type="button" class="category-btn modal-category-btn" data-category="Transport">
-                        <span class="category-icon">🚗</span>
-                        <span>Transport</span>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Groceries">
+                        <span class="category-icon">🛒</span>
+                        <span>Groceries</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Travel">
+                        <span class="category-icon">✈️</span>
+                        <span>Travel</span>
                     </button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Shopping">
                         <span class="category-icon">🛍️</span>
@@ -1020,7 +992,11 @@
                         <span class="category-icon">💊</span>
                         <span>Health</span>
                     </button>
-                    <button type="button" class="category-btn modal-category-btn full-width" data-category="Other">
+                    <button type="button" class="category-btn modal-category-btn" data-category="Savings">
+                        <span class="category-icon">💰</span>
+                        <span>Savings</span>
+                    </button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Other">
                         <span class="category-icon">💡</span>
                         <span>Other</span>
                     </button>
@@ -1028,7 +1004,6 @@
             </div>
 
             <div class="modal-field">
-                <label class="modal-label">Note (Optional)</label>
                 <input type="text" class="modal-input" id="manualNote" placeholder="Add a note...">
             </div>
 
@@ -1043,26 +1018,41 @@
         // ===== CONFIGURATION =====
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxldmFp5e2viGJxpntIP42rYghvoIln4mO4gbKR2RNTY9XuoYUMDr0Ghy7DNe8tbbJp/exec';
 
-        // Category colors (Fun instead of Entertainment)
+        // 9 Categories with colors
         const CATEGORY_COLORS = {
-            'Food': '#2196F3',
-            'Transport': '#9C27B0',
+            'Take Out': '#2196F3',
+            'Groceries': '#4CAF50',
+            'Travel': '#9C27B0',
             'Shopping': '#00BCD4',
             'Bills': '#FF6B35',
             'Fun': '#F44336',
-            'Health': '#4CAF50',
+            'Health': '#E91E63',
+            'Savings': '#8BC34A',
             'Other': '#FFC107'
         };
 
         const CATEGORY_EMOJIS = {
-            'Food': '🍔',
-            'Transport': '🚗',
+            'Take Out': '🍔',
+            'Groceries': '🛒',
+            'Travel': '✈️',
             'Shopping': '🛍️',
             'Bills': '📄',
             'Fun': '🎉',
             'Health': '💊',
+            'Savings': '💰',
             'Other': '💡'
         };
+
+        // Legacy category mapping (for old data in sheet)
+        const LEGACY_CATEGORY_MAP = {
+            'Food': 'Take Out',
+            'Transport': 'Travel',
+            'Entertainment': 'Fun'
+        };
+
+        function resolveCategory(cat) {
+            return LEGACY_CATEGORY_MAP[cat] || cat;
+        }
 
         // Cache for history and stats
         let historyCache = null;
@@ -1125,7 +1115,7 @@
             };
         }
 
-        // Format timestamp consistently
+        // Format timestamp consistently (DD/MM/YYYY HH:MM:SS)
         function formatTimestamp(date) {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1163,7 +1153,7 @@
                 if (!historyCache) loadTransactionHistory();
             } else if (pageName === 'stats') {
                 statsPage.classList.add('active');
-                loadStatsData(); // ALWAYS load stats data when opening page
+                loadStatsData();
             } else {
                 mainPage.classList.add('active');
             }
@@ -1233,7 +1223,6 @@
         // Amount input
         const amountInput = document.getElementById('amount');
         
-        // iOS Input Fix - Force keyboard on touch
         amountInput.addEventListener('touchstart', (e) => {
             e.stopPropagation();
             setTimeout(() => amountInput.focus(), 50);
@@ -1281,7 +1270,7 @@
             historyCache = null;
             statsCache = null;
             
-            // Show success with EMOJI
+            // Show success with emoji
             const successMessage = document.getElementById('successMessage');
             const symbols = { VND: '₫', EUR: '€', USD: '$' };
             const displayAmount = selectedCurrency === 'VND' ? amountNum.toLocaleString('en-US') : amountNum.toFixed(2);
@@ -1299,7 +1288,6 @@
                 categoryBtns.forEach(b => b.classList.remove('selected'));
                 selectedCategory = null;
                 
-                // iOS fix: force focus after delay
                 setTimeout(() => {
                     if (amountInput) amountInput.focus();
                 }, 100);
@@ -1359,7 +1347,6 @@
             });
         }
 
-        // Add loading animation to initial €0
         function addLoadingAnimation() {
             const elements = [
                 document.getElementById('totalAmount'),
@@ -1395,7 +1382,7 @@
             }
         }
 
-        // Display transactions with NEW LAYOUT
+        // Display transactions
         function displayTransactions(transactions) {
             const transactionList = document.getElementById('transactionList');
             
@@ -1419,9 +1406,10 @@
                 
                 const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                 
-                const categoryEmoji = CATEGORY_EMOJIS[t.category] || '💡';
+                // Resolve legacy categories
+                const category = resolveCategory(t.category);
+                const categoryEmoji = CATEGORY_EMOJIS[category] || '💡';
                 
-                // NEW LAYOUT: Row 1 = emoji+category | amount, Row 2 = time | currencies, Note (if exists)
                 let noteHTML = '';
                 if (t.note) {
                     noteHTML = `
@@ -1430,12 +1418,23 @@
                     `;
                 }
                 
+                // Store transaction data including row number
+                const transData = JSON.stringify({
+                    row: t.row,
+                    timestamp: t.timestamp,
+                    vnd: t.vnd,
+                    eur: t.eur,
+                    usd: t.usd,
+                    category: category,
+                    note: t.note || ''
+                }).replace(/'/g, '&#39;');
+                
                 return `
-                    <div class="transaction-item" data-transaction='${JSON.stringify(t).replace(/'/g, "&#39;")}'>
+                    <div class="transaction-item" data-transaction='${transData}'>
                         <div class="transaction-row-1">
                             <div class="transaction-category">
                                 <span class="transaction-category-emoji">${categoryEmoji}</span>
-                                <span>${t.category}</span>
+                                <span>${category}</span>
                             </div>
                             <div class="transaction-amount-primary">€${t.eur.toFixed(2)}</div>
                         </div>
@@ -1488,14 +1487,11 @@
             transactionContainer.addEventListener('scroll', updateScrollGradient);
         }
 
-        // Load stats data - FIXED TO LOAD REAL DATA
+        // Load stats data
         async function loadStatsData() {
             if (!GOOGLE_SCRIPT_URL) return;
 
             const categoryList = document.getElementById('categoryList');
-            const statsChartContainer = document.getElementById('statsChartContainer');
-            
-            // Show loading animation
             categoryList.innerHTML = '<div class="empty-state"><div class="loading-dots">Loading stats</div></div>';
 
             try {
@@ -1514,23 +1510,35 @@
             }
         }
 
-        // Display stats - with REAL DATA
+        // Display stats
         let pieChart = null;
         let barChart = null;
 
         function displayStats(stats) {
-            // Sort by amount
-            const sortedCategories = Object.entries(stats)
+            // Merge legacy categories into new ones for display
+            const mergedStats = {};
+            for (const [name, data] of Object.entries(stats)) {
+                const resolved = resolveCategory(name);
+                if (mergedStats[resolved]) {
+                    mergedStats[resolved].amount += data.amount;
+                    mergedStats[resolved].percent += data.percent;
+                } else {
+                    mergedStats[resolved] = { ...data };
+                }
+            }
+
+            const sortedCategories = Object.entries(mergedStats)
                 .sort((a, b) => b[1].amount - a[1].amount)
                 .map(([name, data]) => ({ name, ...data }));
 
-            // Update category list
             const categoryList = document.getElementById('categoryList');
             const categoryHTML = sortedCategories.map(cat => {
+                const color = CATEGORY_COLORS[cat.name] || '#8E8E93';
+                const emoji = CATEGORY_EMOJIS[cat.name] || '💡';
                 return `
-                    <div class="category-row" style="border-left-color: ${CATEGORY_COLORS[cat.name]};">
+                    <div class="category-row" style="border-left-color: ${color};">
                         <div class="category-left">
-                            <span class="category-emoji">${CATEGORY_EMOJIS[cat.name]}</span>
+                            <span class="category-emoji">${emoji}</span>
                             <span>${cat.name}</span>
                         </div>
                         <div class="category-center">€${cat.amount.toFixed(2)}</div>
@@ -1540,7 +1548,6 @@
             }).join('');
             categoryList.innerHTML = categoryHTML;
 
-            // Initialize charts
             initializeCharts(sortedCategories);
         }
 
@@ -1557,7 +1564,7 @@
                     labels: nonZeroData.map(d => d.name),
                     datasets: [{
                         data: nonZeroData.map(d => d.amount),
-                        backgroundColor: nonZeroData.map(d => CATEGORY_COLORS[d.name]),
+                        backgroundColor: nonZeroData.map(d => CATEGORY_COLORS[d.name] || '#8E8E93'),
                         borderWidth: 0
                     }]
                 },
@@ -1611,7 +1618,7 @@
                     labels: sortedCategories.map(d => d.name),
                     datasets: [{
                         data: sortedCategories.map(d => d.amount),
-                        backgroundColor: sortedCategories.map(d => CATEGORY_COLORS[d.name]),
+                        backgroundColor: sortedCategories.map(d => CATEGORY_COLORS[d.name] || '#8E8E93'),
                         borderRadius: 8,
                         barPercentage: 0.85,
                         categoryPercentage: 1.0
@@ -1683,7 +1690,7 @@
             pieBtn.classList.remove('active');
         });
 
-        // Modal - CRITICAL FIX: UPDATE instead of duplicate!
+        // ===== MODAL (Edit/Add/Delete) =====
         const manualEntryModal = document.getElementById('manualEntryModal');
         const addEntryBtn = document.getElementById('addEntryBtn');
         const modalClose = document.getElementById('modalClose');
@@ -1764,10 +1771,11 @@
                 }
             });
             
+            const category = resolveCategory(transactionData.category);
             modalCategoryBtns.forEach(btn => {
-                if (btn.dataset.category === transactionData.category) {
+                if (btn.dataset.category === category) {
                     btn.classList.add('selected');
-                    modalSelectedCategory = transactionData.category;
+                    modalSelectedCategory = category;
                 } else {
                     btn.classList.remove('selected');
                 }
@@ -1812,7 +1820,7 @@
             if (e.target === manualEntryModal) closeModal();
         });
 
-        // CRITICAL FIX: UPDATE instead of creating duplicate!
+        // SAVE (Add new or Update existing)
         modalSave.addEventListener('click', async () => {
             const rawAmount = manualAmount.value.replace(/,/g, '');
             const amountNum = parseFloat(rawAmount);
@@ -1833,13 +1841,11 @@
                 note: manualNote.value
             };
 
-            // CRITICAL: Check if editing or creating new
-            if (currentEditingTransaction) {
-                // UPDATE existing transaction
+            // UPDATE existing (uses row number) or ADD new
+            if (currentEditingTransaction && currentEditingTransaction.row) {
                 expenseData.action = 'update';
-                expenseData.originalTimestamp = currentEditingTransaction.timestamp;
+                expenseData.row = currentEditingTransaction.row;
             } else {
-                // ADD new transaction
                 expenseData.action = 'add';
             }
 
@@ -1870,8 +1876,9 @@
             }
         });
 
+        // DELETE (uses row number)
         modalDelete.addEventListener('click', async () => {
-            if (!currentEditingTransaction) return;
+            if (!currentEditingTransaction || !currentEditingTransaction.row) return;
             
             if (!confirm('Delete this expense? This cannot be undone.')) return;
             
@@ -1884,7 +1891,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: 'delete',
-                        timestamp: currentEditingTransaction.timestamp
+                        row: currentEditingTransaction.row
                     })
                 });
                 
@@ -1921,7 +1928,6 @@
             loadMonthlyTotal();
             fetchExchangeRates();
             
-            // iOS input fix: Multiple attempts to make keyboard appear
             const tryFocus = () => {
                 if (amountInput) {
                     amountInput.focus();
@@ -1934,7 +1940,6 @@
             setTimeout(tryFocus, 500);
         });
 
-        // iOS fix: Try to make inputs work on any page interaction
         document.addEventListener('touchstart', function() {
             if (document.activeElement && document.activeElement.tagName === 'INPUT') {
                 document.activeElement.focus();
