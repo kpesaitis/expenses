@@ -22,7 +22,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            background: #FFFFFF; color: #000000; padding: 20px;
+            background: #FFFFFF;
+            color: #000000;
+            padding: 20px;
             padding-top: max(20px, env(safe-area-inset-top));
             padding-bottom: env(safe-area-inset-bottom);
             max-width: 480px; margin: 0 auto; min-height: 100vh;
@@ -106,8 +108,19 @@
         .skeleton-item { height: 72px; margin-bottom: 10px; }
         .skeleton-stat { height: 44px; margin-bottom: 6px; }
 
-        .page { display: none; }
-        .page.active { display: block; }
+        .page {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+        }
+        .page.active {
+            display: block;
+            animation: fadeIn 0.25s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         .form-section { margin-bottom: 16px; }
         .section-label {
             font-size: 13px; color: #8E8E93; text-transform: uppercase;
@@ -159,6 +172,29 @@
         @keyframes successPop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
         .success-amount { font-size: 48px; font-weight: 700; margin-bottom: 8px; }
         .success-category { font-size: 20px; opacity: 0.9; }
+
+        /* Confirmation messages */
+        .confirmation-message {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #007AFF;
+            color: white; display: none; align-items: center; justify-content: center;
+            flex-direction: column; z-index: 3000; text-align: center; padding: 40px;
+        }
+        .confirmation-message.show { display: flex; }
+        .confirmation-icon { font-size: 80px; margin-bottom: 20px; animation: successPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .confirmation-title { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+        .confirmation-detail { font-size: 20px; opacity: 0.9; }
+
+        /* Small confirmation (for history edits) */
+        .small-confirmation {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #007AFF; color: white; padding: 24px 32px; border-radius: 16px;
+            z-index: 3000; text-align: center; display: none; min-width: 280px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .small-confirmation.show { display: block; animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        @keyframes popIn { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+        .small-confirmation-icon { font-size: 48px; margin-bottom: 12px; }
+        .small-confirmation-text { font-size: 17px; font-weight: 600; }
 
         /* Transactions */
         .transaction-list-container {
@@ -214,14 +250,14 @@
         }
         .filter-btn, .add-entry-history-btn {
             display: flex; align-items: center; gap: 6px; padding: 8px 14px;
-            border: 1.5px solid #C6C6C8; border-radius: 20px; background: #FFFFFF;
+            border: none; border-radius: 20px; background: #F2F2F7;
             color: #000000; font-size: 13px; font-weight: 500; cursor: pointer;
             transition: all 0.2s;
         }
-        .filter-btn.active { border-color: #007AFF; color: #007AFF; background: #EBF5FF; }
-        .filter-btn:active, .add-entry-history-btn:active { transform: scale(0.95); }
+        .filter-btn.active { background: #007AFF; color: white; }
+        .filter-btn:active, .add-entry-history-btn:active { transform: scale(0.95); opacity: 0.8; }
         .filter-btn .material-symbols-outlined, .add-entry-history-btn .material-symbols-outlined { font-size: 18px; }
-        .add-entry-history-btn { border-color: #007AFF; color: #007AFF; }
+        .add-entry-history-btn { background: #007AFF; color: white; }
         .filter-count {
             background: #007AFF; color: white; border-radius: 10px;
             padding: 1px 6px; font-size: 11px; font-weight: 600; margin-left: 2px;
@@ -539,11 +575,28 @@
         </div>
         <div style="padding: 20px 0;">
             <div class="form-section">
-                <!-- Budget Button -->
-                <button class="submit-btn" id="setBudgetBtn" style="margin-top: 0; margin-bottom: 24px;">
-                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">savings</span>
-                    Set Your Budget
-                </button>
+                <!-- Budget Summary Section -->
+                <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="font-size: 17px; font-weight: 600; color: #000; display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                            Monthly Budget
+                        </h3>
+                        <button id="editBudgetBtn" style="background: transparent; border: none; color: #8E8E93; font-size: 13px; cursor: pointer; padding: 4px 8px;">
+                            Edit
+                        </button>
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                            <span id="helpBudgetSpent" style="font-size: 24px; font-weight: 700; color: #007AFF;">€0</span>
+                            <span id="helpBudgetTotal" style="font-size: 15px; color: #8E8E93;">of €1,600</span>
+                        </div>
+                        <div style="background: #E5E5EA; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div id="helpBudgetProgress" style="height: 100%; background: #007AFF; width: 0%; transition: width 0.3s ease, background 0.3s ease;"></div>
+                        </div>
+                    </div>
+                    <p id="helpBudgetStatus" style="font-size: 13px; color: #8E8E93; margin: 0;">No spending data yet</p>
+                </div>
 
                 <label class="section-label">How to Use This App</label>
                 <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
@@ -599,6 +652,23 @@
         <div class="success-icon">✓</div>
         <div class="success-amount" id="successAmount">€0</div>
         <div class="success-category" id="successCategory">Category</div>
+    </div>
+
+    <!-- Budget Confirmation Message (Full Screen) -->
+    <div class="confirmation-message" id="budgetConfirmation">
+        <div class="confirmation-icon">
+            <span class="material-symbols-outlined" style="font-size: 80px; font-variation-settings: 'FILL' 1;">savings</span>
+        </div>
+        <div class="confirmation-title">Budget Updated</div>
+        <div class="confirmation-detail" id="budgetConfirmationDetail">€1,600 per month</div>
+    </div>
+
+    <!-- History Edit Confirmation (Small) -->
+    <div class="small-confirmation" id="historyEditConfirmation">
+        <div class="small-confirmation-icon">
+            <span class="material-symbols-outlined" style="font-size: 48px; font-variation-settings: 'FILL' 1;">check_circle</span>
+        </div>
+        <div class="small-confirmation-text">Entry Updated</div>
     </div>
 
     <!-- Filter Popup -->
@@ -847,11 +917,18 @@
             const now = new Date();
             const currentMonth = now.getFullYear() * 12 + now.getMonth();
             const viewingMonth = currentViewMonth.getFullYear() * 12 + currentViewMonth.getMonth();
+            const earliestMonth = 2026 * 12 + 1; // February 2026 (month 1 = February, 0-indexed)
 
             // Hide next button if viewing current month or future
             const hideNext = viewingMonth >= currentMonth;
             document.querySelectorAll('#nextMonthMain, #nextMonthHistory, #nextMonthStats').forEach(btn => {
                 btn.classList.toggle('hidden', hideNext);
+            });
+
+            // Hide previous button if at earliest month (February 2026)
+            const hidePrev = viewingMonth <= earliestMonth;
+            document.querySelectorAll('#prevMonthMain, #prevMonthHistory, #prevMonthStats').forEach(btn => {
+                btn.classList.toggle('hidden', hidePrev);
             });
         }
 
@@ -912,6 +989,11 @@
             } else if (p === 'help') {
                 document.getElementById('helpPage').classList.add('active');
                 document.querySelectorAll('#helpNavBtn, #helpPageBtn, #helpFromHistoryBtn, #helpFromStatsBtn').forEach(btn => btn.classList.add('active'));
+
+                // Update budget summary
+                if (budgetData && statsData) {
+                    updateHelpBudgetSummary();
+                }
             } else {
                 document.getElementById('mainPage').classList.add('active');
                 document.querySelectorAll('#homeBtn, #homeFromHistoryBtn, #homeFromStatsBtn, #homeFromHelpBtn').forEach(btn => btn.classList.add('active'));
@@ -1562,6 +1644,14 @@
                 allTransactions = null; statsData = null; budgetData = null; cacheTimestamp = 0;
                 closeModal();
                 hideLoadingBar();
+
+                // Show confirmation popup for updates
+                if (currentEditingTransaction && currentEditingTransaction.row) {
+                    const historyConfirm = document.getElementById('historyEditConfirmation');
+                    historyConfirm.classList.add('show');
+                    setTimeout(() => historyConfirm.classList.remove('show'), 1500);
+                }
+
                 setTimeout(async () => { await refreshAllData(true); }, 300);
                 if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
             } catch (error) {
@@ -1672,8 +1762,21 @@
                         statsData = null;
                         cacheTimestamp = 0;
                         closeBudgetModal();
-                        await refreshAllData(true);
+                        hideLoadingBar();
+
+                        // Show budget confirmation message
+                        const budgetConfirm = document.getElementById('budgetConfirmation');
+                        const confirmDetail = document.getElementById('budgetConfirmationDetail');
+                        confirmDetail.textContent = `€${newBudget.toLocaleString('en-US')} per month`;
+                        budgetConfirm.classList.add('show');
                         if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
+
+                        setTimeout(() => {
+                            budgetConfirm.classList.remove('show');
+                        }, 2000);
+
+                        await refreshAllData(true);
+                        return;
                     } else {
                         throw new Error(result.message || 'Update failed');
                     }
@@ -1684,6 +1787,43 @@
                     hideLoadingBar();
                 }
             });
+        }
+
+        // Edit budget button in help page
+        const editBudgetBtn = document.getElementById('editBudgetBtn');
+        if (editBudgetBtn) {
+            editBudgetBtn.addEventListener('click', openBudgetModal);
+        }
+
+        // Update help page budget summary
+        function updateHelpBudgetSummary() {
+            if (!budgetData || !statsData) return;
+
+            const spent = Object.values(statsData).reduce((sum, cat) => sum + (cat.amount || 0), 0);
+            const budget = budgetData.amount || 0;
+            const percentage = budget > 0 ? (spent / budget) * 100 : 0;
+            const isOver = spent > budget;
+
+            document.getElementById('helpBudgetSpent').textContent = `€${spent.toFixed(0).toLocaleString('en-US')}`;
+            document.getElementById('helpBudgetTotal').textContent = `of €${budget.toLocaleString('en-US')}`;
+
+            const progressBar = document.getElementById('helpBudgetProgress');
+            progressBar.style.width = Math.min(percentage, 100) + '%';
+            progressBar.style.background = isOver ? '#FF3B30' : '#007AFF';
+
+            const statusText = document.getElementById('helpBudgetStatus');
+            if (spent === 0) {
+                statusText.textContent = 'No spending data yet';
+                statusText.style.color = '#8E8E93';
+            } else if (isOver) {
+                const over = spent - budget;
+                statusText.textContent = `€${over.toFixed(0)} over budget`;
+                statusText.style.color = '#FF3B30';
+            } else {
+                const remaining = budget - spent;
+                statusText.textContent = `€${remaining.toFixed(0)} remaining`;
+                statusText.style.color = '#34C759';
+            }
         }
 
         // Google Sheets button
