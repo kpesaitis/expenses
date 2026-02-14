@@ -62,7 +62,18 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Headers */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            position: sticky;
+            top: 0;
+            background: #FFFFFF;
+            z-index: 100;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
         .header-left, .header-right { display: flex; gap: 4px; }
         .header-center { flex: 1; text-align: center; padding: 0 12px; }
         h1, h2 { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; text-align: center; }
@@ -545,7 +556,7 @@
             </div>
             <div class="chart-canvas-container" id="statsChartContainer">
                 <canvas id="pieChart" style="max-height: 250px; max-width: 250px;"></canvas>
-                <canvas id="barChart" class="hidden" style="max-height: 250px; width: 100%; max-width: 400px;"></canvas>
+                <canvas id="barChart" class="hidden" style="max-height: 250px; width: 100%;"></canvas>
                 <div class="budget-center-text" id="budgetCenterText" style="display:none;">
                     <div class="budget-amount" id="budgetAmountText">€0</div>
                     <div class="budget-label">Budget</div>
@@ -579,7 +590,7 @@
                 <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <h3 style="font-size: 17px; font-weight: 600; color: #000; display: flex; align-items: center; gap: 8px; margin: 0;">
-                            <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                            <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">savings</span>
                             Monthly Budget
                         </h3>
                         <button id="editBudgetBtn" style="background: transparent; border: none; color: #8E8E93; font-size: 13px; cursor: pointer; padding: 4px 8px;">
@@ -1754,11 +1765,16 @@
                         budget: newBudget
                     });
 
-                    const resp = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+                    const url = `${GOOGLE_SCRIPT_URL}?${params.toString()}`;
+                    console.log('Updating budget:', { year, month, budget: newBudget, url });
+
+                    const resp = await fetch(url);
                     const result = await resp.json();
 
+                    console.log('Budget update response:', result);
+
                     if (result.status === 'success') {
-                        budgetData = { amount: newBudget, percent: 0 };
+                        // Clear cache to force reload from sheet
                         statsData = null;
                         cacheTimestamp = 0;
                         closeBudgetModal();
@@ -1775,6 +1791,7 @@
                             budgetConfirm.classList.remove('show');
                         }, 2000);
 
+                        // Reload data from sheet to get updated budget
                         await refreshAllData(true);
                         return;
                     } else {
@@ -1782,7 +1799,7 @@
                     }
                 } catch (error) {
                     console.error('Budget update failed:', error);
-                    alert('Failed to update budget. Please try again.');
+                    alert(`Failed to update budget: ${error.message}\n\nPlease ensure the Google Apps Script is deployed and accessible.`);
                 } finally {
                     hideLoadingBar();
                 }
