@@ -249,6 +249,31 @@ function doGet(e) {
     }
   }
 
+  if (action === 'addEntry') {
+    try {
+      var ts = e.parameter.timestamp;
+      var entryDate = new Date(ts);
+      // Handle dd/mm/yyyy format
+      var parts = ts.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+      if (parts) {
+        entryDate = new Date(parseInt(parts[3]), parseInt(parts[2]) - 1, parseInt(parts[1]),
+                             parseInt(parts[4]), parseInt(parts[5]), parseInt(parts[6]));
+      }
+      var targetSheet = getOrCreateMonthSheet(entryDate);
+      targetSheet.appendRow([
+        ts,
+        parseFloat(e.parameter.vnd) || 0,
+        parseFloat(e.parameter.eur) || 0,
+        parseFloat(e.parameter.usd) || 0,
+        e.parameter.category || '',
+        e.parameter.note || ''
+      ]);
+      return ok('Added to ' + targetSheet.getName());
+    } catch (er) {
+      return err('Add failed: ' + er.toString());
+    }
+  }
+
   if (action === 'updateBudget') {
     var budgetAmount = parseFloat(e.parameter.budget);
 

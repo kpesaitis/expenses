@@ -1126,11 +1126,17 @@
                 if (currentPage === 'history') displayTransactions();
             }
 
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(expenseData)
-            }).catch(err => console.error('Save failed:', err));
+            const addParams = new URLSearchParams({
+                action: 'addEntry',
+                timestamp: expenseData.timestamp,
+                vnd: expenseData.vnd,
+                eur: expenseData.eur,
+                usd: expenseData.usd,
+                category: expenseData.category,
+                note: expenseData.note || ''
+            });
+            fetch(`${GOOGLE_SCRIPT_URL}?${addParams.toString()}`)
+                .catch(err => console.error('Save failed:', err));
 
             const symbols = { VND: '₫', EUR: '€', USD: '$' };
             const dispAmt = selectedCurrency === 'VND' ? amt.toLocaleString('en-US') : amt.toFixed(2);
