@@ -129,6 +129,12 @@ function doPost(e) {
 
     // Parse the timestamp to determine which month sheet to use
     var timestamp = new Date(data.timestamp);
+    // Handle dd/mm/yyyy format
+    var postParts = data.timestamp.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+    if (postParts) {
+      timestamp = new Date(parseInt(postParts[3]), parseInt(postParts[2]) - 1, parseInt(postParts[1]),
+                           parseInt(postParts[4]), parseInt(postParts[5]), parseInt(postParts[6]));
+    }
     var sheet = getOrCreateMonthSheet(timestamp);
 
     // Append the transaction to the appropriate monthly sheet
@@ -212,6 +218,12 @@ function doGet(e) {
       // Parse new timestamp to see if it needs to move to a different month
       var newTimestamp = e.parameter.timestamp;
       var newDate = new Date(newTimestamp);
+      // Handle dd/mm/yyyy format
+      var tsParts = newTimestamp.match(/(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/);
+      if (tsParts) {
+        newDate = new Date(parseInt(tsParts[3]), parseInt(tsParts[2]) - 1, parseInt(tsParts[1]),
+                           parseInt(tsParts[4]), parseInt(tsParts[5]), parseInt(tsParts[6]));
+      }
       var newSheetName = getMonthSheetName(newDate);
 
       // If timestamp changes to different month, move the transaction
