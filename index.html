@@ -477,6 +477,10 @@
             <div class="form-section">
                 <input type="text" id="note" placeholder="Add a note..." autocomplete="off">
             </div>
+            <div class="form-section" style="margin-top: -8px;">
+                <button type="button" id="toggleDateBtn" style="background:none;border:none;color:#8E8E93;font-size:13px;cursor:pointer;padding:4px 0;">+ Add custom date</button>
+                <input type="datetime-local" id="entryDate" style="display:none;width:100%;font-size:15px;padding:10px 12px;border:none;border-radius:12px;background:#F2F2F7;color:#000;margin-top:6px;">
+            </div>
             <button type="submit" class="submit-btn">Add Expense</button>
         </form>
     </div>
@@ -801,6 +805,14 @@
         // Filters
         let activeFilters = new Set(); // Start empty
 
+        // ===== LOCAL STORAGE CACHE HELPERS =====
+        function saveCacheToStorage(year, month, data) {
+            try { localStorage.setItem(`exp_${year}_${month}`, JSON.stringify(data)); } catch(e) {}
+        }
+        function loadCacheFromStorage(year, month) {
+            try { const s = localStorage.getItem(`exp_${year}_${month}`); return s ? JSON.parse(s) : null; } catch(e) { return null; }
+        }
+
         // ===== LOADING BAR =====
         const loadingBar = document.getElementById('loadingBar');
         const loadingBarProgress = document.getElementById('loadingBarProgress');
@@ -902,22 +914,33 @@
 
         // ===== BATCHED DATA LOADING =====
         async function loadAllData() {
-            try {
-                const year = currentViewMonth.getFullYear();
-                const month = currentViewMonth.getMonth() + 1; // JavaScript months are 0-indexed
+            const year = currentViewMonth.getFullYear();
+            const month = currentViewMonth.getMonth() + 1;
 
+            // Instant: populate from localStorage first
+            const cached = loadCacheFromStorage(year, month);
+            if (cached) {
+                updateMonthlyTotalUI(cached.totalEUR, cached.totalVND, cached.totalUSD);
+                allTransactions = cached.transactions || [];
+                statsData = cached.stats || {};
+                budgetData = cached.budget || { amount: 0, percent: 0 };
+                updateNavigationButtons();
+                if (currentPage === 'history') displayTransactions();
+                if (currentPage === 'stats' && statsData) displayStats(statsData);
+            }
+
+            // Then fetch fresh data
+            try {
                 const r = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&year=${year}&month=${month}`);
                 const data = await r.json();
                 if (data.status === 'success') {
                     cacheTimestamp = Date.now();
+                    saveCacheToStorage(year, month, data);
                     updateMonthlyTotalUI(data.totalEUR, data.totalVND, data.totalUSD);
                     allTransactions = data.transactions || [];
                     statsData = data.stats || {};
                     budgetData = data.budget || { amount: 0, percent: 0 };
-
-                    // Update navigation button states based on data availability
                     updateNavigationButtons();
-
                     return data;
                 }
             } catch (e) { console.error('Load all failed:', e); }
@@ -1108,6 +1131,23 @@
             e.target.value = v;
         });
 
+        document.getElementById('toggleDateBtn').addEventListener('click', () => {
+            const input = document.getElementById('entryDate');
+            const btn = document.getElementById('toggleDateBtn');
+            if (input.style.display === 'none') {
+                input.style.display = 'block';
+                // Default to now
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                input.value = now.toISOString().slice(0, 16);
+                btn.textContent = '− Remove custom date';
+            } else {
+                input.style.display = 'none';
+                input.value = '';
+                btn.textContent = '+ Add custom date';
+            }
+        });
+
         document.getElementById('expenseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const raw = amountInput.value.replace(/,/g, '');
@@ -1115,7 +1155,9 @@
             if (!amt || !selectedCategory) { alert('Please enter an amount and select a category'); return; }
 
             const converted = convertCurrency(amt, selectedCurrency);
-            const ts = formatTimestamp(new Date());
+            const dateInputEl = document.getElementById('entryDate');
+            const entryDateVal = dateInputEl.value ? new Date(dateInputEl.value) : new Date();
+            const ts = formatTimestamp(entryDateVal);
             const expenseData = { timestamp: ts, vnd: converted.VND, eur: converted.EUR, usd: converted.USD, category: selectedCategory, note: document.getElementById('note').value };
 
             showLoadingBar();
@@ -1150,6 +1192,9 @@
                 amountInput.value = ''; document.getElementById('note').value = '';
                 categoryBtns.forEach(b => b.classList.remove('selected'));
                 selectedCategory = null;
+                document.getElementById('entryDate').style.display = 'none';
+                document.getElementById('entryDate').value = '';
+                document.getElementById('toggleDateBtn').textContent = '+ Add custom date';
                 setTimeout(() => { if (amountInput) amountInput.focus(); }, 100);
             }, 2000);
 
@@ -1910,16 +1955,9 @@
 
         window.addEventListener('load', async () => {
             updateMonthLabel();
-            ['totalAmount', 'historyTotalAmount', 'statsTotalAmount'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.textContent === '€0') el.classList.add('loading');
-            });
-
-            // Background load everything in one call
             showLoadingBar();
             await Promise.all([loadAllData(), fetchExchangeRates()]);
             hideLoadingBar();
-
             const tryFocus = () => { if (amountInput) { amountInput.focus(); amountInput.click(); } };
             setTimeout(tryFocus, 100); setTimeout(tryFocus, 300);
         });

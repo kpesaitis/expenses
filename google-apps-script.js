@@ -331,14 +331,30 @@ function err(msg) {
 function getAllData(sheet) {
   var values = sheet.getDataRange().getValues();
 
-  // Totals from row 2
-  var vndTotal = sheet.getRange('B2').getValue() || 0;
-  var eurTotal = sheet.getRange('C2').getValue() || 0;
-  var usdTotal = sheet.getRange('D2').getValue() || 0;
+  // Detect format: if A2 contains "TOTAL" (case-insensitive), use our format
+  var isOurFormat = values.length > 1 && String(values[1][0]).toUpperCase().indexOf('TOTAL') !== -1;
+  var dataStartIdx = isOurFormat ? 2 : 1; // index into values array
 
-  // Transactions (reverse order, skip header + totals)
+  var vndTotal, eurTotal, usdTotal;
+  if (isOurFormat) {
+    // Totals from row 2 (SUM formulas)
+    vndTotal = sheet.getRange('B2').getValue() || 0;
+    eurTotal = sheet.getRange('C2').getValue() || 0;
+    usdTotal = sheet.getRange('D2').getValue() || 0;
+  } else {
+    // Old format: calculate totals from data rows
+    vndTotal = 0; eurTotal = 0; usdTotal = 0;
+    for (var k = dataStartIdx; k < values.length; k++) {
+      if (!values[k][0]) continue;
+      vndTotal += Number(values[k][1]) || 0;
+      eurTotal += Number(values[k][2]) || 0;
+      usdTotal += Number(values[k][3]) || 0;
+    }
+  }
+
+  // Transactions (reverse order, skip header [+ totals for our format])
   var transactions = [];
-  for (var i = values.length - 1; i >= 2; i--) {
+  for (var i = values.length - 1; i >= dataStartIdx; i--) {
     var row = values[i];
     if (!row[0]) continue;
     transactions.push({
@@ -353,22 +369,39 @@ function getAllData(sheet) {
     });
   }
 
-  // Stats from summary block H3:J11
-  var categories = sheet.getRange('H3:H11').getValues();
-  var amounts = sheet.getRange('I3:I11').getValues();
-  var percentages = sheet.getRange('J3:J11').getValues();
+  // Stats: try H3:J11 summary block first; fall back to calculating from transactions
+  var h3val = sheet.getRange('H3').getValue();
+  var stats = {};
+  if (isOurFormat && h3val && h3val !== '') {
+    var categories = sheet.getRange('H3:H11').getValues();
+    var amounts = sheet.getRange('I3:I11').getValues();
+    var percentages = sheet.getRange('J3:J11').getValues();
+    for (var j = 0; j < categories.length; j++) {
+      var cat = categories[j][0];
+      if (!cat || cat === '') continue;
+      stats[cat] = {
+        amount: Number(amounts[j][0]) || 0,
+        percent: parsePct(percentages[j][0])
+      };
+    }
+  } else {
+    // Calculate stats directly from transaction data
+    var catTotals = {};
+    for (var m = dataStartIdx; m < values.length; m++) {
+      if (!values[m][0]) continue;
+      var c = values[m][4] || 'Other';
+      catTotals[c] = (catTotals[c] || 0) + (Number(values[m][2]) || 0);
+    }
+    for (var cn in catTotals) {
+      stats[cn] = {
+        amount: catTotals[cn],
+        percent: eurTotal > 0 ? Math.round((catTotals[cn] / eurTotal) * 100) : 0
+      };
+    }
+  }
+
   var budgetAmount = sheet.getRange('I12').getValue() || 0;
   var budgetPercent = sheet.getRange('J12').getValue() || 0;
-
-  var stats = {};
-  for (var j = 0; j < categories.length; j++) {
-    var cat = categories[j][0];
-    if (!cat || cat === '') continue;
-    stats[cat] = {
-      amount: Number(amounts[j][0]) || 0,
-      percent: parsePct(percentages[j][0])
-    };
-  }
 
   return ContentService.createTextOutput(JSON.stringify({
     status: 'success',
@@ -395,8 +428,11 @@ function getMonthlyTotals(sheet) {
 
 function getTransactionHistory(sheet) {
   var values = sheet.getDataRange().getValues();
+  // Detect format: if A2 contains "TOTAL" (case-insensitive), use our format
+  var isOurFormat = values.length > 1 && String(values[1][0]).toUpperCase().indexOf('TOTAL') !== -1;
+  var dataStartIdx = isOurFormat ? 2 : 1;
   var transactions = [];
-  for (var i = values.length - 1; i >= 2; i--) {
+  for (var i = values.length - 1; i >= dataStartIdx; i--) {
     var row = values[i];
     if (!row[0]) continue;
     transactions.push({
@@ -416,20 +452,44 @@ function getTransactionHistory(sheet) {
 }
 
 function getStatsData(sheet) {
-  var categories = sheet.getRange('H3:H11').getValues();
-  var amounts = sheet.getRange('I3:I11').getValues();
-  var percentages = sheet.getRange('J3:J11').getValues();
   var budgetAmount = sheet.getRange('I12').getValue() || 0;
   var budgetPercent = sheet.getRange('J12').getValue() || 0;
-
   var stats = {};
-  for (var i = 0; i < categories.length; i++) {
-    var cat = categories[i][0];
-    if (!cat || cat === '') continue;
-    stats[cat] = {
-      amount: Number(amounts[i][0]) || 0,
-      percent: parsePct(percentages[i][0])
-    };
+
+  // If H3 is populated, use the summary block; otherwise calculate from transactions
+  var h3val = sheet.getRange('H3').getValue();
+  if (h3val && h3val !== '') {
+    var categories = sheet.getRange('H3:H11').getValues();
+    var amounts = sheet.getRange('I3:I11').getValues();
+    var percentages = sheet.getRange('J3:J11').getValues();
+    for (var i = 0; i < categories.length; i++) {
+      var cat = categories[i][0];
+      if (!cat || cat === '') continue;
+      stats[cat] = {
+        amount: Number(amounts[i][0]) || 0,
+        percent: parsePct(percentages[i][0])
+      };
+    }
+  } else {
+    // Old format: calculate from transaction data
+    var values = sheet.getDataRange().getValues();
+    var isOurFormat = values.length > 1 && String(values[1][0]).toUpperCase().indexOf('TOTAL') !== -1;
+    var dataStartIdx = isOurFormat ? 2 : 1;
+    var eurTotal = 0;
+    var catTotals = {};
+    for (var j = dataStartIdx; j < values.length; j++) {
+      if (!values[j][0]) continue;
+      var c = values[j][4] || 'Other';
+      var eur = Number(values[j][2]) || 0;
+      catTotals[c] = (catTotals[c] || 0) + eur;
+      eurTotal += eur;
+    }
+    for (var cn in catTotals) {
+      stats[cn] = {
+        amount: catTotals[cn],
+        percent: eurTotal > 0 ? Math.round((catTotals[cn] / eurTotal) * 100) : 0
+      };
+    }
   }
 
   return ContentService.createTextOutput(JSON.stringify({
