@@ -464,13 +464,16 @@
                 <label class="section-label">Category</label>
                 <div class="categories">
                     <button type="button" class="category-btn" data-category="Food"><span class="category-icon">🍔</span><span>Food</span></button>
-                    <button type="button" class="category-btn" data-category="Groceries"><span class="category-icon">🛒</span><span>Groceries</span></button>
                     <button type="button" class="category-btn" data-category="Travel"><span class="category-icon">✈️</span><span>Travel</span></button>
                     <button type="button" class="category-btn" data-category="Shopping"><span class="category-icon">🛍️</span><span>Shopping</span></button>
                     <button type="button" class="category-btn" data-category="Bills"><span class="category-icon">📄</span><span>Bills</span></button>
                     <button type="button" class="category-btn" data-category="Fun"><span class="category-icon">🎉</span><span>Fun</span></button>
                     <button type="button" class="category-btn" data-category="Health"><span class="category-icon">💊</span><span>Health</span></button>
-                    <button type="button" class="category-btn" data-category="Saving"><span class="category-icon">💰</span><span>Saving</span></button>
+                    <button type="button" class="category-btn" data-category="Groceries"><span class="category-icon">🛒</span><span>Groceries</span></button>
+                    <button type="button" class="category-btn" data-category="Investment"><span class="category-icon">📈</span><span>Investment</span></button>
+                    <button type="button" class="category-btn" data-category="Subscriptions"><span class="category-icon">📱</span><span>Subscriptions</span></button>
+                    <button type="button" class="category-btn" data-category="Transport"><span class="category-icon">🚗</span><span>Transport</span></button>
+                    <button type="button" class="category-btn" data-category="Self Care"><span class="category-icon">🧴</span><span>Self Care</span></button>
                     <button type="button" class="category-btn" data-category="Other"><span class="category-icon">💡</span><span>Other</span></button>
                 </div>
             </div>
@@ -728,13 +731,16 @@
                 <label class="modal-label">Category</label>
                 <div class="modal-categories">
                     <button type="button" class="category-btn modal-category-btn" data-category="Food"><span class="category-icon">🍔</span><span>Food</span></button>
-                    <button type="button" class="category-btn modal-category-btn" data-category="Groceries"><span class="category-icon">🛒</span><span>Groceries</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Travel"><span class="category-icon">✈️</span><span>Travel</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Shopping"><span class="category-icon">🛍️</span><span>Shopping</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Bills"><span class="category-icon">📄</span><span>Bills</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Fun"><span class="category-icon">🎉</span><span>Fun</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Health"><span class="category-icon">💊</span><span>Health</span></button>
-                    <button type="button" class="category-btn modal-category-btn" data-category="Saving"><span class="category-icon">💰</span><span>Saving</span></button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Groceries"><span class="category-icon">🛒</span><span>Groceries</span></button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Investment"><span class="category-icon">📈</span><span>Investment</span></button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Subscriptions"><span class="category-icon">📱</span><span>Subscriptions</span></button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Transport"><span class="category-icon">🚗</span><span>Transport</span></button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Self Care"><span class="category-icon">🧴</span><span>Self Care</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Other"><span class="category-icon">💡</span><span>Other</span></button>
                 </div>
             </div>
@@ -771,18 +777,20 @@
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ53mevunFH8a2skDSI0iUl6CxZGDeI8AEN9fCXIKEIkYECUolQT3_s0hJTiBRFvSS/exec';
         const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1gKmp_8yU5V4zx8EgYTBb_lX0IRiYbezRkedFXRYO8Fo/edit';
 
-        // 9 categories matching sheet
+        // 12 categories matching sheet
         const CATEGORY_COLORS = {
-            'Food': '#2196F3', 'Groceries': '#4CAF50', 'Travel': '#9C27B0',
-            'Shopping': '#00BCD4', 'Bills': '#FF6B35', 'Fun': '#F44336',
-            'Health': '#E91E63', 'Saving': '#8BC34A', 'Other': '#FFC107'
+            'Food': '#2196F3', 'Travel': '#9C27B0', 'Shopping': '#00BCD4',
+            'Bills': '#FF6B35', 'Fun': '#F44336', 'Health': '#E91E63',
+            'Groceries': '#4CAF50', 'Investment': '#8BC34A', 'Subscriptions': '#607D8B',
+            'Transport': '#FF9800', 'Self Care': '#E91E63', 'Other': '#FFC107'
         };
         const CATEGORY_EMOJIS = {
-            'Food': '🍔', 'Groceries': '🛒', 'Travel': '✈️', 'Shopping': '🛍️',
-            'Bills': '📄', 'Fun': '🎉', 'Health': '💊', 'Saving': '💰', 'Other': '💭'
+            'Food': '🍔', 'Travel': '✈️', 'Shopping': '🛍️', 'Bills': '📄',
+            'Fun': '🎉', 'Health': '💊', 'Groceries': '🛒', 'Investment': '📈',
+            'Subscriptions': '📱', 'Transport': '🚗', 'Self Care': '🧴', 'Other': '💭'
         };
         const ALL_CATEGORIES = Object.keys(CATEGORY_COLORS);
-        const LEGACY_MAP = { 'Transport': 'Travel', 'Entertainment': 'Fun', 'Savings': 'Saving' };
+        const LEGACY_MAP = { 'Entertainment': 'Fun', 'Savings': 'Other', 'Saving': 'Other' };
         function resolveCategory(c) { return LEGACY_MAP[c] || c; }
 
         // ===== STATE =====

@@ -1,6 +1,6 @@
 // Google Apps Script - Monthly sheets with batched endpoint, delete/update via GET
-// Categories: H3:H11 (Food, Travel, Shopping, Bills, Fun, Health, Groceries, Saving, Other)
-// Budget: H12/I12/J12
+// Categories: H3:H14 (Food, Travel, Shopping, Bills, Fun, Health, Groceries, Investment, Subscriptions, Transport, Self Care, Other)
+// Budget: H15/I15/J15
 
 /**
  * Get or create a sheet for a specific month
@@ -70,29 +70,30 @@ function createMonthSheet(ss, sheetName) {
   sheet.getRange('H2:J2').setValues([['Category', 'EUR', '%']]);
   sheet.getRange('H2:J2').setFontWeight('bold');
 
-  // Set up category labels (H3:H11)
+  // Set up category labels (H3:H14)
   var categories = [
     ['Food'], ['Travel'], ['Shopping'], ['Bills'],
-    ['Fun'], ['Health'], ['Groceries'], ['Saving'], ['Other']
+    ['Fun'], ['Health'], ['Groceries'], ['Investment'],
+    ['Subscriptions'], ['Transport'], ['Self Care'], ['Other']
   ];
-  sheet.getRange('H3:H11').setValues(categories);
+  sheet.getRange('H3:H14').setValues(categories);
 
-  // Set up category sum formulas (I3:I11)
-  for (var row = 3; row <= 11; row++) {
+  // Set up category sum formulas (I3:I14)
+  for (var row = 3; row <= 14; row++) {
     sheet.getRange('I' + row).setFormula('=SUMIF($E$3:$E,H' + row + ',$C$3:$C)');
   }
 
-  // Set up category percentage formulas (J3:J11)
-  for (var row = 3; row <= 11; row++) {
+  // Set up category percentage formulas (J3:J14)
+  for (var row = 3; row <= 14; row++) {
     sheet.getRange('J' + row).setFormula('=IF($C$2=0,0,I' + row + '/$C$2)');
     sheet.getRange('J' + row).setNumberFormat('0%');
   }
 
-  // Set up Budget row (H12:J12)
-  sheet.getRange('H12').setValue('Budget');
-  sheet.getRange('I12').setValue(1600); // Default budget amount in EUR
-  sheet.getRange('J12').setFormula('=1-C2/I12');
-  sheet.getRange('J12').setNumberFormat('0%');
+  // Set up Budget row (H15:J15)
+  sheet.getRange('H15').setValue('Budget');
+  sheet.getRange('I15').setValue(1600); // Default budget amount in EUR
+  sheet.getRange('J15').setFormula('=1-C2/I15');
+  sheet.getRange('J15').setNumberFormat('0%');
 
   // Freeze top 2 rows
   sheet.setFrozenRows(2);
@@ -299,7 +300,7 @@ function doGet(e) {
     }
 
     try {
-      sheet.getRange('I12').setValue(budgetAmount);
+      sheet.getRange('I15').setValue(budgetAmount);
       return ok('Budget updated to ' + budgetAmount);
     } catch (er) {
       return err('Budget update failed: ' + er.toString());
@@ -373,9 +374,9 @@ function getAllData(sheet) {
   var h3val = sheet.getRange('H3').getValue();
   var stats = {};
   if (isOurFormat && h3val && h3val !== '') {
-    var categories = sheet.getRange('H3:H11').getValues();
-    var amounts = sheet.getRange('I3:I11').getValues();
-    var percentages = sheet.getRange('J3:J11').getValues();
+    var categories = sheet.getRange('H3:H14').getValues();
+    var amounts = sheet.getRange('I3:I14').getValues();
+    var percentages = sheet.getRange('J3:J14').getValues();
     for (var j = 0; j < categories.length; j++) {
       var cat = categories[j][0];
       if (!cat || cat === '') continue;
@@ -400,8 +401,8 @@ function getAllData(sheet) {
     }
   }
 
-  var budgetAmount = sheet.getRange('I12').getValue() || 0;
-  var budgetPercent = sheet.getRange('J12').getValue() || 0;
+  var budgetAmount = sheet.getRange('I15').getValue() || 0;
+  var budgetPercent = sheet.getRange('J15').getValue() || 0;
 
   return ContentService.createTextOutput(JSON.stringify({
     status: 'success',
@@ -452,16 +453,16 @@ function getTransactionHistory(sheet) {
 }
 
 function getStatsData(sheet) {
-  var budgetAmount = sheet.getRange('I12').getValue() || 0;
-  var budgetPercent = sheet.getRange('J12').getValue() || 0;
+  var budgetAmount = sheet.getRange('I15').getValue() || 0;
+  var budgetPercent = sheet.getRange('J15').getValue() || 0;
   var stats = {};
 
   // If H3 is populated, use the summary block; otherwise calculate from transactions
   var h3val = sheet.getRange('H3').getValue();
   if (h3val && h3val !== '') {
-    var categories = sheet.getRange('H3:H11').getValues();
-    var amounts = sheet.getRange('I3:I11').getValues();
-    var percentages = sheet.getRange('J3:J11').getValues();
+    var categories = sheet.getRange('H3:H14').getValues();
+    var amounts = sheet.getRange('I3:I14').getValues();
+    var percentages = sheet.getRange('J3:J14').getValues();
     for (var i = 0; i < categories.length; i++) {
       var cat = categories[i][0];
       if (!cat || cat === '') continue;
