@@ -184,6 +184,7 @@
         @keyframes successPop { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
         .success-amount { font-size: 48px; font-weight: 700; margin-bottom: 8px; }
         .success-category { font-size: 20px; opacity: 0.9; }
+        .success-note { font-size: 15px; opacity: 0.75; margin-top: 8px; font-style: italic; }
 
         /* Confirmation messages */
         .confirmation-message {
@@ -229,19 +230,19 @@
         .day-header:first-child { margin-top: 0; }
 
         .transaction-item {
-            background: #F2F2F7; border-radius: 12px; padding: 12px 14px;
-            cursor: pointer; transition: all 0.15s ease;
+            background: #F2F2F7; border-radius: 10px; padding: 8px 12px;
+            cursor: pointer; transition: all 0.15s ease; margin-bottom: 4px;
         }
         .transaction-item:active { transform: scale(0.98); opacity: 0.8; }
-        .transaction-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .transaction-category { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 500; }
-        .transaction-category-emoji { font-size: 20px; }
-        .transaction-amount-primary { font-size: 20px; font-weight: 600; }
+        .transaction-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+        .transaction-category { display: flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 500; }
+        .transaction-category-emoji { font-size: 17px; }
+        .transaction-amount-primary { font-size: 16px; font-weight: 600; }
         .transaction-row-2 { display: flex; justify-content: space-between; align-items: center; }
-        .transaction-time { font-size: 13px; color: #8E8E93; }
-        .transaction-currencies-secondary { font-size: 12px; color: #8E8E93; }
-        .transaction-note-divider { height: 1px; background: #E5E5EA; margin: 8px 0 6px 0; }
-        .transaction-note-text { font-size: 12px; color: #8E8E93; font-style: italic; }
+        .transaction-time { font-size: 12px; color: #8E8E93; }
+        .transaction-currencies-secondary { font-size: 11px; color: #8E8E93; }
+        .transaction-note-divider { height: 1px; background: #E5E5EA; margin: 5px 0 4px 0; }
+        .transaction-note-text { font-size: 11px; color: #8E8E93; font-style: italic; }
         .empty-state { text-align: center; padding: 60px 20px; color: #8E8E93; }
         .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
         .loading-dots::after { content: ''; animation: dots 1.5s steps(4, end) infinite; }
@@ -671,6 +672,7 @@
         <div class="success-icon">✓</div>
         <div class="success-amount" id="successAmount">€0</div>
         <div class="success-category" id="successCategory">Category</div>
+        <div class="success-note" id="successNote"></div>
     </div>
 
     <!-- Budget Confirmation Message (Full Screen) -->
@@ -1132,10 +1134,14 @@
         amountInput.addEventListener('touchstart', (e) => {
             e.stopPropagation(); setTimeout(() => amountInput.focus(), 50);
         }, { passive: true });
+        amountInput.addEventListener('keydown', (e) => {
+            if (e.key === ',') { e.preventDefault(); const pos = amountInput.selectionStart; const v = amountInput.value; amountInput.value = v.slice(0, pos) + '.' + v.slice(amountInput.selectionEnd); amountInput.setSelectionRange(pos + 1, pos + 1); amountInput.dispatchEvent(new Event('input')); }
+        });
         amountInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/,/g, '');
-            if (!/^\d*\.?\d*$/.test(v)) v = v.replace(/[^\d.]/g, '');
-            if (v && !v.includes('.')) { const n = parseInt(v, 10); if (!isNaN(n)) v = n.toLocaleString('en-US'); }
+            let v = e.target.value.replace(/,/g, '.');
+            v = v.replace(/[^\d.]/g, '');
+            const parts = v.split('.');
+            if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
             e.target.value = v;
         });
 
@@ -1190,8 +1196,10 @@
 
             const symbols = { VND: '₫', EUR: '€', USD: '$' };
             const dispAmt = selectedCurrency === 'VND' ? amt.toLocaleString('en-US') : amt.toFixed(2);
+            const noteVal = document.getElementById('note').value;
             document.getElementById('successAmount').textContent = `${symbols[selectedCurrency]}${dispAmt}`;
             document.getElementById('successCategory').textContent = `${CATEGORY_EMOJIS[selectedCategory]} ${selectedCategory}`;
+            document.getElementById('successNote').textContent = noteVal ? `"${noteVal}"` : '';
             document.getElementById('successMessage').classList.add('show');
             if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
 
@@ -1257,7 +1265,8 @@
                     const dd = new Date(dayKey + 'T12:00:00');
                     dayLabel = dd.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 }
-                html += `<div class="day-header">${dayLabel}</div>`;
+                const dayTotal = groups[dayKey].reduce((sum, t) => sum + (t.eur || 0), 0);
+                html += `<div class="day-header">${dayLabel} <span style="color:#007AFF;font-weight:600;">€${dayTotal.toFixed(2)}</span></div>`;
 
                 groups[dayKey].forEach(t => {
                     const date = new Date(t.timestamp);
@@ -1265,7 +1274,7 @@
                     const cat = resolveCategory(t.category);
                     const emoji = CATEGORY_EMOJIS[cat] || '💡';
                     const noteHTML = t.note ? `<div class="transaction-note-divider"></div><div class="transaction-note-text">"${t.note}"</div>` : '';
-                    const td = JSON.stringify({ row: t.row, timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
+                    const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
 
                     html += `<div class="transaction-item" data-transaction='${td}'>
                         <div class="transaction-row-1">
@@ -1563,10 +1572,14 @@
         manualAmount.addEventListener('touchstart', (e) => {
             e.stopPropagation(); setTimeout(() => manualAmount.focus(), 50);
         }, { passive: true });
+        manualAmount.addEventListener('keydown', (e) => {
+            if (e.key === ',') { e.preventDefault(); const pos = manualAmount.selectionStart; const v = manualAmount.value; manualAmount.value = v.slice(0, pos) + '.' + v.slice(manualAmount.selectionEnd); manualAmount.setSelectionRange(pos + 1, pos + 1); manualAmount.dispatchEvent(new Event('input')); }
+        });
         manualAmount.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/,/g, '');
-            if (!/^\d*\.?\d*$/.test(v)) v = v.replace(/[^\d.]/g, '');
-            if (v && !v.includes('.')) { const n = parseInt(v, 10); if (!isNaN(n)) v = n.toLocaleString('en-US'); }
+            let v = e.target.value.replace(/,/g, '.');
+            v = v.replace(/[^\d.]/g, '');
+            const parts = v.split('.');
+            if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
             e.target.value = v;
         });
 
@@ -1693,12 +1706,17 @@
                         throw new Error(result.message || 'Update failed');
                     }
                 } else {
-                    // Create new entry
-                    await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST', mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ timestamp: ts, vnd: converted.VND, eur: converted.EUR, usd: converted.USD, category: modalSelectedCategory, note: manualNote.value || '' })
+                    // Create new entry via GET
+                    const newParams = new URLSearchParams({
+                        action: 'addEntry',
+                        timestamp: ts,
+                        vnd: converted.VND,
+                        eur: converted.EUR,
+                        usd: converted.USD,
+                        category: modalSelectedCategory,
+                        note: manualNote.value || ''
                     });
+                    await fetch(`${GOOGLE_SCRIPT_URL}?${newParams.toString()}`);
                 }
 
                 // Check if we need to navigate to a different month
