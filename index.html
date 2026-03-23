@@ -75,7 +75,7 @@
             padding-top: 8px;
             padding-bottom: 8px;
         }
-        .header-left, .header-right { display: flex; gap: 4px; }
+        .header-left, .header-right { display: flex; gap: 4px; width: 92px; flex-shrink: 0; }
         .header-center { flex: 1; text-align: center; padding: 0 12px; }
         h1, h2 { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; text-align: center; }
         .nav-btn {
@@ -429,7 +429,7 @@
         }
         .modal-input {
             width: 100%; font-size: 17px; padding: 12px 14px; border: none;
-            border-radius: 12px; background: #F2F2F7; color: #000000;
+            border-radius: 12px; background: #F2F2F7; color: #000000; box-sizing: border-box;
         }
         .modal-input:focus { outline: 2px solid #007AFF; outline-offset: -2px; }
         .modal-amount-input {
@@ -1896,13 +1896,25 @@
             e.stopPropagation(); setTimeout(() => manualAmount.focus(), 50);
         }, { passive: true });
         manualAmount.addEventListener('keydown', (e) => {
-            if (e.key === ',') { e.preventDefault(); const pos = manualAmount.selectionStart; const v = manualAmount.value; manualAmount.value = v.slice(0, pos) + '.' + v.slice(manualAmount.selectionEnd); manualAmount.setSelectionRange(pos + 1, pos + 1); manualAmount.dispatchEvent(new Event('input')); }
+            if (e.key === ',') {
+                e.preventDefault();
+                if (modalSelectedCurrency !== 'VND') {
+                    const pos = manualAmount.selectionStart; const v = manualAmount.value;
+                    manualAmount.value = v.slice(0, pos) + '.' + v.slice(manualAmount.selectionEnd);
+                    manualAmount.setSelectionRange(pos + 1, pos + 1);
+                    manualAmount.dispatchEvent(new Event('input'));
+                }
+            }
         });
         manualAmount.addEventListener('input', (e) => {
             let v = e.target.value;
-            v = v.replace(/[^\d.]/g, '');
-            const parts = v.split('.');
-            if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+            if (modalSelectedCurrency === 'VND') {
+                v = v.replace(/[^\d]/g, '');
+            } else {
+                v = v.replace(/[^\d.]/g, '');
+                const parts = v.split('.');
+                if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+            }
             e.target.value = v;
         });
 
@@ -1971,8 +1983,16 @@
             const date = new Date(t.timestamp);
             date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
             manualDate.value = date.toISOString().slice(0, 16);
-            manualAmount.value = t.eur.toFixed(2);
-            setModalSelectedCurrency('EUR');
+            if (t.eur < 0.01 && t.vnd > 0) {
+                manualAmount.value = Math.round(t.vnd).toString();
+                setModalSelectedCurrency('VND');
+            } else if (t.eur < 0.01 && t.usd > 0) {
+                manualAmount.value = t.usd.toFixed(2);
+                setModalSelectedCurrency('USD');
+            } else {
+                manualAmount.value = t.eur.toFixed(2);
+                setModalSelectedCurrency('EUR');
+            }
             const cat = resolveCategory(t.category);
             modalCategoryBtns.forEach(btn => btn.classList.toggle('selected', btn.dataset.category === cat));
             modalSelectedCategory = cat;
