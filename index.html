@@ -158,15 +158,16 @@
         .currency-btn.selected { background: #007AFF; color: white; border-color: #007AFF; }
         .currency-symbol-large { font-size: 18px; }
         .currency-code { font-size: 11px; opacity: 0.8; }
-        .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .category-btn {
-            padding: 10px 6px; border: 1.5px solid #8E8E93; border-radius: 12px;
-            background: #FFFFFF; color: #000000; font-size: 13px; font-weight: 500;
+            padding: 10px 4px; border: none; border-radius: 10px;
+            background: #F2F2F7; color: #000000; font-size: 11px; font-weight: 500;
             cursor: pointer; transition: all 0.2s ease; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+            flex-direction: column; align-items: center; justify-content: center; gap: 0;
         }
+        .category-btn span:not(.category-icon) { display: none; }
         .category-btn:active { transform: scale(0.95); }
-        .category-btn.selected { background: #007AFF; color: white; border-color: #007AFF; }
+        .category-btn.selected { background: #007AFF; color: white; }
         .category-icon { font-size: 24px; }
         .submit-btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
@@ -224,14 +225,22 @@
 
         /* Day headers */
         .day-header {
-            font-size: 13px; font-weight: 500; color: #8E8E93; text-transform: uppercase;
-            letter-spacing: 0.5px; padding: 8px 0 4px; margin-top: 6px; text-align: center;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; font-weight: 500; color: #8E8E93; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 10px 4px 5px; margin-top: 4px;
         }
         .day-header:first-child { margin-top: 0; }
+        .day-total { font-size: 13px; font-weight: 700; color: #007AFF; text-transform: none; letter-spacing: 0; }
+        .today-total { font-size: 13px; color: #34C759; margin-top: 6px; font-weight: 600; display: none; }
 
+        .swipe-wrap { position: relative; border-radius: 10px; overflow: hidden; }
+        .delete-bg {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
+            background: #FF3B30; display: flex; align-items: center; justify-content: center; color: white;
+        }
         .transaction-item {
             background: #F2F2F7; border-radius: 10px; padding: 8px 12px;
-            cursor: pointer; transition: all 0.15s ease; margin-bottom: 4px;
+            cursor: pointer; transition: transform 0.15s ease;
         }
         .transaction-item:active { transform: scale(0.98); opacity: 0.8; }
         .transaction-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
@@ -398,7 +407,7 @@
         }
         .modal-currency-selector { display: flex; gap: 6px; margin-top: 6px; margin-bottom: 14px; }
         .modal-currency-selector .currency-btn { padding: 8px 6px; font-size: 12px; }
-        .modal-categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .modal-categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .modal-categories .category-btn { padding: 8px 6px; font-size: 12px; }
         .modal-categories .category-icon { font-size: 20px; }
         .modal-buttons { display: flex; gap: 12px; margin-top: 16px; }
@@ -540,6 +549,51 @@
         .numpad-overlay.show .numpad-panel {
             animation: slideUp 0.22s ease;
         }
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            body { background: #1C1C1E; color: #FFFFFF; }
+            .header { background: #1C1C1E; }
+            h1, h2 { color: #FFFFFF; }
+            input[type="text"] { background: #2C2C2E; color: #FFFFFF; }
+            .transaction-item { background: #2C2C2E; }
+            .transaction-category { color: #FFFFFF; }
+            .transaction-amount-primary { color: #FFFFFF; }
+            .category-btn { background: #2C2C2E; color: #FFFFFF; }
+            .category-btn.selected { background: #0A84FF; }
+            .submit-btn { background: #0A84FF; }
+            .monthly-total-amount, .history-total-amount { color: #FFFFFF; }
+            .nav-btn { color: #636366; }
+            .nav-btn.active { color: #0A84FF; }
+            .modal { background: #1C1C1E; }
+            .modal-input, .modal-amount-input { background: #2C2C2E; color: #FFFFFF; }
+            .modal-label { color: #8E8E93; }
+            .modal-btn-cancel { background: #2C2C2E; color: #FFFFFF; }
+            .filter-popup { background: #1C1C1E; }
+            .filter-option { border-bottom-color: #2C2C2E; }
+            .filter-option-label { color: #FFFFFF; }
+            .numpad-panel { background: #1C1C1E; }
+            .numpad-btn { background: #2C2C2E; color: #FFFFFF; }
+            .numpad-btn.numpad-special, .numpad-btn.numpad-backspace { background: #3A3A3C; }
+            .numpad-btn:active { background: #48484A; transform: scale(0.95); }
+            .currency-picker-popup { background: #1C1C1E; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+            .currency-option { color: #FFFFFF; border-bottom-color: #2C2C2E; }
+            .currency-option.selected { color: #0A84FF; }
+            .currency-option:active { background: #2C2C2E; }
+            .scroll-gradient { background: linear-gradient(to top, #1C1C1E 30%, transparent 100%); }
+            .section-label { color: #8E8E93; }
+            .load-more-btn { background: #2C2C2E; color: #0A84FF; }
+            .filter-btn { background: #2C2C2E; color: #FFFFFF; }
+            .category-row { background: #2C2C2E; }
+            .skeleton { background: linear-gradient(90deg, #2C2C2E 25%, #3A3A3C 50%, #2C2C2E 75%); background-size: 200% 100%; }
+            .month-nav-btn { background: #2C2C2E; color: #8E8E93; }
+            .transaction-note-divider { background: #3A3A3C; }
+            .delete-bg { background: #FF453A; }
+            .add-entry-history-btn { background: #0A84FF; }
+            .filter-btn.active { background: #0A84FF; }
+            .modal-delete-btn { color: #FF453A; }
+            .modal-top-bar { color: #FFFFFF; }
+            .small-confirmation { background: #0A84FF; }
+        }
     </style>
 </head>
 <body>
@@ -573,6 +627,7 @@
             </div>
             <div class="monthly-total-amount" id="totalAmount">€0</div>
             <div class="monthly-total-currencies" id="totalCurrencies">₫0 | $0</div>
+            <div class="today-total" id="todayTotal"></div>
         </div>
         <form id="expenseForm">
             <div class="form-section">
@@ -918,6 +973,27 @@
         </div>
     </div>
 
+    <!-- Numpad Overlay -->
+    <div class="numpad-overlay" id="numpadOverlay">
+        <div class="numpad-backdrop" id="numpadBackdrop"></div>
+        <div class="numpad-panel">
+            <div class="numpad" id="numpad">
+                <button type="button" class="numpad-btn" data-key="7">7</button>
+                <button type="button" class="numpad-btn" data-key="8">8</button>
+                <button type="button" class="numpad-btn" data-key="9">9</button>
+                <button type="button" class="numpad-btn" data-key="4">4</button>
+                <button type="button" class="numpad-btn" data-key="5">5</button>
+                <button type="button" class="numpad-btn" data-key="6">6</button>
+                <button type="button" class="numpad-btn" data-key="1">1</button>
+                <button type="button" class="numpad-btn" data-key="2">2</button>
+                <button type="button" class="numpad-btn" data-key="3">3</button>
+                <button type="button" class="numpad-btn numpad-special" id="numpadDecimal" data-key="000">000</button>
+                <button type="button" class="numpad-btn" data-key="0">0</button>
+                <button type="button" class="numpad-btn numpad-backspace" data-key="back"><span class="material-symbols-outlined">backspace</span></button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQ53mevunFH8a2skDSI0iUl6CxZGDeI8AEN9fCXIKEIkYECUolQT3_s0hJTiBRFvSS/exec';
         const SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1gKmp_8yU5V4zx8EgYTBb_lX0IRiYbezRkedFXRYO8Fo/edit';
@@ -1075,6 +1151,7 @@
             if (cached) {
                 updateMonthlyTotalUI(cached.totalEUR, cached.totalVND, cached.totalUSD);
                 allTransactions = cached.transactions || [];
+                updateTodayTotal();
                 statsData = cached.stats || {};
                 budgetData = cached.budget || { amount: 0, percent: 0 };
                 updateNavigationButtons();
@@ -1091,6 +1168,7 @@
                     saveCacheToStorage(year, month, data);
                     updateMonthlyTotalUI(data.totalEUR, data.totalVND, data.totalUSD);
                     allTransactions = data.transactions || [];
+                    updateTodayTotal();
                     statsData = data.stats || {};
                     budgetData = data.budget || { amount: 0, percent: 0 };
                     updateNavigationButtons();
@@ -1390,7 +1468,9 @@
                 note: expenseData.note || ''
             });
             fetch(`${GOOGLE_SCRIPT_URL}?${addParams.toString()}`)
-                .catch(err => console.error('Save failed:', err));
+                .then(r => r.json())
+                .then(result => { if (result.status !== 'success') saveToOfflineQueue(expenseData); })
+                .catch(() => saveToOfflineQueue(expenseData));
 
             const symbols = { VND: '₫', EUR: '€', USD: '$' };
             const dispAmt = selectedCurrency === 'VND' ? amt.toLocaleString('en-US') : amt.toFixed(2);
@@ -1471,8 +1551,9 @@
                     const dd = new Date(dayKey + 'T12:00:00');
                     dayLabel = dd.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
                 }
-                const dayTotal = groups[dayKey].reduce((sum, t) => sum + (t.eur || 0), 0);
-                html += `<div class="day-header">${dayLabel} <span style="color:#007AFF;font-weight:600;">€${dayTotal.toFixed(2)}</span></div>`;
+                const dayTotalEUR = groups[dayKey].reduce((sum, t) => sum + (t.eur || 0), 0);
+                const dayTotalVND = groups[dayKey].reduce((sum, t) => sum + (t.vnd || 0), 0);
+                html += `<div class="day-header"><span>${dayLabel}</span><span class="day-total">₫${Math.round(dayTotalVND).toLocaleString('en-US')} · €${dayTotalEUR.toFixed(2)}</span></div>`;
 
                 groups[dayKey].forEach(t => {
                     const date = new Date(t.timestamp);
@@ -1482,7 +1563,7 @@
                     const noteHTML = t.note ? `<div class="transaction-note-divider"></div><div class="transaction-note-text">"${t.note}"</div>` : '';
                     const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
 
-                    html += `<div class="transaction-item" data-transaction='${td}'>
+                    html += `<div class="swipe-wrap" data-row="${t.row}" data-sheet="${t.sheetName || ''}"><div class="delete-bg"><span class="material-symbols-outlined">delete</span></div><div class="transaction-item" data-transaction='${td}'>
                         <div class="transaction-row-1">
                             <div class="transaction-category"><span class="transaction-category-emoji">${emoji}</span><span>${cat}</span></div>
                             <div class="transaction-amount-primary">€${t.eur.toFixed(2)}</div>
@@ -1492,7 +1573,7 @@
                             <div class="transaction-currencies-secondary">₫${Math.round(t.vnd).toLocaleString('en-US')} | $${t.usd.toFixed(2)}</div>
                         </div>
                         ${noteHTML}
-                    </div>`;
+                    </div></div>`;
                 });
             });
 
@@ -1515,11 +1596,62 @@
         }
 
         function attachTransactionListeners() {
-            document.querySelectorAll('.transaction-item').forEach(item => {
+            document.querySelectorAll('.swipe-wrap').forEach(wrap => {
+                const item = wrap.querySelector('.transaction-item');
+                let startX = 0, startY = 0, currentX = 0, tracking = false, didSwipe = false;
+
                 item.addEventListener('click', () => {
+                    if (didSwipe) { didSwipe = false; return; }
                     try { openEditModal(JSON.parse(item.dataset.transaction)); }
                     catch (err) { console.error('Parse error:', err); }
                 });
+
+                item.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+                    currentX = 0; tracking = true; didSwipe = false;
+                }, { passive: true });
+
+                item.addEventListener('touchmove', (e) => {
+                    if (!tracking) return;
+                    const dx = e.touches[0].clientX - startX;
+                    const dy = e.touches[0].clientY - startY;
+                    if (Math.abs(dy) > Math.abs(dx) + 5) { tracking = false; return; }
+                    if (dx < -8) {
+                        didSwipe = true;
+                        currentX = Math.max(dx, -80);
+                        item.style.transition = 'none';
+                        item.style.transform = `translateX(${currentX}px)`;
+                    }
+                }, { passive: true });
+
+                item.addEventListener('touchend', (e) => {
+                    tracking = false;
+                    if (!didSwipe) return;
+                    e.preventDefault();
+                    item.style.transition = 'transform 0.2s ease';
+                    if (currentX < -60) {
+                        const row = parseInt(wrap.dataset.row);
+                        const sheetName = wrap.dataset.sheet;
+                        if (!row || row < 3) { item.style.transform = 'translateX(0)'; didSwipe = false; return; }
+                        if (!confirm('Delete this expense?')) { item.style.transform = 'translateX(0)'; didSwipe = false; return; }
+                        item.style.transform = 'translateX(-100%)';
+                        showLoadingBar();
+                        (async () => {
+                            try {
+                                const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=delete&row=${row}&sheetName=${sheetName}`);
+                                const result = await resp.json();
+                                if (result.status === 'success') {
+                                    allTransactions = null; statsData = null; cacheTimestamp = 0;
+                                    setTimeout(async () => { await refreshAllData(true); }, 300);
+                                } else { item.style.transform = 'translateX(0)'; alert('Delete failed.'); }
+                            } catch (err) { item.style.transform = 'translateX(0)'; alert('Delete failed.'); }
+                            hideLoadingBar();
+                        })();
+                    } else {
+                        item.style.transform = 'translateX(0)';
+                    }
+                    currentX = 0;
+                }, { passive: false });
             });
         }
 
@@ -2195,12 +2327,58 @@
             if (btn) btn.addEventListener('click', () => changeMonth(1));
         });
 
+        // ===== OFFLINE QUEUE =====
+        function saveToOfflineQueue(entry) {
+            try {
+                const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
+                queue.push({ ...entry, queuedAt: Date.now() });
+                localStorage.setItem('offlineQueue', JSON.stringify(queue));
+            } catch(e) {}
+        }
+
+        async function syncOfflineQueue() {
+            let queue;
+            try { queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]'); } catch(e) { return; }
+            if (!queue.length) return;
+            const remaining = [];
+            for (const entry of queue) {
+                try {
+                    const params = new URLSearchParams({ action: 'addEntry', timestamp: entry.timestamp, vnd: entry.vnd, eur: entry.eur, usd: entry.usd, category: entry.category, note: entry.note || '' });
+                    const resp = await fetch(`${GOOGLE_SCRIPT_URL}?${params.toString()}`);
+                    const result = await resp.json();
+                    if (result.status !== 'success') remaining.push(entry);
+                } catch(e) { remaining.push(entry); }
+            }
+            try { localStorage.setItem('offlineQueue', JSON.stringify(remaining)); } catch(e) {}
+            if (remaining.length < queue.length) { cacheTimestamp = 0; refreshAllData(true); }
+        }
+
+        window.addEventListener('online', syncOfflineQueue);
+
+        // ===== TODAY'S TOTAL =====
+        function updateTodayTotal() {
+            const el = document.getElementById('todayTotal');
+            if (!el || !allTransactions) return;
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+            const todayTxns = allTransactions.filter(t => {
+                const d = new Date(t.timestamp);
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` === todayStr;
+            });
+            if (!todayTxns.length) { el.style.display = 'none'; return; }
+            const vnd = todayTxns.reduce((s, t) => s + (t.vnd || 0), 0);
+            const eur = todayTxns.reduce((s, t) => s + (t.eur || 0), 0);
+            el.style.display = 'block';
+            el.textContent = `Today  ₫${Math.round(vnd).toLocaleString('en-US')} · €${eur.toFixed(2)}`;
+        }
+
         // ===== INIT =====
 
         window.addEventListener('load', async () => {
             updateMonthLabel();
             showLoadingBar();
             await Promise.all([loadAllData(), fetchExchangeRates()]);
+            syncOfflineQueue();
             hideLoadingBar();
             const tryFocus = () => { if (amountInput) { amountInput.focus(); showNumpad(); } };
             setTimeout(tryFocus, 100); setTimeout(tryFocus, 300);
@@ -2210,25 +2388,5 @@
             if (document.activeElement && document.activeElement.tagName === 'INPUT') document.activeElement.focus();
         }, { passive: true, once: true });
     </script>
-    <!-- Numpad Overlay -->
-    <div class="numpad-overlay" id="numpadOverlay">
-        <div class="numpad-backdrop" id="numpadBackdrop"></div>
-        <div class="numpad-panel">
-            <div class="numpad" id="numpad">
-                <button type="button" class="numpad-btn" data-key="7">7</button>
-                <button type="button" class="numpad-btn" data-key="8">8</button>
-                <button type="button" class="numpad-btn" data-key="9">9</button>
-                <button type="button" class="numpad-btn" data-key="4">4</button>
-                <button type="button" class="numpad-btn" data-key="5">5</button>
-                <button type="button" class="numpad-btn" data-key="6">6</button>
-                <button type="button" class="numpad-btn" data-key="1">1</button>
-                <button type="button" class="numpad-btn" data-key="2">2</button>
-                <button type="button" class="numpad-btn" data-key="3">3</button>
-                <button type="button" class="numpad-btn numpad-special" id="numpadDecimal" data-key="000">000</button>
-                <button type="button" class="numpad-btn" data-key="0">0</button>
-                <button type="button" class="numpad-btn numpad-backspace" data-key="back"><span class="material-symbols-outlined">backspace</span></button>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
