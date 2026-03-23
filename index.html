@@ -190,7 +190,7 @@
         .submit-btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
             background: #007AFF; color: white; font-size: 17px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s ease; margin-top: 8px; margin-bottom: 40px;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 4px; margin-bottom: 40px;
         }
         .submit-btn:active { opacity: 0.8; transform: scale(0.98); }
         .success-message {
@@ -702,7 +702,7 @@
                     <button type="button" class="category-btn" data-category="Other"><span class="category-icon">💡</span><span>Other</span></button>
                 </div>
             </div>
-            <div class="form-section">
+            <div class="form-section" style="margin-bottom: 4px;">
                 <input type="text" id="note" placeholder="Add a note..." autocomplete="off">
             </div>
             <button type="submit" class="submit-btn">Add Expense</button>
@@ -1459,6 +1459,9 @@
         amountInput.addEventListener('touchstart', (e) => {
             e.stopPropagation(); setTimeout(() => amountInput.focus(), 50);
         }, { passive: true });
+        document.getElementById('note').addEventListener('focus', () => {
+            setTimeout(() => document.querySelector('.submit-btn').scrollIntoView({ behavior: 'smooth', block: 'end' }), 350);
+        });
         amountInput.addEventListener('keydown', (e) => {
             if (e.key === ',') { e.preventDefault(); const pos = amountInput.selectionStart; const v = amountInput.value; amountInput.value = v.slice(0, pos) + '.' + v.slice(amountInput.selectionEnd); amountInput.setSelectionRange(pos + 1, pos + 1); amountInput.dispatchEvent(new Event('input')); }
         });
@@ -1585,7 +1588,7 @@
                 }
                 const dayTotalEUR = groups[dayKey].reduce((sum, t) => sum + (t.eur || 0), 0);
                 const dayTotalVND = groups[dayKey].reduce((sum, t) => sum + (t.vnd || 0), 0);
-                html += `<div class="day-header"><span>${dayLabel}</span><span class="day-total">₫${Math.round(dayTotalVND).toLocaleString('en-US')} · €${dayTotalEUR.toFixed(2)}</span></div>`;
+                html += `<div class="day-header"><span>${dayLabel}</span><span class="day-total">€${dayTotalEUR.toFixed(2)}</span></div>`;
                 html += `<div class="day-group">`;
 
                 groups[dayKey].forEach(t => {
@@ -1593,7 +1596,7 @@
                     const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                     const cat = resolveCategory(t.category);
                     const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
-                    const subLeft = t.note ? `${timeStr} · "${t.note}"` : timeStr;
+                    const subLeft = t.note ? `${timeStr} · <i>${t.note}</i>` : timeStr;
                     html += `<div class="receipt-item" data-transaction='${td}'>
                         <div class="receipt-row-1">
                             <span class="receipt-cat">${cat}</span>
@@ -2015,7 +2018,7 @@
             }
 
             const converted = convertCurrency(amt, modalSelectedCurrency, rates);
-            const ts = formatTimestamp(selectedDate);
+            const ts = selectedDate.toISOString();
 
             try {
                 if (currentEditingTransaction && currentEditingTransaction.row && currentEditingTransaction.row >= 3) {
