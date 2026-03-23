@@ -417,6 +417,99 @@
         }
         .rate-indicator.show { display: block; }
         .rate-indicator .material-symbols-outlined { font-size: 14px; vertical-align: -2px; }
+
+        /* Amount row with currency picker */
+        .amount-row {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+            position: relative;
+        }
+        .amount-row #amount {
+            min-width: 0;
+            flex: 1;
+            width: auto;
+        }
+        .currency-picker-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            background: #F2F2F7;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            min-width: 68px;
+            gap: 1px;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+        .currency-picker-btn:active { opacity: 0.7; transform: scale(0.97); }
+        .currency-picker-symbol { font-size: 22px; font-weight: 600; line-height: 1.1; }
+        .currency-picker-code { font-size: 10px; color: #8E8E93; font-weight: 500; }
+        .currency-picker-popup {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            background: #FFFFFF;
+            border-radius: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 500;
+            overflow: hidden;
+            display: none;
+            min-width: 190px;
+        }
+        .currency-picker-popup.show { display: block; animation: popIn 0.2s ease; }
+        .currency-option {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 13px 16px;
+            background: none;
+            border: none;
+            font-size: 15px;
+            cursor: pointer;
+            gap: 10px;
+            border-bottom: 1px solid #F2F2F7;
+            text-align: left;
+            transition: background 0.1s;
+        }
+        .currency-option:last-child { border-bottom: none; }
+        .currency-option.selected { color: #007AFF; font-weight: 600; }
+        .currency-option:active { background: #F2F2F7; }
+        .currency-option-symbol { font-size: 18px; font-weight: 600; min-width: 22px; }
+        .currency-option-code { font-size: 12px; color: #8E8E93; margin-left: auto; }
+        .currency-option.selected .currency-option-code { color: #007AFF; }
+
+        /* Numpad */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .numpad-btn {
+            height: 56px;
+            border: none;
+            border-radius: 12px;
+            background: #F2F2F7;
+            font-size: 22px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .numpad-btn:active { background: #C7C7CC; transform: scale(0.95); }
+        .numpad-btn.numpad-special { background: #E5E5EA; font-size: 17px; font-weight: 600; }
+        .numpad-btn.numpad-backspace { background: #E5E5EA; }
+        .numpad-btn.numpad-backspace .material-symbols-outlined { font-size: 22px; }
     </style>
 </head>
 <body>
@@ -454,11 +547,38 @@
         <form id="expenseForm">
             <div class="form-section">
                 <label class="section-label">Amount</label>
-                <input type="text" id="amount" inputmode="decimal" placeholder="0" autocomplete="off" required>
-                <div class="currency-selector">
-                    <button type="button" class="currency-btn" data-currency="VND"><span class="currency-symbol-large">₫</span><span class="currency-code">VND</span></button>
-                    <button type="button" class="currency-btn selected" data-currency="EUR"><span class="currency-symbol-large">€</span><span class="currency-code">EUR</span></button>
-                    <button type="button" class="currency-btn" data-currency="USD"><span class="currency-symbol-large">$</span><span class="currency-code">USD</span></button>
+                <div class="amount-row">
+                    <input type="text" id="amount" inputmode="none" placeholder="0" autocomplete="off" required>
+                    <button type="button" id="currencyPickerBtn" class="currency-picker-btn">
+                        <span class="currency-picker-symbol" id="currencyPickerSymbol">₫</span>
+                        <span class="currency-picker-code" id="currencyPickerCode">VND</span>
+                        <span class="material-symbols-outlined" style="font-size:14px;color:#8E8E93;margin-top:1px;">expand_more</span>
+                    </button>
+                    <div class="currency-picker-popup" id="currencyPickerPopup">
+                        <button type="button" class="currency-option selected" data-currency="VND">
+                            <span class="currency-option-symbol">₫</span><span>Vietnamese Dong</span><span class="currency-option-code">VND</span>
+                        </button>
+                        <button type="button" class="currency-option" data-currency="EUR">
+                            <span class="currency-option-symbol">€</span><span>Euro</span><span class="currency-option-code">EUR</span>
+                        </button>
+                        <button type="button" class="currency-option" data-currency="USD">
+                            <span class="currency-option-symbol">$</span><span>US Dollar</span><span class="currency-option-code">USD</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="numpad" id="numpad">
+                    <button type="button" class="numpad-btn" data-key="7">7</button>
+                    <button type="button" class="numpad-btn" data-key="8">8</button>
+                    <button type="button" class="numpad-btn" data-key="9">9</button>
+                    <button type="button" class="numpad-btn" data-key="4">4</button>
+                    <button type="button" class="numpad-btn" data-key="5">5</button>
+                    <button type="button" class="numpad-btn" data-key="6">6</button>
+                    <button type="button" class="numpad-btn" data-key="1">1</button>
+                    <button type="button" class="numpad-btn" data-key="2">2</button>
+                    <button type="button" class="numpad-btn" data-key="3">3</button>
+                    <button type="button" class="numpad-btn numpad-special" id="numpadDecimal" data-key="000">000</button>
+                    <button type="button" class="numpad-btn" data-key="0">0</button>
+                    <button type="button" class="numpad-btn numpad-backspace" data-key="back"><span class="material-symbols-outlined">backspace</span></button>
                 </div>
             </div>
             <div class="form-section">
@@ -723,10 +843,23 @@
             <div class="modal-field">
                 <label class="modal-label">Amount</label>
                 <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="decimal">
-                <div class="modal-currency-selector">
-                    <button type="button" class="currency-btn modal-currency-btn" data-currency="VND"><span class="currency-symbol-large">₫</span><span class="currency-code">VND</span></button>
-                    <button type="button" class="currency-btn modal-currency-btn selected" data-currency="EUR"><span class="currency-symbol-large">€</span><span class="currency-code">EUR</span></button>
-                    <button type="button" class="currency-btn modal-currency-btn" data-currency="USD"><span class="currency-symbol-large">$</span><span class="currency-code">USD</span></button>
+                <div style="position:relative;display:flex;justify-content:flex-end;margin-top:6px;margin-bottom:6px;">
+                    <button type="button" id="modalCurrencyPickerBtn" class="currency-picker-btn" style="min-width:60px;padding:6px 12px;">
+                        <span class="currency-picker-symbol" id="modalCurrencyPickerSymbol">₫</span>
+                        <span class="currency-picker-code" id="modalCurrencyPickerCode">VND</span>
+                        <span class="material-symbols-outlined" style="font-size:14px;color:#8E8E93;margin-top:1px;">expand_more</span>
+                    </button>
+                    <div class="currency-picker-popup" id="modalCurrencyPickerPopup">
+                        <button type="button" class="currency-option selected" data-currency="VND">
+                            <span class="currency-option-symbol">₫</span><span>Vietnamese Dong</span><span class="currency-option-code">VND</span>
+                        </button>
+                        <button type="button" class="currency-option" data-currency="EUR">
+                            <span class="currency-option-symbol">€</span><span>Euro</span><span class="currency-option-code">EUR</span>
+                        </button>
+                        <button type="button" class="currency-option" data-currency="USD">
+                            <span class="currency-option-symbol">$</span><span>US Dollar</span><span class="currency-option-code">USD</span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="modal-field">
@@ -1108,14 +1241,65 @@
         }, { passive: true });
 
         // ===== MAIN FORM =====
-        const currencyBtns = document.querySelectorAll('.currency-btn:not(.modal-currency-btn)');
-        let selectedCurrency = 'EUR';
-        currencyBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                currencyBtns.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedCurrency = btn.dataset.currency;
+        const CURRENCY_SYMBOLS = { VND: '₫', EUR: '€', USD: '$' };
+        let selectedCurrency = 'VND';
+
+        function setSelectedCurrency(currency) {
+            selectedCurrency = currency;
+            document.getElementById('currencyPickerSymbol').textContent = CURRENCY_SYMBOLS[currency];
+            document.getElementById('currencyPickerCode').textContent = currency;
+            const decBtn = document.getElementById('numpadDecimal');
+            if (currency === 'VND') {
+                decBtn.textContent = '000';
+                decBtn.dataset.key = '000';
+            } else {
+                decBtn.textContent = '.';
+                decBtn.dataset.key = '.';
+            }
+            document.querySelectorAll('#currencyPickerPopup .currency-option').forEach(o =>
+                o.classList.toggle('selected', o.dataset.currency === currency));
+        }
+
+        document.getElementById('currencyPickerBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('currencyPickerPopup').classList.toggle('show');
+            if (document.getElementById('modalCurrencyPickerPopup')) document.getElementById('modalCurrencyPickerPopup').classList.remove('show');
+        });
+
+        document.querySelectorAll('#currencyPickerPopup .currency-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setSelectedCurrency(opt.dataset.currency);
+                document.getElementById('currencyPickerPopup').classList.remove('show');
                 if (navigator.vibrate) navigator.vibrate(10);
+            });
+        });
+
+        // ===== NUMPAD =====
+        function handleNumpadKey(key) {
+            const input = document.getElementById('amount');
+            let val = input.value;
+            if (key === 'back') {
+                val = val.slice(0, -1);
+            } else if (key === '000') {
+                if (val === '' || val === '0') return;
+                val += '000';
+            } else if (key === '.') {
+                if (val.includes('.')) return;
+                if (val === '') val = '0';
+                val += '.';
+            } else {
+                if (val === '0') val = key;
+                else val += key;
+            }
+            input.value = val;
+        }
+
+        document.querySelectorAll('#numpad .numpad-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                handleNumpadKey(btn.dataset.key);
+                if (navigator.vibrate) navigator.vibrate(5);
             });
         });
 
@@ -1138,7 +1322,7 @@
             if (e.key === ',') { e.preventDefault(); const pos = amountInput.selectionStart; const v = amountInput.value; amountInput.value = v.slice(0, pos) + '.' + v.slice(amountInput.selectionEnd); amountInput.setSelectionRange(pos + 1, pos + 1); amountInput.dispatchEvent(new Event('input')); }
         });
         amountInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/,/g, '.');
+            let v = e.target.value;
             v = v.replace(/[^\d.]/g, '');
             const parts = v.split('.');
             if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
@@ -1217,6 +1401,14 @@
             hideLoadingBar();
             // Background sync: reload real data after delay
             setTimeout(() => { cacheTimestamp = 0; refreshAllData(true); }, 1500);
+        });
+
+        // Close currency pickers on outside click
+        document.addEventListener('click', () => {
+            const p1 = document.getElementById('currencyPickerPopup');
+            const p2 = document.getElementById('modalCurrencyPickerPopup');
+            if (p1) p1.classList.remove('show');
+            if (p2) p2.classList.remove('show');
         });
 
         // ===== HISTORY WITH PAGINATION & DAY GROUPING =====
@@ -1576,7 +1768,7 @@
             if (e.key === ',') { e.preventDefault(); const pos = manualAmount.selectionStart; const v = manualAmount.value; manualAmount.value = v.slice(0, pos) + '.' + v.slice(manualAmount.selectionEnd); manualAmount.setSelectionRange(pos + 1, pos + 1); manualAmount.dispatchEvent(new Event('input')); }
         });
         manualAmount.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/,/g, '.');
+            let v = e.target.value;
             v = v.replace(/[^\d.]/g, '');
             const parts = v.split('.');
             if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
@@ -1596,13 +1788,27 @@
             }
         });
 
-        const modalCurrencyBtns = document.querySelectorAll('.modal-currency-btn');
-        let modalSelectedCurrency = 'EUR';
-        modalCurrencyBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                modalCurrencyBtns.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                modalSelectedCurrency = btn.dataset.currency;
+        let modalSelectedCurrency = 'VND';
+
+        function setModalSelectedCurrency(currency) {
+            modalSelectedCurrency = currency;
+            document.getElementById('modalCurrencyPickerSymbol').textContent = CURRENCY_SYMBOLS[currency];
+            document.getElementById('modalCurrencyPickerCode').textContent = currency;
+            document.querySelectorAll('#modalCurrencyPickerPopup .currency-option').forEach(o =>
+                o.classList.toggle('selected', o.dataset.currency === currency));
+        }
+
+        document.getElementById('modalCurrencyPickerBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('modalCurrencyPickerPopup').classList.toggle('show');
+            document.getElementById('currencyPickerPopup').classList.remove('show');
+        });
+
+        document.querySelectorAll('#modalCurrencyPickerPopup .currency-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                setModalSelectedCurrency(opt.dataset.currency);
+                document.getElementById('modalCurrencyPickerPopup').classList.remove('show');
                 if (navigator.vibrate) navigator.vibrate(10);
             });
         });
@@ -1635,8 +1841,7 @@
             date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
             manualDate.value = date.toISOString().slice(0, 16);
             manualAmount.value = t.eur.toFixed(2);
-            modalCurrencyBtns.forEach(btn => btn.classList.toggle('selected', btn.dataset.currency === 'EUR'));
-            modalSelectedCurrency = 'EUR';
+            setModalSelectedCurrency('EUR');
             const cat = resolveCategory(t.category);
             modalCategoryBtns.forEach(btn => btn.classList.toggle('selected', btn.dataset.category === cat));
             modalSelectedCategory = cat;
@@ -1652,8 +1857,7 @@
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
             manualDate.value = now.toISOString().slice(0, 16);
             manualAmount.value = ''; manualNote.value = '';
-            modalCurrencyBtns.forEach(btn => btn.classList.toggle('selected', btn.dataset.currency === 'EUR'));
-            modalSelectedCurrency = 'EUR';
+            setModalSelectedCurrency('VND');
             modalCategoryBtns.forEach(b => b.classList.remove('selected'));
             modalSelectedCategory = null;
             rateIndicator.classList.remove('show');
