@@ -95,10 +95,12 @@
 
         /* Monthly Totals */
         .monthly-total, .history-total {
-            padding: 12px 0; margin-bottom: 20px; text-align: center; position: relative;
+            padding: 16px; margin-bottom: 20px; text-align: center; position: relative;
+            background: linear-gradient(135deg, rgba(0,122,255,0.08) 0%, rgba(52,199,89,0.06) 100%);
+            border-radius: 20px; border: 1px solid rgba(0,122,255,0.1);
         }
         .monthly-total-label, .history-total-label {
-            font-size: 13px; color: #8E8E93; text-transform: uppercase;
+            font-size: 12px; color: #8E8E93; text-transform: uppercase;
             letter-spacing: 0.5px; margin-bottom: 4px; font-weight: 500; display: flex;
             align-items: center; justify-content: center; gap: 8px;
         }
@@ -109,8 +111,9 @@
         }
         .month-nav-btn:active { opacity: 0.6; transform: scale(0.95); }
         .month-nav-btn.hidden { visibility: hidden; }
-        .monthly-total-amount, .history-total-amount { font-size: 32px; font-weight: 600; letter-spacing: -0.5px; }
+        .monthly-total-amount, .history-total-amount { font-size: 36px; font-weight: 700; letter-spacing: -1px; color: #007AFF; }
         .monthly-total-currencies, .history-total-currencies { font-size: 13px; color: #8E8E93; margin-top: 4px; }
+        .today-total { font-size: 13px; color: #34C759; margin-top: 6px; font-weight: 600; display: none; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .loading { animation: pulse 1.5s ease-in-out infinite; }
 
@@ -160,15 +163,26 @@
         .currency-code { font-size: 11px; opacity: 0.8; }
         .categories { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
         .category-btn {
-            padding: 10px 4px; border: none; border-radius: 10px;
-            background: #F2F2F7; color: #000000; font-size: 11px; font-weight: 500;
+            padding: 8px 4px; border: none; border-radius: 10px;
+            background: #F2F2F7; color: #1C1C1E; font-size: 10px; font-weight: 500;
             cursor: pointer; transition: all 0.2s ease; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; gap: 0;
+            flex-direction: column; align-items: center; justify-content: center; gap: 2px;
         }
-        .category-btn span:not(.category-icon) { display: none; }
         .category-btn:active { transform: scale(0.95); }
-        .category-btn.selected { background: #007AFF; color: white; }
-        .category-icon { font-size: 24px; }
+        .category-btn.selected { background: #007AFF !important; color: white !important; }
+        .category-icon { font-size: 20px; line-height: 1; }
+        [data-category="Food"] { background: rgba(255,107,53,0.12); color: #C0392B; }
+        [data-category="Travel"] { background: rgba(156,39,176,0.12); color: #7B1FA2; }
+        [data-category="Shopping"] { background: rgba(0,188,212,0.12); color: #00838F; }
+        [data-category="Bills"] { background: rgba(255,152,0,0.12); color: #E65100; }
+        [data-category="Fun"] { background: rgba(244,67,54,0.12); color: #C62828; }
+        [data-category="Health"] { background: rgba(233,30,99,0.12); color: #AD1457; }
+        [data-category="Groceries"] { background: rgba(76,175,80,0.12); color: #2E7D32; }
+        [data-category="Investment"] { background: rgba(139,195,74,0.12); color: #558B2F; }
+        [data-category="Subs"] { background: rgba(94,106,210,0.12); color: #3949AB; }
+        [data-category="Transport"] { background: rgba(255,152,0,0.12); color: #E65100; }
+        [data-category="Self Care"] { background: rgba(156,39,176,0.12); color: #6A1B9A; }
+        [data-category="Other"] { background: rgba(255,193,7,0.12); color: #F57F17; }
         .submit-btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
             background: #007AFF; color: white; font-size: 17px; font-weight: 600;
@@ -231,16 +245,16 @@
         }
         .day-header:first-child { margin-top: 0; }
         .day-total { font-size: 13px; font-weight: 700; color: #007AFF; text-transform: none; letter-spacing: 0; }
-        .today-total { font-size: 13px; color: #34C759; margin-top: 6px; font-weight: 600; display: none; }
-
         .swipe-wrap { position: relative; border-radius: 10px; overflow: hidden; }
         .delete-bg {
             position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
             background: #FF3B30; display: flex; align-items: center; justify-content: center; color: white;
         }
         .transaction-item {
-            background: #F2F2F7; border-radius: 10px; padding: 8px 12px;
+            background: #FFFFFF; border-radius: 10px; padding: 8px 12px;
             cursor: pointer; transition: transform 0.15s ease;
+            border-left: 4px solid #E5E5EA;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
         }
         .transaction-item:active { transform: scale(0.98); opacity: 0.8; }
         .transaction-row-1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
@@ -342,7 +356,7 @@
         }
         .switch-btn.active { background: #007AFF; color: #FFFFFF; }
         .switch-btn:active { opacity: 0.6; }
-        canvas { max-width: 100%; height: auto !important; }
+        canvas { max-width: 100%; }
         .chart-canvas-container {
             display: flex; justify-content: center; align-items: center;
             min-height: 250px; margin-bottom: 12px; position: relative;
@@ -555,11 +569,13 @@
             .header { background: #1C1C1E; }
             h1, h2 { color: #FFFFFF; }
             input[type="text"] { background: #2C2C2E; color: #FFFFFF; }
-            .transaction-item { background: #2C2C2E; }
+            .transaction-item { background: #2C2C2E; box-shadow: none; }
             .transaction-category { color: #FFFFFF; }
             .transaction-amount-primary { color: #FFFFFF; }
-            .category-btn { background: #2C2C2E; color: #FFFFFF; }
-            .category-btn.selected { background: #0A84FF; }
+            .category-btn { color: #EBEBF5; }
+            .category-btn.selected { background: #0A84FF !important; color: white !important; }
+            .monthly-total, .history-total { background: linear-gradient(135deg, rgba(10,132,255,0.12) 0%, rgba(48,209,88,0.08) 100%); border-color: rgba(10,132,255,0.2); }
+            .monthly-total-amount, .history-total-amount { color: #0A84FF; }
             .submit-btn { background: #0A84FF; }
             .monthly-total-amount, .history-total-amount { color: #FFFFFF; }
             .nav-btn { color: #636366; }
@@ -662,7 +678,7 @@
                     <button type="button" class="category-btn" data-category="Health"><span class="category-icon">💊</span><span>Health</span></button>
                     <button type="button" class="category-btn" data-category="Groceries"><span class="category-icon">🛒</span><span>Groceries</span></button>
                     <button type="button" class="category-btn" data-category="Investment"><span class="category-icon">📈</span><span>Investment</span></button>
-                    <button type="button" class="category-btn" data-category="Subscriptions"><span class="category-icon">📱</span><span>Subscriptions</span></button>
+                    <button type="button" class="category-btn" data-category="Subs"><span class="category-icon">📱</span><span>Subs</span></button>
                     <button type="button" class="category-btn" data-category="Transport"><span class="category-icon">🚗</span><span>Transport</span></button>
                     <button type="button" class="category-btn" data-category="Self Care"><span class="category-icon">🧴</span><span>Self Care</span></button>
                     <button type="button" class="category-btn" data-category="Other"><span class="category-icon">💡</span><span>Other</span></button>
@@ -938,7 +954,7 @@
                     <button type="button" class="category-btn modal-category-btn" data-category="Health"><span class="category-icon">💊</span><span>Health</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Groceries"><span class="category-icon">🛒</span><span>Groceries</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Investment"><span class="category-icon">📈</span><span>Investment</span></button>
-                    <button type="button" class="category-btn modal-category-btn" data-category="Subscriptions"><span class="category-icon">📱</span><span>Subscriptions</span></button>
+                    <button type="button" class="category-btn modal-category-btn" data-category="Subs"><span class="category-icon">📱</span><span>Subs</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Transport"><span class="category-icon">🚗</span><span>Transport</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Self Care"><span class="category-icon">🧴</span><span>Self Care</span></button>
                     <button type="button" class="category-btn modal-category-btn" data-category="Other"><span class="category-icon">💡</span><span>Other</span></button>
@@ -1000,18 +1016,18 @@
 
         // 12 categories matching sheet
         const CATEGORY_COLORS = {
-            'Food': '#2196F3', 'Travel': '#9C27B0', 'Shopping': '#00BCD4',
-            'Bills': '#FF6B35', 'Fun': '#F44336', 'Health': '#E91E63',
-            'Groceries': '#4CAF50', 'Investment': '#8BC34A', 'Subscriptions': '#607D8B',
-            'Transport': '#FF9800', 'Self Care': '#E91E63', 'Other': '#FFC107'
+            'Food': '#FF6B35', 'Travel': '#9C27B0', 'Shopping': '#00BCD4',
+            'Bills': '#FF9800', 'Fun': '#F44336', 'Health': '#E91E63',
+            'Groceries': '#43A047', 'Investment': '#7CB342', 'Subs': '#5E6AD2',
+            'Transport': '#FF8F00', 'Self Care': '#AB47BC', 'Other': '#FFC107'
         };
         const CATEGORY_EMOJIS = {
             'Food': '🍔', 'Travel': '✈️', 'Shopping': '🛍️', 'Bills': '📄',
             'Fun': '🎉', 'Health': '💊', 'Groceries': '🛒', 'Investment': '📈',
-            'Subscriptions': '📱', 'Transport': '🚗', 'Self Care': '🧴', 'Other': '💭'
+            'Subs': '📱', 'Transport': '🚗', 'Self Care': '🧴', 'Other': '💭'
         };
         const ALL_CATEGORIES = Object.keys(CATEGORY_COLORS);
-        const LEGACY_MAP = { 'Entertainment': 'Fun', 'Savings': 'Other', 'Saving': 'Other' };
+        const LEGACY_MAP = { 'Entertainment': 'Fun', 'Savings': 'Other', 'Saving': 'Other', 'Subscriptions': 'Subs' };
         function resolveCategory(c) { return LEGACY_MAP[c] || c; }
 
         // ===== STATE =====
@@ -1290,23 +1306,21 @@
         let touchStartY = 0;
         let touchEndX = 0;
         let touchEndY = 0;
+        let touchStartTarget = null;
 
         const pageOrder = ['main', 'history', 'stats', 'help'];
 
         document.addEventListener('touchstart', (e) => {
-            // Ignore if touching input fields or buttons
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) {
-                return;
-            }
+            touchStartTarget = e.target;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
             touchStartX = e.changedTouches[0].screenX;
             touchStartY = e.changedTouches[0].screenY;
         }, { passive: true });
 
         document.addEventListener('touchend', (e) => {
-            // Ignore if touching input fields or buttons
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) {
-                return;
-            }
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+            // Don't page-navigate when swiping on transaction items
+            if (touchStartTarget && touchStartTarget.closest('.swipe-wrap')) return;
 
             touchEndX = e.changedTouches[0].screenX;
             touchEndY = e.changedTouches[0].screenY;
@@ -1314,15 +1328,11 @@
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
 
-            // Require minimum swipe distance and more horizontal than vertical
             if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
                 const currentIndex = pageOrder.indexOf(currentPage);
-
                 if (deltaX > 0 && currentIndex > 0) {
-                    // Swipe right - go to previous page
                     navigateToPage(pageOrder[currentIndex - 1]);
                 } else if (deltaX < 0 && currentIndex < pageOrder.length - 1) {
-                    // Swipe left - go to next page
                     navigateToPage(pageOrder[currentIndex + 1]);
                 }
             }
@@ -1563,7 +1573,8 @@
                     const noteHTML = t.note ? `<div class="transaction-note-divider"></div><div class="transaction-note-text">"${t.note}"</div>` : '';
                     const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
 
-                    html += `<div class="swipe-wrap" data-row="${t.row}" data-sheet="${t.sheetName || ''}"><div class="delete-bg"><span class="material-symbols-outlined">delete</span></div><div class="transaction-item" data-transaction='${td}'>
+                    const catColor = CATEGORY_COLORS[cat] || '#8E8E93';
+                    html += `<div class="swipe-wrap" data-row="${t.row}" data-sheet="${t.sheetName || ''}"><div class="delete-bg"><span class="material-symbols-outlined">delete</span></div><div class="transaction-item" style="border-left-color:${catColor};" data-transaction='${td}'>
                         <div class="transaction-row-1">
                             <div class="transaction-category"><span class="transaction-category-emoji">${emoji}</span><span>${cat}</span></div>
                             <div class="transaction-amount-primary">€${t.eur.toFixed(2)}</div>
@@ -1627,26 +1638,25 @@
                 item.addEventListener('touchend', (e) => {
                     tracking = false;
                     if (!didSwipe) return;
-                    e.preventDefault();
                     item.style.transition = 'transform 0.2s ease';
                     if (currentX < -60) {
                         const row = parseInt(wrap.dataset.row);
                         const sheetName = wrap.dataset.sheet;
                         if (!row || row < 3) { item.style.transform = 'translateX(0)'; didSwipe = false; return; }
-                        if (!confirm('Delete this expense?')) { item.style.transform = 'translateX(0)'; didSwipe = false; return; }
                         item.style.transform = 'translateX(-100%)';
-                        showLoadingBar();
-                        (async () => {
+                        if (navigator.vibrate) navigator.vibrate(30);
+                        setTimeout(async () => {
+                            showLoadingBar();
                             try {
                                 const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=delete&row=${row}&sheetName=${sheetName}`);
                                 const result = await resp.json();
                                 if (result.status === 'success') {
                                     allTransactions = null; statsData = null; cacheTimestamp = 0;
                                     setTimeout(async () => { await refreshAllData(true); }, 300);
-                                } else { item.style.transform = 'translateX(0)'; alert('Delete failed.'); }
-                            } catch (err) { item.style.transform = 'translateX(0)'; alert('Delete failed.'); }
+                                } else { item.style.transform = 'translateX(0)'; }
+                            } catch (err) { item.style.transform = 'translateX(0)'; }
                             hideLoadingBar();
-                        })();
+                        }, 200);
                     } else {
                         item.style.transform = 'translateX(0)';
                     }
