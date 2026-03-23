@@ -114,6 +114,10 @@
         .monthly-total-amount, .history-total-amount { font-size: 36px; font-weight: 700; letter-spacing: -1px; color: #007AFF; }
         .monthly-total-currencies, .history-total-currencies { font-size: 13px; color: #8E8E93; margin-top: 4px; }
         .today-total { font-size: 13px; color: #34C759; margin-top: 6px; font-weight: 600; display: none; }
+        .history-total { padding: 10px 16px !important; margin-bottom: 10px !important; }
+        .history-total-amount { font-size: 26px !important; }
+        #statsPage .monthly-total { padding: 10px 16px !important; margin-bottom: 10px !important; }
+        #statsPage .monthly-total-amount { font-size: 26px !important; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .loading { animation: pulse 1.5s ease-in-out infinite; }
 
@@ -240,11 +244,25 @@
         /* Day headers */
         .day-header {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 12px; font-weight: 500; color: #8E8E93; text-transform: uppercase;
-            letter-spacing: 0.5px; padding: 10px 4px 5px; margin-top: 4px;
+            font-size: 11px; font-weight: 600; color: #8E8E93; text-transform: uppercase;
+            letter-spacing: 0.5px; padding: 12px 2px 4px; margin-top: 4px;
         }
         .day-header:first-child { margin-top: 0; }
-        .day-total { font-size: 13px; font-weight: 700; color: #007AFF; text-transform: none; letter-spacing: 0; }
+        .day-total { font-size: 12px; font-weight: 600; color: #007AFF; text-transform: none; letter-spacing: 0; }
+        /* Receipt-style history rows */
+        .receipt-item {
+            padding: 7px 2px; border-bottom: 1px solid #F2F2F7;
+            cursor: pointer; transition: background 0.1s;
+        }
+        .receipt-item:active { background: #F9F9F9; }
+        .receipt-item:last-child { border-bottom: none; }
+        .receipt-row-1 {
+            display: flex; align-items: center; justify-content: space-between; font-size: 14px;
+        }
+        .receipt-cat { font-weight: 500; flex: 1; min-width: 0; }
+        .receipt-time { font-size: 12px; color: #8E8E93; flex: 0 0 auto; padding: 0 10px; }
+        .receipt-eur { font-weight: 600; flex: 0 0 auto; }
+        .receipt-row-2 { font-size: 11px; color: #8E8E93; margin-top: 1px; }
         .swipe-wrap { position: relative; border-radius: 10px; overflow: hidden; }
         .delete-bg {
             position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
@@ -1029,6 +1047,10 @@
         const ALL_CATEGORIES = Object.keys(CATEGORY_COLORS);
         const LEGACY_MAP = { 'Entertainment': 'Fun', 'Savings': 'Other', 'Saving': 'Other', 'Subscriptions': 'Subs' };
         function resolveCategory(c) { return LEGACY_MAP[c] || c; }
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16);
+            return `rgba(${r},${g},${b},${alpha})`;
+        }
 
         // ===== STATE =====
         let allTransactions = null;
@@ -1499,7 +1521,7 @@
                 categoryBtns.forEach(b => b.classList.remove('selected'));
                 selectedCategory = null;
                 hideNumpad();
-                setTimeout(() => { if (amountInput) { amountInput.focus(); showNumpad(); } }, 100);
+                if (amountInput) amountInput.blur();
             }, 2000);
 
             hideLoadingBar();
@@ -1569,22 +1591,18 @@
                     const date = new Date(t.timestamp);
                     const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                     const cat = resolveCategory(t.category);
-                    const emoji = CATEGORY_EMOJIS[cat] || '💡';
-                    const noteHTML = t.note ? `<div class="transaction-note-divider"></div><div class="transaction-note-text">"${t.note}"</div>` : '';
                     const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
-
-                    const catColor = CATEGORY_COLORS[cat] || '#8E8E93';
-                    html += `<div class="swipe-wrap" data-row="${t.row}" data-sheet="${t.sheetName || ''}"><div class="delete-bg"><span class="material-symbols-outlined">delete</span></div><div class="transaction-item" style="border-left-color:${catColor};" data-transaction='${td}'>
-                        <div class="transaction-row-1">
-                            <div class="transaction-category"><span class="transaction-category-emoji">${emoji}</span><span>${cat}</span></div>
-                            <div class="transaction-amount-primary">€${t.eur.toFixed(2)}</div>
+                    const subParts = [];
+                    if (t.note) subParts.push(`"${t.note}"`);
+                    subParts.push(`₫${Math.round(t.vnd).toLocaleString('en-US')}`);
+                    html += `<div class="receipt-item" data-transaction='${td}'>
+                        <div class="receipt-row-1">
+                            <span class="receipt-cat">${cat}</span>
+                            <span class="receipt-time">${timeStr}</span>
+                            <span class="receipt-eur">€${t.eur.toFixed(2)}</span>
                         </div>
-                        <div class="transaction-row-2">
-                            <div class="transaction-time">${timeStr}</div>
-                            <div class="transaction-currencies-secondary">₫${Math.round(t.vnd).toLocaleString('en-US')} | $${t.usd.toFixed(2)}</div>
-                        </div>
-                        ${noteHTML}
-                    </div></div>`;
+                        <div class="receipt-row-2">${subParts.join(' · ')}</div>
+                    </div>`;
                 });
             });
 
@@ -1607,61 +1625,11 @@
         }
 
         function attachTransactionListeners() {
-            document.querySelectorAll('.swipe-wrap').forEach(wrap => {
-                const item = wrap.querySelector('.transaction-item');
-                let startX = 0, startY = 0, currentX = 0, tracking = false, didSwipe = false;
-
+            document.querySelectorAll('.receipt-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    if (didSwipe) { didSwipe = false; return; }
                     try { openEditModal(JSON.parse(item.dataset.transaction)); }
                     catch (err) { console.error('Parse error:', err); }
                 });
-
-                item.addEventListener('touchstart', (e) => {
-                    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
-                    currentX = 0; tracking = true; didSwipe = false;
-                }, { passive: true });
-
-                item.addEventListener('touchmove', (e) => {
-                    if (!tracking) return;
-                    const dx = e.touches[0].clientX - startX;
-                    const dy = e.touches[0].clientY - startY;
-                    if (Math.abs(dy) > Math.abs(dx) + 5) { tracking = false; return; }
-                    if (dx < -8) {
-                        didSwipe = true;
-                        currentX = Math.max(dx, -80);
-                        item.style.transition = 'none';
-                        item.style.transform = `translateX(${currentX}px)`;
-                    }
-                }, { passive: true });
-
-                item.addEventListener('touchend', (e) => {
-                    tracking = false;
-                    if (!didSwipe) return;
-                    item.style.transition = 'transform 0.2s ease';
-                    if (currentX < -60) {
-                        const row = parseInt(wrap.dataset.row);
-                        const sheetName = wrap.dataset.sheet;
-                        if (!row || row < 3) { item.style.transform = 'translateX(0)'; didSwipe = false; return; }
-                        item.style.transform = 'translateX(-100%)';
-                        if (navigator.vibrate) navigator.vibrate(30);
-                        setTimeout(async () => {
-                            showLoadingBar();
-                            try {
-                                const resp = await fetch(`${GOOGLE_SCRIPT_URL}?action=delete&row=${row}&sheetName=${sheetName}`);
-                                const result = await resp.json();
-                                if (result.status === 'success') {
-                                    allTransactions = null; statsData = null; cacheTimestamp = 0;
-                                    setTimeout(async () => { await refreshAllData(true); }, 300);
-                                } else { item.style.transform = 'translateX(0)'; }
-                            } catch (err) { item.style.transform = 'translateX(0)'; }
-                            hideLoadingBar();
-                        }, 200);
-                    } else {
-                        item.style.transform = 'translateX(0)';
-                    }
-                    currentX = 0;
-                }, { passive: false });
             });
         }
 
@@ -1748,7 +1716,7 @@
             document.getElementById('categoryList').innerHTML = sorted.map(cat => {
                 const color = CATEGORY_COLORS[cat.name] || '#8E8E93';
                 const emoji = CATEGORY_EMOJIS[cat.name] || '💡';
-                return `<div class="category-row" style="border-left-color:${color};">
+                return `<div class="category-row" style="background:${hexToRgba(color,0.1)};border-left-color:${hexToRgba(color,0.5)};">
                     <div class="category-left"><span class="category-emoji">${emoji}</span><span>${cat.name}</span></div>
                     <div class="category-center">€${cat.amount.toFixed(2)}</div>
                     <div class="category-right">${cat.percent}%</div>
@@ -1769,7 +1737,7 @@
 
             const datasets = [{
                 data: nonZero.map(d => d.amount),
-                backgroundColor: nonZero.map(d => CATEGORY_COLORS[d.name] || '#8E8E93'),
+                backgroundColor: nonZero.map(d => hexToRgba(CATEGORY_COLORS[d.name] || '#8E8E93', 0.72)),
                 borderWidth: 0,
                 spacing: 0,
                 weight: hasBudget ? 0.7 : 1
