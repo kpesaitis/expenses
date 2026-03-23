@@ -233,7 +233,8 @@
             position: relative; max-height: calc(100vh - 280px);
             overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 100px;
         }
-        .transaction-list { display: flex; flex-direction: column; gap: 10px; }
+        .transaction-list { display: flex; flex-direction: column; gap: 0; }
+        .day-group { background: #F2F2F7; border-radius: 12px; padding: 0 12px; margin-bottom: 8px; }
         .scroll-gradient {
             position: fixed; bottom: 0; left: 0; right: 0; height: 120px;
             background: linear-gradient(to top, #FFFFFF 30%, transparent 100%);
@@ -251,18 +252,17 @@
         .day-total { font-size: 12px; font-weight: 600; color: #007AFF; text-transform: none; letter-spacing: 0; }
         /* Receipt-style history rows */
         .receipt-item {
-            padding: 7px 2px; border-bottom: 1px solid #F2F2F7;
-            cursor: pointer; transition: background 0.1s;
+            padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.06);
+            cursor: pointer; transition: opacity 0.1s;
         }
-        .receipt-item:active { background: #F9F9F9; }
+        .receipt-item:active { opacity: 0.6; }
         .receipt-item:last-child { border-bottom: none; }
-        .receipt-row-1 {
-            display: flex; align-items: center; justify-content: space-between; font-size: 14px;
-        }
+        .receipt-row-1 { display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
         .receipt-cat { font-weight: 500; flex: 1; min-width: 0; }
-        .receipt-time { font-size: 12px; color: #8E8E93; flex: 0 0 auto; padding: 0 10px; }
         .receipt-eur { font-weight: 600; flex: 0 0 auto; }
-        .receipt-row-2 { font-size: 11px; color: #8E8E93; margin-top: 1px; }
+        .receipt-row-2 { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #8E8E93; margin-top: 2px; }
+        .receipt-sub-left { flex: 1; min-width: 0; }
+        .receipt-vnd { flex: 0 0 auto; text-align: right; }
         .swipe-wrap { position: relative; border-radius: 10px; overflow: hidden; }
         .delete-bg {
             position: absolute; right: 0; top: 0; bottom: 0; width: 80px;
@@ -1586,24 +1586,27 @@
                 const dayTotalEUR = groups[dayKey].reduce((sum, t) => sum + (t.eur || 0), 0);
                 const dayTotalVND = groups[dayKey].reduce((sum, t) => sum + (t.vnd || 0), 0);
                 html += `<div class="day-header"><span>${dayLabel}</span><span class="day-total">₫${Math.round(dayTotalVND).toLocaleString('en-US')} · €${dayTotalEUR.toFixed(2)}</span></div>`;
+                html += `<div class="day-group">`;
 
                 groups[dayKey].forEach(t => {
                     const date = new Date(t.timestamp);
                     const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                     const cat = resolveCategory(t.category);
                     const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
-                    const subParts = [];
-                    if (t.note) subParts.push(`"${t.note}"`);
-                    subParts.push(`₫${Math.round(t.vnd).toLocaleString('en-US')}`);
+                    const subLeft = t.note ? `${timeStr} · "${t.note}"` : timeStr;
                     html += `<div class="receipt-item" data-transaction='${td}'>
                         <div class="receipt-row-1">
                             <span class="receipt-cat">${cat}</span>
-                            <span class="receipt-time">${timeStr}</span>
                             <span class="receipt-eur">€${t.eur.toFixed(2)}</span>
                         </div>
-                        <div class="receipt-row-2">${subParts.join(' · ')}</div>
+                        <div class="receipt-row-2">
+                            <span class="receipt-sub-left">${subLeft}</span>
+                            <span class="receipt-vnd">₫${Math.round(t.vnd).toLocaleString('en-US')}</span>
+                        </div>
                     </div>`;
                 });
+
+                html += `</div>`;
             });
 
             if (hasMore) {
@@ -1823,7 +1826,7 @@
                 type: 'bar',
                 data: {
                     labels: sorted.map(d => d.name),
-                    datasets: [{ data: sorted.map(d => d.amount), backgroundColor: sorted.map(d => CATEGORY_COLORS[d.name] || '#8E8E93'), borderRadius: 8, barPercentage: 0.75, categoryPercentage: 0.95 }]
+                    datasets: [{ data: sorted.map(d => d.amount), backgroundColor: sorted.map(d => hexToRgba(CATEGORY_COLORS[d.name] || '#8E8E93', 0.72)), borderRadius: 8, barPercentage: 0.75, categoryPercentage: 0.95 }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, indexAxis: 'y',
@@ -1840,6 +1843,7 @@
                             grid: { display: true, color: '#E5E5EA', drawBorder: false, drawTicks: false }
                         },
                         y: {
+                            afterFit: (scale) => { scale.width = 72; },
                             ticks: {
                                 font: { size: 12, weight: '500' },
                                 autoSkip: false,
@@ -1849,7 +1853,7 @@
                             grid: { display: false }
                         }
                     },
-                    layout: { padding: { top: 10, right: 40, bottom: 10, left: 10 } }
+                    layout: { padding: { top: 10, right: 8, bottom: 10, left: 0 } }
                 }
             });
         }
