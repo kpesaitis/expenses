@@ -160,7 +160,7 @@
         .currency-code { font-size: 11px; opacity: 0.8; }
         .categories { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .category-btn {
-            padding: 10px 6px; border: 1.5px solid #C6C6C8; border-radius: 12px;
+            padding: 10px 6px; border: 1.5px solid #8E8E93; border-radius: 12px;
             background: #FFFFFF; color: #000000; font-size: 13px; font-weight: 500;
             cursor: pointer; transition: all 0.2s ease; display: flex;
             flex-direction: column; align-items: center; justify-content: center; gap: 4px;
@@ -425,7 +425,7 @@
             align-items: stretch;
             position: relative;
         }
-        .amount-row #amount {
+        .amount-row input[type="text"] {
             min-width: 0;
             flex: 1;
             width: auto;
@@ -436,18 +436,18 @@
             align-items: center;
             justify-content: center;
             padding: 8px 14px;
-            background: #F2F2F7;
+            background: #007AFF;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            min-width: 68px;
-            gap: 1px;
+            min-width: 72px;
+            gap: 2px;
             transition: all 0.15s ease;
             flex-shrink: 0;
         }
-        .currency-picker-btn:active { opacity: 0.7; transform: scale(0.97); }
-        .currency-picker-symbol { font-size: 22px; font-weight: 600; line-height: 1.1; }
-        .currency-picker-code { font-size: 10px; color: #8E8E93; font-weight: 500; }
+        .currency-picker-btn:active { opacity: 0.75; transform: scale(0.97); }
+        .currency-picker-symbol { font-size: 26px; font-weight: 700; color: white; line-height: 1.1; }
+        .currency-picker-code { font-size: 12px; color: rgba(255,255,255,0.85); font-weight: 500; }
         .currency-picker-popup {
             position: absolute;
             right: 0;
@@ -510,6 +510,36 @@
         .numpad-btn.numpad-special { background: #E5E5EA; font-size: 17px; font-weight: 600; }
         .numpad-btn.numpad-backspace { background: #E5E5EA; }
         .numpad-btn.numpad-backspace .material-symbols-outlined { font-size: 22px; }
+        /* Numpad Overlay */
+        .numpad-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            pointer-events: none;
+        }
+        .numpad-overlay.show {
+            display: block;
+            pointer-events: auto;
+        }
+        .numpad-backdrop {
+            position: absolute;
+            inset: 0;
+        }
+        .numpad-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #F2F2F7;
+            padding: 12px 16px;
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+        }
+        .numpad-overlay.show .numpad-panel {
+            animation: slideUp 0.22s ease;
+        }
     </style>
 </head>
 <body>
@@ -552,7 +582,6 @@
                     <button type="button" id="currencyPickerBtn" class="currency-picker-btn">
                         <span class="currency-picker-symbol" id="currencyPickerSymbol">₫</span>
                         <span class="currency-picker-code" id="currencyPickerCode">VND</span>
-                        <span class="material-symbols-outlined" style="font-size:14px;color:#8E8E93;margin-top:1px;">expand_more</span>
                     </button>
                     <div class="currency-picker-popup" id="currencyPickerPopup">
                         <button type="button" class="currency-option selected" data-currency="VND">
@@ -565,20 +594,6 @@
                             <span class="currency-option-symbol">$</span><span>US Dollar</span><span class="currency-option-code">USD</span>
                         </button>
                     </div>
-                </div>
-                <div class="numpad" id="numpad">
-                    <button type="button" class="numpad-btn" data-key="7">7</button>
-                    <button type="button" class="numpad-btn" data-key="8">8</button>
-                    <button type="button" class="numpad-btn" data-key="9">9</button>
-                    <button type="button" class="numpad-btn" data-key="4">4</button>
-                    <button type="button" class="numpad-btn" data-key="5">5</button>
-                    <button type="button" class="numpad-btn" data-key="6">6</button>
-                    <button type="button" class="numpad-btn" data-key="1">1</button>
-                    <button type="button" class="numpad-btn" data-key="2">2</button>
-                    <button type="button" class="numpad-btn" data-key="3">3</button>
-                    <button type="button" class="numpad-btn numpad-special" id="numpadDecimal" data-key="000">000</button>
-                    <button type="button" class="numpad-btn" data-key="0">0</button>
-                    <button type="button" class="numpad-btn numpad-backspace" data-key="back"><span class="material-symbols-outlined">backspace</span></button>
                 </div>
             </div>
             <div class="form-section">
@@ -600,10 +615,6 @@
             </div>
             <div class="form-section">
                 <input type="text" id="note" placeholder="Add a note..." autocomplete="off">
-            </div>
-            <div class="form-section" style="margin-top: -8px;">
-                <button type="button" id="toggleDateBtn" style="background:none;border:none;color:#8E8E93;font-size:13px;cursor:pointer;padding:4px 0;">+ Add custom date</button>
-                <input type="datetime-local" id="entryDate" style="display:none;width:100%;font-size:15px;padding:10px 12px;border:none;border-radius:12px;background:#F2F2F7;color:#000;margin-top:6px;">
             </div>
             <button type="submit" class="submit-btn">Add Expense</button>
         </form>
@@ -842,12 +853,11 @@
             </div>
             <div class="modal-field">
                 <label class="modal-label">Amount</label>
-                <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="decimal">
-                <div style="position:relative;display:flex;justify-content:flex-end;margin-top:6px;margin-bottom:6px;">
-                    <button type="button" id="modalCurrencyPickerBtn" class="currency-picker-btn" style="min-width:60px;padding:6px 12px;">
+                <div class="amount-row">
+                    <input type="text" class="modal-amount-input" id="manualAmount" placeholder="0" inputmode="decimal">
+                    <button type="button" id="modalCurrencyPickerBtn" class="currency-picker-btn">
                         <span class="currency-picker-symbol" id="modalCurrencyPickerSymbol">₫</span>
                         <span class="currency-picker-code" id="modalCurrencyPickerCode">VND</span>
-                        <span class="material-symbols-outlined" style="font-size:14px;color:#8E8E93;margin-top:1px;">expand_more</span>
                     </button>
                     <div class="currency-picker-popup" id="modalCurrencyPickerPopup">
                         <button type="button" class="currency-option selected" data-currency="VND">
@@ -1276,9 +1286,18 @@
         });
 
         // ===== NUMPAD =====
-        function handleNumpadKey(key) {
+        let rawAmountValue = '';
+
+        function updateAmountDisplay() {
             const input = document.getElementById('amount');
-            let val = input.value;
+            if (!rawAmountValue) { input.value = ''; return; }
+            const parts = rawAmountValue.split('.');
+            const intFormatted = parseInt(parts[0] || '0').toLocaleString('en-US');
+            input.value = parts.length > 1 ? intFormatted + '.' + parts[1] : intFormatted;
+        }
+
+        function handleNumpadKey(key) {
+            let val = rawAmountValue;
             if (key === 'back') {
                 val = val.slice(0, -1);
             } else if (key === '000') {
@@ -1292,7 +1311,8 @@
                 if (val === '0') val = key;
                 else val += key;
             }
-            input.value = val;
+            rawAmountValue = val;
+            updateAmountDisplay();
         }
 
         document.querySelectorAll('#numpad .numpad-btn').forEach(btn => {
@@ -1302,6 +1322,17 @@
                 if (navigator.vibrate) navigator.vibrate(5);
             });
         });
+
+        function showNumpad() {
+            document.getElementById('numpadOverlay').classList.add('show');
+        }
+        function hideNumpad() {
+            document.getElementById('numpadOverlay').classList.remove('show');
+        }
+
+        document.getElementById('amount').addEventListener('focus', showNumpad);
+        document.getElementById('amount').addEventListener('click', showNumpad);
+        document.getElementById('numpadBackdrop').addEventListener('click', hideNumpad);
 
         const categoryBtns = document.querySelectorAll('.category-btn:not(.modal-category-btn)');
         let selectedCategory = null;
@@ -1322,39 +1353,22 @@
             if (e.key === ',') { e.preventDefault(); const pos = amountInput.selectionStart; const v = amountInput.value; amountInput.value = v.slice(0, pos) + '.' + v.slice(amountInput.selectionEnd); amountInput.setSelectionRange(pos + 1, pos + 1); amountInput.dispatchEvent(new Event('input')); }
         });
         amountInput.addEventListener('input', (e) => {
-            let v = e.target.value;
+            let v = e.target.value.replace(/,/g, '');
             v = v.replace(/[^\d.]/g, '');
             const parts = v.split('.');
             if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
-            e.target.value = v;
+            rawAmountValue = v;
+            updateAmountDisplay();
         });
 
-        document.getElementById('toggleDateBtn').addEventListener('click', () => {
-            const input = document.getElementById('entryDate');
-            const btn = document.getElementById('toggleDateBtn');
-            if (input.style.display === 'none') {
-                input.style.display = 'block';
-                // Default to now
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                input.value = now.toISOString().slice(0, 16);
-                btn.textContent = '− Remove custom date';
-            } else {
-                input.style.display = 'none';
-                input.value = '';
-                btn.textContent = '+ Add custom date';
-            }
-        });
 
         document.getElementById('expenseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const raw = amountInput.value.replace(/,/g, '');
-            const amt = parseFloat(raw);
+            const amt = parseFloat(rawAmountValue) || 0;
             if (!amt || !selectedCategory) { alert('Please enter an amount and select a category'); return; }
 
             const converted = convertCurrency(amt, selectedCurrency);
-            const dateInputEl = document.getElementById('entryDate');
-            const entryDateVal = dateInputEl.value ? new Date(dateInputEl.value) : new Date();
+            const entryDateVal = new Date();
             const ts = formatTimestamp(entryDateVal);
             const expenseData = { timestamp: ts, vnd: converted.VND, eur: converted.EUR, usd: converted.USD, category: selectedCategory, note: document.getElementById('note').value };
 
@@ -1389,13 +1403,13 @@
 
             setTimeout(() => {
                 document.getElementById('successMessage').classList.remove('show');
-                amountInput.value = ''; document.getElementById('note').value = '';
+                rawAmountValue = '';
+                amountInput.value = '';
+                document.getElementById('note').value = '';
                 categoryBtns.forEach(b => b.classList.remove('selected'));
                 selectedCategory = null;
-                document.getElementById('entryDate').style.display = 'none';
-                document.getElementById('entryDate').value = '';
-                document.getElementById('toggleDateBtn').textContent = '+ Add custom date';
-                setTimeout(() => { if (amountInput) amountInput.focus(); }, 100);
+                hideNumpad();
+                setTimeout(() => { if (amountInput) { amountInput.focus(); showNumpad(); } }, 100);
             }, 2000);
 
             hideLoadingBar();
@@ -2188,7 +2202,7 @@
             showLoadingBar();
             await Promise.all([loadAllData(), fetchExchangeRates()]);
             hideLoadingBar();
-            const tryFocus = () => { if (amountInput) { amountInput.focus(); amountInput.click(); } };
+            const tryFocus = () => { if (amountInput) { amountInput.focus(); showNumpad(); } };
             setTimeout(tryFocus, 100); setTimeout(tryFocus, 300);
         });
 
@@ -2196,5 +2210,25 @@
             if (document.activeElement && document.activeElement.tagName === 'INPUT') document.activeElement.focus();
         }, { passive: true, once: true });
     </script>
+    <!-- Numpad Overlay -->
+    <div class="numpad-overlay" id="numpadOverlay">
+        <div class="numpad-backdrop" id="numpadBackdrop"></div>
+        <div class="numpad-panel">
+            <div class="numpad" id="numpad">
+                <button type="button" class="numpad-btn" data-key="7">7</button>
+                <button type="button" class="numpad-btn" data-key="8">8</button>
+                <button type="button" class="numpad-btn" data-key="9">9</button>
+                <button type="button" class="numpad-btn" data-key="4">4</button>
+                <button type="button" class="numpad-btn" data-key="5">5</button>
+                <button type="button" class="numpad-btn" data-key="6">6</button>
+                <button type="button" class="numpad-btn" data-key="1">1</button>
+                <button type="button" class="numpad-btn" data-key="2">2</button>
+                <button type="button" class="numpad-btn" data-key="3">3</button>
+                <button type="button" class="numpad-btn numpad-special" id="numpadDecimal" data-key="000">000</button>
+                <button type="button" class="numpad-btn" data-key="0">0</button>
+                <button type="button" class="numpad-btn numpad-backspace" data-key="back"><span class="material-symbols-outlined">backspace</span></button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
