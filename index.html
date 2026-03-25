@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Costs">
     <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">    <title>Costs</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <style>
         .material-symbols-outlined {
@@ -16,7 +16,7 @@
             vertical-align: middle; user-select: none; -webkit-user-select: none;
         }
         .nav-btn .material-symbols-outlined {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 0, 'opsz' 24;
             font-size: 24px;
         }
         .header-btn .material-symbols-outlined { font-size: 28px; }
@@ -501,7 +501,8 @@
             display: none;
             min-width: 190px;
         }
-        .currency-picker-popup.show { display: block; animation: popIn 0.2s ease; }
+        @keyframes popInDropdown { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+        .currency-picker-popup.show { display: block; animation: popInDropdown 0.15s ease; transform-origin: top right; }
         .currency-option {
             display: flex;
             align-items: center;
