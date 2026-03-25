@@ -1,9 +1,10 @@
-const CACHE = 'expenses-v1';
+const CACHE = 'expenses-v2';
 const PRECACHE = [
     './',
     './index.html',
+    './manifest.json',
     'https://cdn.jsdelivr.net/npm/chart.js',
-    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0'
+    'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200'
 ];
 
 self.addEventListener('install', e => {
@@ -23,7 +24,7 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
     const url = e.request.url;
 
-    // Never cache Google Apps Script API calls
+    // Never cache API calls
     if (url.includes('script.google.com') || url.includes('exchangerate-api.com')) {
         return;
     }
@@ -40,14 +41,18 @@ self.addEventListener('fetch', e => {
         return;
     }
 
-    // App shell (HTML): network-first, fall back to cache
+    // App shell: stale-while-revalidate — serve cache instantly, update in background
     if (e.request.mode === 'navigate' || url.includes('index.html')) {
         e.respondWith(
-            fetch(e.request).then(res => {
-                const clone = res.clone();
-                caches.open(CACHE).then(c => c.put(e.request, clone));
-                return res;
-            }).catch(() => caches.match(e.request))
+            caches.open(CACHE).then(cache =>
+                cache.match(e.request).then(cached => {
+                    const fetchPromise = fetch(e.request).then(res => {
+                        cache.put(e.request, res.clone());
+                        return res;
+                    }).catch(() => cached);
+                    return cached || fetchPromise;
+                })
+            )
         );
         return;
     }

@@ -7,7 +7,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Costs">
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">    <title>Costs</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+    <link rel="manifest" href="./manifest.json">
+    <title>Costs</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <style>
@@ -818,10 +820,12 @@
             <div class="chart-switch">
                 <button class="switch-btn active" id="pieBtn"><span class="material-symbols-outlined">pie_chart</span></button>
                 <button class="switch-btn" id="barBtn"><span class="material-symbols-outlined">bar_chart</span></button>
+                <button class="switch-btn" id="trendBtn"><span class="material-symbols-outlined">show_chart</span></button>
             </div>
             <div class="chart-canvas-container" id="statsChartContainer">
                 <canvas id="pieChart" style="max-height: 250px; max-width: 250px;"></canvas>
                 <canvas id="barChart" class="hidden" style="max-height: 250px; width: 100%;"></canvas>
+                <canvas id="trendChart" class="hidden" style="max-height: 250px; width: 100%;"></canvas>
                 <div class="budget-center-text" id="budgetCenterText" style="display:none;">
                     <div class="budget-amount" id="budgetAmountText">€0</div>
                     <div class="budget-label">Budget</div>
@@ -1368,8 +1372,10 @@
                 // Reset to pie chart view
                 document.getElementById('pieChart').classList.remove('hidden');
                 document.getElementById('barChart').classList.add('hidden');
+                document.getElementById('trendChart').classList.add('hidden');
                 document.getElementById('pieBtn').classList.add('active');
                 document.getElementById('barBtn').classList.remove('active');
+                document.getElementById('trendBtn').classList.remove('active');
                 document.getElementById('barChartBudgetInfo').classList.add('hidden');
 
                 if (statsData) displayStats(statsData);
@@ -1950,21 +1956,135 @@
 
         document.getElementById('pieBtn').addEventListener('click', () => {
             document.getElementById('barChart').classList.add('hidden');
+            document.getElementById('trendChart').classList.add('hidden');
             document.getElementById('pieChart').classList.remove('hidden');
             document.getElementById('pieBtn').classList.add('active');
             document.getElementById('barBtn').classList.remove('active');
+            document.getElementById('trendBtn').classList.remove('active');
             document.getElementById('budgetCenterText').style.display = (budgetData && budgetData.amount > 0) ? 'block' : 'none';
             document.getElementById('barChartBudgetInfo').classList.add('hidden');
         });
         document.getElementById('barBtn').addEventListener('click', () => {
             document.getElementById('pieChart').classList.add('hidden');
             document.getElementById('barChart').classList.remove('hidden');
+            document.getElementById('trendChart').classList.add('hidden');
             document.getElementById('barBtn').classList.add('active');
             document.getElementById('pieBtn').classList.remove('active');
+            document.getElementById('trendBtn').classList.remove('active');
             document.getElementById('budgetCenterText').style.display = 'none';
             if (budgetData && budgetData.amount > 0) {
                 document.getElementById('barChartBudgetInfo').classList.remove('hidden');
             }
+        });
+
+        // ===== TREND CHART =====
+        let trendChart = null;
+        let prevMonthTransactions = null;
+
+        async function loadPrevMonthTransactions() {
+            const prev = new Date(currentViewMonth);
+            prev.setMonth(prev.getMonth() - 1);
+            const year = prev.getFullYear(), month = prev.getMonth() + 1;
+            const cached = loadCacheFromStorage(year, month);
+            if (cached && cached.transactions) return cached.transactions;
+            try {
+                const r = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAllData&year=${year}&month=${month}`);
+                const data = await r.json();
+                if (data.status === 'success') {
+                    saveCacheToStorage(year, month, data);
+                    return data.transactions || [];
+                }
+            } catch (e) { console.error('Prev month load failed:', e); }
+            return [];
+        }
+
+        function getDailySpending(transactions, year, month) {
+            const days = new Date(year, month, 0).getDate();
+            const daily = new Array(days).fill(0);
+            transactions.forEach(t => {
+                const d = new Date(t.timestamp);
+                if (d.getFullYear() === year && d.getMonth() + 1 === month) {
+                    const eur = t.eur > 0 ? t.eur : (t.vnd || 0) * exchangeRates.EUR;
+                    daily[d.getDate() - 1] += eur;
+                }
+            });
+            return daily;
+        }
+
+        async function showTrendChart() {
+            const curYear = currentViewMonth.getFullYear();
+            const curMonth = currentViewMonth.getMonth() + 1;
+            const curDaily = getDailySpending(allTransactions || [], curYear, curMonth);
+
+            const prev = new Date(currentViewMonth);
+            prev.setMonth(prev.getMonth() - 1);
+            if (!prevMonthTransactions) prevMonthTransactions = await loadPrevMonthTransactions();
+            const prevDaily = getDailySpending(prevMonthTransactions, prev.getFullYear(), prev.getMonth() + 1);
+
+            const labels = Array.from({ length: curDaily.length }, (_, i) => i + 1);
+            const cumulate = arr => arr.reduce((acc, v) => { acc.push((acc[acc.length - 1] || 0) + v); return acc; }, []);
+            const curCum = cumulate(curDaily);
+            const prevCum = cumulate(prevDaily.slice(0, curDaily.length));
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === curYear && today.getMonth() + 1 === curMonth;
+            const curData = isCurrentMonth ? curCum.slice(0, today.getDate()) : curCum;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255,255,255,0.08)' : '#E5E5EA';
+            const tickColor = '#8E8E93';
+
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (trendChart) trendChart.destroy();
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'This month',
+                            data: curData,
+                            borderColor: '#007AFF',
+                            backgroundColor: 'rgba(0,122,255,0.08)',
+                            fill: true, tension: 0.3,
+                            pointRadius: 0, pointHoverRadius: 4, borderWidth: 2.5
+                        },
+                        {
+                            label: 'Last month',
+                            data: prevCum,
+                            borderColor: '#8E8E93',
+                            backgroundColor: 'transparent',
+                            fill: false, tension: 0.3,
+                            pointRadius: 0, pointHoverRadius: 4, borderWidth: 1.5,
+                            borderDash: [4, 4]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { font: { size: 12 }, color: tickColor, usePointStyle: true, pointStyleWidth: 20, boxHeight: 2 } },
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: €${ctx.raw.toFixed(2)}` } }
+                    },
+                    scales: {
+                        x: { ticks: { font: { size: 11 }, color: tickColor, maxTicksLimit: 8 }, grid: { color: gridColor, drawBorder: false } },
+                        y: { beginAtZero: true, ticks: { callback: v => '€' + v.toFixed(0), font: { size: 11 }, color: tickColor }, grid: { color: gridColor, drawBorder: false } }
+                    },
+                    layout: { padding: { right: 8 } }
+                }
+            });
+        }
+
+        document.getElementById('trendBtn').addEventListener('click', () => {
+            document.getElementById('pieChart').classList.add('hidden');
+            document.getElementById('barChart').classList.add('hidden');
+            document.getElementById('trendChart').classList.remove('hidden');
+            document.getElementById('trendBtn').classList.add('active');
+            document.getElementById('pieBtn').classList.remove('active');
+            document.getElementById('barBtn').classList.remove('active');
+            document.getElementById('budgetCenterText').style.display = 'none';
+            document.getElementById('barChartBudgetInfo').classList.add('hidden');
+            showTrendChart();
         });
 
         // ===== MODAL =====
@@ -2409,6 +2529,7 @@
             statsData = null;
             budgetData = null;
             cacheTimestamp = 0;
+            prevMonthTransactions = null; // reset trend data for new month
 
             // Reset pagination
             visibleDays = 5;

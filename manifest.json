@@ -1,0 +1,17 @@
+{
+  "name": "Costs",
+  "short_name": "Costs",
+  "description": "Personal expense tracker",
+  "start_url": "/expenses/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007AFF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
