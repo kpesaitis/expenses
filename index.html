@@ -6,10 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Expenses">
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">    <title>Cash Tracker</title>
+    <meta name="apple-mobile-web-app-title" content="Costs">
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">    <title>Costs</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <style>
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
@@ -581,53 +581,88 @@
         .numpad-overlay.show .numpad-panel {
             animation: slideUp 0.22s ease;
         }
-        /* Dark Mode */
-        @media (prefers-color-scheme: dark) {
-            body { background: #1C1C1E; color: #FFFFFF; }
-            .header { background: #1C1C1E; }
-            h1, h2 { color: #FFFFFF; }
-            input[type="text"] { background: #2C2C2E; color: #FFFFFF; }
-            .transaction-item { background: #2C2C2E; box-shadow: none; }
-            .transaction-category { color: #FFFFFF; }
-            .transaction-amount-primary { color: #FFFFFF; }
-            .category-btn { color: #EBEBF5; }
-            .category-btn.selected { background: #0A84FF !important; color: white !important; }
-            .monthly-total, .history-total { background: linear-gradient(135deg, rgba(10,132,255,0.12) 0%, rgba(48,209,88,0.08) 100%); border-color: rgba(10,132,255,0.2); }
-            .monthly-total-amount, .history-total-amount { color: #0A84FF; }
-            .submit-btn { background: #0A84FF; }
-            .monthly-total-amount, .history-total-amount { color: #FFFFFF; }
-            .nav-btn { color: #636366; }
-            .nav-btn.active { color: #0A84FF; }
-            .modal { background: #1C1C1E; }
-            .modal-input, .modal-amount-input { background: #2C2C2E; color: #FFFFFF; }
-            .modal-label { color: #8E8E93; }
-            .modal-btn-cancel { background: #2C2C2E; color: #FFFFFF; }
-            .filter-popup { background: #1C1C1E; }
-            .filter-option { border-bottom-color: #2C2C2E; }
-            .filter-option-label { color: #FFFFFF; }
-            .numpad-panel { background: #1C1C1E; }
-            .numpad-btn { background: #2C2C2E; color: #FFFFFF; }
-            .numpad-btn.numpad-special, .numpad-btn.numpad-backspace { background: #3A3A3C; }
-            .numpad-btn:active { background: #48484A; transform: scale(0.95); }
-            .currency-picker-popup { background: #1C1C1E; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-            .currency-option { color: #FFFFFF; border-bottom-color: #2C2C2E; }
-            .currency-option.selected { color: #0A84FF; }
-            .currency-option:active { background: #2C2C2E; }
-            .scroll-gradient { background: linear-gradient(to top, #1C1C1E 30%, transparent 100%); }
-            .section-label { color: #8E8E93; }
-            .load-more-btn { background: #2C2C2E; color: #0A84FF; }
-            .filter-btn { background: #2C2C2E; color: #FFFFFF; }
-            .category-row { background: #2C2C2E; }
-            .skeleton { background: linear-gradient(90deg, #2C2C2E 25%, #3A3A3C 50%, #2C2C2E 75%); background-size: 200% 100%; }
-            .month-nav-btn { background: #2C2C2E; color: #8E8E93; }
-            .transaction-note-divider { background: #3A3A3C; }
-            .delete-bg { background: #FF453A; }
-            .add-entry-history-btn { background: #0A84FF; }
-            .filter-btn.active { background: #0A84FF; }
-            .modal-delete-btn { color: #FF453A; }
-            .modal-top-bar { color: #FFFFFF; }
-            .small-confirmation { background: #0A84FF; }
-        }
+        /* Settings Page */
+        .settings-card { background: #F2F2F7; border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+        .settings-card-padded { background: #F2F2F7; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row-label { font-size: 16px; }
+        .settings-card h3 { font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 8px; margin: 0 0 12px 0; }
+        /* Toggle switch */
+        .toggle-label { position: relative; display: inline-block; width: 51px; height: 31px; flex-shrink: 0; }
+        .toggle-label input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-track { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #E5E5EA; border-radius: 31px; transition: background 0.3s; }
+        .toggle-track::before { content: ''; position: absolute; height: 27px; width: 27px; left: 2px; bottom: 2px; background: white; border-radius: 50%; transition: transform 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .toggle-label input:checked + .toggle-track { background: #34C759; }
+        .toggle-label input:checked + .toggle-track::before { transform: translateX(20px); }
+        /* FAQ accordion */
+        .faq-item { border-bottom: 1px solid rgba(0,0,0,0.06); }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; cursor: pointer; list-style: none; font-size: 15px; font-weight: 500; }
+        .faq-summary::-webkit-details-marker { display: none; }
+        .faq-chevron { transition: transform 0.2s ease; font-size: 20px !important; color: #8E8E93; flex-shrink: 0; }
+        details[open] > .faq-summary .faq-chevron { transform: rotate(180deg); }
+        .faq-content { padding: 0 16px 14px; font-size: 14px; line-height: 1.6; color: #3C3C43; }
+        .faq-content p { margin-bottom: 4px; }
+        .faq-content p:last-child { margin-bottom: 0; }
+        .budget-bar-bg { background: #E5E5EA; height: 8px; border-radius: 4px; overflow: hidden; }
+        /* Dark Mode — applied via html.dark class (set by JS from localStorage or system preference) */
+        html.dark body { background: #1C1C1E; color: #FFFFFF; }
+        html.dark .header { background: #1C1C1E; }
+        html.dark h1, html.dark h2 { color: #FFFFFF; }
+        html.dark input[type="text"] { background: #2C2C2E; color: #FFFFFF; }
+        html.dark .transaction-item { background: #2C2C2E; box-shadow: none; }
+        html.dark .transaction-category { color: #FFFFFF; }
+        html.dark .transaction-amount-primary { color: #FFFFFF; }
+        html.dark .category-btn { color: #EBEBF5; }
+        html.dark .category-btn.selected { background: #0A84FF !important; color: white !important; }
+        html.dark .monthly-total, html.dark .history-total { background: linear-gradient(135deg, rgba(10,132,255,0.12) 0%, rgba(48,209,88,0.08) 100%); border-color: rgba(10,132,255,0.2); }
+        html.dark .monthly-total-amount, html.dark .history-total-amount { color: #FFFFFF; }
+        html.dark .submit-btn { background: #0A84FF; }
+        html.dark .nav-btn { color: #636366; }
+        html.dark .nav-btn.active { color: #0A84FF; }
+        html.dark .modal { background: #1C1C1E; }
+        html.dark .modal-input, html.dark .modal-amount-input { background: #2C2C2E; color: #FFFFFF; }
+        html.dark .modal-label { color: #8E8E93; }
+        html.dark .modal-btn-cancel { background: #2C2C2E; color: #FFFFFF; }
+        html.dark .filter-popup { background: #1C1C1E; }
+        html.dark .filter-option { border-bottom-color: #2C2C2E; }
+        html.dark .filter-option-label { color: #FFFFFF; }
+        html.dark .numpad-panel { background: #1C1C1E; }
+        html.dark .numpad-btn { background: #2C2C2E; color: #FFFFFF; }
+        html.dark .numpad-btn.numpad-special, html.dark .numpad-btn.numpad-backspace { background: #3A3A3C; }
+        html.dark .numpad-btn:active { background: #48484A; transform: scale(0.95); }
+        html.dark .currency-picker-popup { background: #1C1C1E; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        html.dark .currency-option { color: #FFFFFF; border-bottom-color: #2C2C2E; }
+        html.dark .currency-option.selected { color: #0A84FF; }
+        html.dark .currency-option:active { background: #2C2C2E; }
+        html.dark .scroll-gradient { background: linear-gradient(to top, #1C1C1E 30%, transparent 100%); }
+        html.dark .section-label { color: #8E8E93; }
+        html.dark .load-more-btn { background: #2C2C2E; color: #0A84FF; }
+        html.dark .filter-btn { background: #2C2C2E; color: #FFFFFF; }
+        html.dark .category-row { background: #2C2C2E; }
+        html.dark .skeleton { background: linear-gradient(90deg, #2C2C2E 25%, #3A3A3C 50%, #2C2C2E 75%); background-size: 200% 100%; }
+        html.dark .month-nav-btn { background: #2C2C2E; color: #8E8E93; }
+        html.dark .transaction-note-divider { background: #3A3A3C; }
+        html.dark .delete-bg { background: #FF453A; }
+        html.dark .add-entry-history-btn { background: #0A84FF; }
+        html.dark .filter-btn.active { background: #0A84FF; }
+        html.dark .modal-delete-btn { color: #FF453A; }
+        html.dark .modal-top-bar { color: #FFFFFF; }
+        html.dark .small-confirmation { background: #0A84FF; }
+        /* Dark mode fixes */
+        html.dark .day-group { background: #2C2C2E; }
+        html.dark .receipt-item { border-bottom-color: #3A3A3C; }
+        html.dark .budget-amount { color: #FFFFFF; }
+        html.dark .chart-switch { background: #3A3A3C; }
+        html.dark .settings-card, html.dark .settings-card-padded { background: #2C2C2E; }
+        html.dark .settings-row { border-bottom-color: #3A3A3C; }
+        html.dark .settings-card h3 { color: #FFFFFF; }
+        html.dark .faq-summary { color: #FFFFFF; }
+        html.dark .faq-content { color: #EBEBF5; }
+        html.dark .faq-item { border-bottom-color: #3A3A3C; }
+        html.dark .budget-bar-bg { background: #3A3A3C; }
+        html.dark .toggle-track { background: #636366; }
     </style>
 </head>
 <body>
@@ -647,10 +682,10 @@
                 <button class="nav-btn active" id="homeBtn"><span class="material-symbols-outlined">home</span></button>
                 <button class="nav-btn" id="historyNavBtn"><span class="material-symbols-outlined">receipt_long</span></button>
             </div>
-            <div class="header-center"><h1>Expenses</h1></div>
+            <div class="header-center"><h1>Costs</h1></div>
             <div class="header-right">
                 <button class="nav-btn" id="statsNavBtn"><span class="material-symbols-outlined">bar_chart</span></button>
-                <button class="nav-btn" id="helpNavBtn"><span class="material-symbols-outlined">help</span></button>
+                <button class="nav-btn" id="helpNavBtn"><span class="material-symbols-outlined">settings</span></button>
             </div>
         </div>
         <div class="monthly-total">
@@ -719,7 +754,7 @@
             <div class="header-center"><h2>History</h2></div>
             <div class="header-right">
                 <button class="nav-btn" id="statsFromHistoryBtn"><span class="material-symbols-outlined">bar_chart</span></button>
-                <button class="nav-btn" id="helpFromHistoryBtn"><span class="material-symbols-outlined">help</span></button>
+                <button class="nav-btn" id="helpFromHistoryBtn"><span class="material-symbols-outlined">settings</span></button>
             </div>
         </div>
         <div class="history-total">
@@ -762,7 +797,7 @@
             <div class="header-center"><h1>Stats</h1></div>
             <div class="header-right">
                 <button class="nav-btn active" id="statsPageBtn"><span class="material-symbols-outlined">bar_chart</span></button>
-                <button class="nav-btn" id="helpFromStatsBtn"><span class="material-symbols-outlined">help</span></button>
+                <button class="nav-btn" id="helpFromStatsBtn"><span class="material-symbols-outlined">settings</span></button>
             </div>
         </div>
         <div class="monthly-total" style="padding-bottom: 8px;">
@@ -807,82 +842,114 @@
                 <button class="nav-btn" id="homeFromHelpBtn"><span class="material-symbols-outlined">home</span></button>
                 <button class="nav-btn" id="historyFromHelpBtn"><span class="material-symbols-outlined">receipt_long</span></button>
             </div>
-            <div class="header-center"><h1>Help</h1></div>
+            <div class="header-center"><h1>Settings</h1></div>
             <div class="header-right">
                 <button class="nav-btn" id="statsFromHelpBtn"><span class="material-symbols-outlined">bar_chart</span></button>
-                <button class="nav-btn active" id="helpPageBtn"><span class="material-symbols-outlined">help</span></button>
+                <button class="nav-btn active" id="helpPageBtn"><span class="material-symbols-outlined">settings</span></button>
             </div>
         </div>
         <div style="padding: 20px 0;">
             <div class="form-section">
-                <!-- Budget Summary Section -->
-                <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+
+                <!-- Appearance -->
+                <label class="section-label">Appearance</label>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <span class="settings-row-label">Dark Mode</span>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="toggle-track"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Budget -->
+                <label class="section-label">Budget</label>
+                <div class="settings-card-padded">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="font-size: 17px; font-weight: 600; color: #000; display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <h3>
                             <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">savings</span>
                             Monthly Budget
                         </h3>
-                        <button id="editBudgetBtn" style="background: transparent; border: none; color: #8E8E93; font-size: 13px; cursor: pointer; padding: 4px 8px;">
-                            Edit
-                        </button>
+                        <button id="editBudgetBtn" style="background: transparent; border: none; color: #8E8E93; font-size: 13px; cursor: pointer; padding: 4px 8px;">Edit</button>
                     </div>
                     <div style="margin-bottom: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
                             <span id="helpBudgetSpent" style="font-size: 24px; font-weight: 700; color: #007AFF;">€0</span>
                             <span id="helpBudgetTotal" style="font-size: 15px; color: #8E8E93;">of €1,600</span>
                         </div>
-                        <div style="background: #E5E5EA; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div class="budget-bar-bg">
                             <div id="helpBudgetProgress" style="height: 100%; background: #007AFF; width: 0%; transition: width 0.3s ease, background 0.3s ease;"></div>
                         </div>
                     </div>
                     <p id="helpBudgetStatus" style="font-size: 13px; color: #8E8E93; margin: 0;">No spending data yet</p>
                 </div>
 
-                <label class="section-label">How to Use This App</label>
-                <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px; color: #000; display: flex; align-items: center; gap: 8px;">
-                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">home</span>
-                        Adding Expenses
-                    </h3>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">1. Enter the amount on the home screen</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">2. Select your currency (VND, EUR, or USD)</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">3. Choose a category</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">4. Optionally add a note</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000;">5. Tap "Add Expense" to save</p>
-                </div>
-                <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px; color: #000; display: flex; align-items: center; gap: 8px;">
-                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">receipt_long</span>
-                        Viewing History
-                    </h3>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">• Tap the receipt icon to view all expenses</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">• Tap any expense to edit or delete it</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">• Use the filter button to view specific categories</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000;">• Pull down to refresh your data</p>
-                </div>
-                <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px; color: #000; display: flex; align-items: center; gap: 8px;">
-                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">bar_chart</span>
-                        Statistics
-                    </h3>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">• View your spending breakdown by category</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">• Switch between pie chart and bar chart views</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000;">• See your total monthly spending at the top</p>
-                </div>
-                <div style="background: #F2F2F7; border-radius: 12px; padding: 20px; margin-bottom: 16px;">
-                    <h3 style="font-size: 17px; font-weight: 600; margin-bottom: 12px; color: #000; display: flex; align-items: center; gap: 8px;">
-                        <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings: 'FILL' 1;">lightbulb</span>
-                        Tips
-                    </h3>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000; margin-bottom: 8px;">• Exchange rates update automatically</p>
-                    <p style="font-size: 15px; line-height: 1.5; color: #000;">• Swipe down on any page to refresh data</p>
+                <!-- Data -->
+                <label class="section-label">Data</label>
+                <div class="settings-card">
+                    <div class="settings-row">
+                        <span class="settings-row-label">Google Sheets</span>
+                        <button id="openSheetsBtn" style="background: #34C759; border: none; color: white; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">table_chart</span>
+                            Open
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Google Sheets Button -->
-                <button class="submit-btn" id="openSheetsBtn" style="background: #34C759; margin-bottom: 40px;">
-                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">table_chart</span>
-                    Open Google Sheets
-                </button>
+                <!-- Help FAQ -->
+                <label class="section-label">Help</label>
+                <div class="settings-card">
+                    <details class="faq-item">
+                        <summary class="faq-summary">
+                            <span>Adding Expenses</span>
+                            <span class="material-symbols-outlined faq-chevron">expand_more</span>
+                        </summary>
+                        <div class="faq-content">
+                            <p>1. Enter the amount using the numpad on the home screen</p>
+                            <p>2. Select your currency — VND, EUR, or USD</p>
+                            <p>3. Choose a category</p>
+                            <p>4. Optionally add a note</p>
+                            <p>5. Tap "Add Expense" to save</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-summary">
+                            <span>Viewing &amp; Editing History</span>
+                            <span class="material-symbols-outlined faq-chevron">expand_more</span>
+                        </summary>
+                        <div class="faq-content">
+                            <p>• Tap the receipt icon to view all expenses</p>
+                            <p>• Tap any entry to edit or delete it</p>
+                            <p>• Use the filter button to view specific categories</p>
+                            <p>• Pull down from the top to refresh data</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-summary">
+                            <span>Statistics</span>
+                            <span class="material-symbols-outlined faq-chevron">expand_more</span>
+                        </summary>
+                        <div class="faq-content">
+                            <p>• View your spending breakdown by category</p>
+                            <p>• Switch between pie chart and bar chart views</p>
+                            <p>• Navigate between months using the arrows</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary class="faq-summary">
+                            <span>Tips</span>
+                            <span class="material-symbols-outlined faq-chevron">expand_more</span>
+                        </summary>
+                        <div class="faq-content">
+                            <p>• Exchange rates update automatically once per day</p>
+                            <p>• Expenses added offline are saved and synced when you reconnect</p>
+                            <p>• Swipe down on any page to manually refresh data</p>
+                        </div>
+                    </details>
+                </div>
+
+                <div style="height: 40px;"></div>
             </div>
         </div>
     </div>
@@ -1129,18 +1196,34 @@
         }, { passive: true });
 
         // ===== EXCHANGE RATES =====
+        const FALLBACK_RATES = { VND: 1, EUR: 0.000037, USD: 0.000040 };
+        function validRates(r) { return r && r.EUR > 0 && r.USD > 0; }
         async function fetchExchangeRates() {
             const cached = localStorage.getItem('exchangeRates');
             const cachedDate = localStorage.getItem('exchangeRatesDate');
             const today = new Date().toDateString();
-            if (cached && cachedDate === today) { exchangeRates = JSON.parse(cached); return; }
+            if (cached && cachedDate === today) {
+                const parsed = JSON.parse(cached);
+                if (validRates(parsed)) { exchangeRates = parsed; return; }
+                localStorage.removeItem('exchangeRates');
+                localStorage.removeItem('exchangeRatesDate');
+            }
             try {
                 const r = await fetch('https://api.exchangerate-api.com/v4/latest/VND');
                 const d = await r.json();
-                exchangeRates = { VND: 1, EUR: d.rates.EUR, USD: d.rates.USD };
-                localStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
-                localStorage.setItem('exchangeRatesDate', today);
-            } catch (e) { console.error('Rate fetch failed:', e); }
+                const fetched = { VND: 1, EUR: d.rates.EUR, USD: d.rates.USD };
+                if (validRates(fetched)) {
+                    exchangeRates = fetched;
+                    localStorage.setItem('exchangeRates', JSON.stringify(exchangeRates));
+                    localStorage.setItem('exchangeRatesDate', today);
+                } else {
+                    console.warn('Invalid rates from API, using fallback');
+                    exchangeRates = FALLBACK_RATES;
+                }
+            } catch (e) {
+                console.error('Rate fetch failed, using fallback:', e);
+                exchangeRates = FALLBACK_RATES;
+            }
         }
 
         // Historical rates for past entries
@@ -1302,6 +1385,7 @@
                 document.getElementById('mainPage').classList.add('active');
                 document.querySelectorAll('#homeBtn, #homeFromHistoryBtn, #homeFromStatsBtn, #homeFromHelpBtn').forEach(btn => btn.classList.add('active'));
             }
+            if (p !== 'main') hideNumpad();
             if (navigator.vibrate) navigator.vibrate(10);
         }
 
@@ -1434,6 +1518,7 @@
         });
 
         function showNumpad() {
+            if (currentPage !== 'main') return;
             document.getElementById('numpadOverlay').classList.add('show');
         }
         function hideNumpad() {
@@ -1597,10 +1682,11 @@
                     const cat = resolveCategory(t.category);
                     const td = JSON.stringify({ row: t.row, sheetName: t.sheetName || '', timestamp: t.timestamp, vnd: t.vnd, eur: t.eur, usd: t.usd, category: cat, note: t.note || '' }).replace(/'/g, '&#39;');
                     const subLeft = t.note ? `${timeStr} · <i>${t.note}</i>` : timeStr;
+                    const displayEur = (t.eur > 0) ? t.eur : (t.vnd > 0 ? t.vnd * exchangeRates.EUR : 0);
                     html += `<div class="receipt-item" data-transaction='${td}'>
                         <div class="receipt-row-1">
                             <span class="receipt-cat">${cat}</span>
-                            <span class="receipt-eur">€${t.eur.toFixed(2)}</span>
+                            <span class="receipt-eur">€${displayEur.toFixed(2)}</span>
                         </div>
                         <div class="receipt-row-2">
                             <span class="receipt-sub-left">${subLeft}</span>
@@ -2276,6 +2362,17 @@
             }
         }
 
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle) {
+            darkModeToggle.checked = document.documentElement.classList.contains('dark');
+            darkModeToggle.addEventListener('change', () => {
+                const on = darkModeToggle.checked;
+                localStorage.setItem('darkMode', on ? 'true' : 'false');
+                document.documentElement.classList.toggle('dark', on);
+            });
+        }
+
         // Google Sheets button
         const openSheetsBtn = document.getElementById('openSheetsBtn');
         if (openSheetsBtn) {
@@ -2372,12 +2469,30 @@
             });
             if (!todayTxns.length) { el.style.display = 'none'; return; }
             const vnd = todayTxns.reduce((s, t) => s + (t.vnd || 0), 0);
-            const eur = todayTxns.reduce((s, t) => s + (t.eur || 0), 0);
+            const eur = todayTxns.reduce((s, t) => s + (t.eur > 0 ? t.eur : (t.vnd || 0) * exchangeRates.EUR), 0);
             el.style.display = 'block';
             el.textContent = `Today  ₫${Math.round(vnd).toLocaleString('en-US')} · €${eur.toFixed(2)}`;
         }
 
         // ===== INIT =====
+
+        // Dark mode init — runs before load to avoid flash
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'true' || (saved === null && systemDark)) {
+                document.documentElement.classList.add('dark');
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (localStorage.getItem('darkMode') === null) {
+                    document.documentElement.classList.toggle('dark', e.matches);
+                }
+            });
+        })();
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW reg failed:', e));
+        }
 
         window.addEventListener('load', async () => {
             updateMonthLabel();
