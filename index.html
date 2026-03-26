@@ -818,14 +818,14 @@
         </div>
         <div class="chart-container">
             <div class="chart-switch">
-                <button class="switch-btn active" id="pieBtn"><span class="material-symbols-outlined">pie_chart</span></button>
+                <button class="switch-btn" id="pieBtn"><span class="material-symbols-outlined">pie_chart</span></button>
                 <button class="switch-btn" id="barBtn"><span class="material-symbols-outlined">bar_chart</span></button>
-                <button class="switch-btn" id="trendBtn"><span class="material-symbols-outlined">show_chart</span></button>
+                <button class="switch-btn active" id="trendBtn"><span class="material-symbols-outlined">show_chart</span></button>
             </div>
             <div class="chart-canvas-container" id="statsChartContainer">
-                <canvas id="pieChart" style="max-height: 250px; max-width: 250px;"></canvas>
+                <canvas id="pieChart" class="hidden" style="max-height: 250px; max-width: 250px;"></canvas>
                 <canvas id="barChart" class="hidden" style="max-height: 250px; width: 100%;"></canvas>
-                <canvas id="trendChart" class="hidden" style="max-height: 250px; width: 100%;"></canvas>
+                <canvas id="trendChart" style="max-height: 250px; width: 100%;"></canvas>
                 <div class="budget-center-text" id="budgetCenterText" style="display:none;">
                     <div class="budget-amount" id="budgetAmountText">€0</div>
                     <div class="budget-label">Budget</div>
@@ -1369,16 +1369,16 @@
                 document.getElementById('statsPage').classList.add('active');
                 document.querySelectorAll('#statsNavBtn, #statsPageBtn, #statsFromHistoryBtn').forEach(btn => btn.classList.add('active'));
 
-                // Reset to pie chart view
-                document.getElementById('pieChart').classList.remove('hidden');
+                // Reset to trend chart view
+                document.getElementById('pieChart').classList.add('hidden');
                 document.getElementById('barChart').classList.add('hidden');
-                document.getElementById('trendChart').classList.add('hidden');
-                document.getElementById('pieBtn').classList.add('active');
+                document.getElementById('trendChart').classList.remove('hidden');
+                document.getElementById('pieBtn').classList.remove('active');
                 document.getElementById('barBtn').classList.remove('active');
-                document.getElementById('trendBtn').classList.remove('active');
+                document.getElementById('trendBtn').classList.add('active');
                 document.getElementById('barChartBudgetInfo').classList.add('hidden');
 
-                if (statsData) displayStats(statsData);
+                if (statsData) { displayStats(statsData); showTrendChart(); }
                 else refreshAllData(true);
             } else if (p === 'help') {
                 document.getElementById('helpPage').classList.add('active');
@@ -1613,15 +1613,12 @@
                 rawAmountValue = '';
                 amountInput.value = '';
                 document.getElementById('note').value = '';
-                categoryBtns.forEach(b => b.classList.remove('selected'));
-                selectedCategory = null;
                 hideNumpad();
-                if (amountInput) amountInput.blur();
+                if (amountInput) amountInput.focus();
+                showNumpad();
             }, 2000);
 
             hideLoadingBar();
-            // Background sync: reload real data after delay
-            setTimeout(() => { cacheTimestamp = 0; refreshAllData(true); }, 1500);
         });
 
         // Close currency pickers on outside click
@@ -2598,18 +2595,11 @@
 
         // ===== INIT =====
 
-        // Dark mode init — runs before load to avoid flash
+        // Dark mode init — only from manual toggle, never auto from system
         (function() {
-            const saved = localStorage.getItem('darkMode');
-            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (saved === 'true' || (saved === null && systemDark)) {
+            if (localStorage.getItem('darkMode') === 'true') {
                 document.documentElement.classList.add('dark');
             }
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if (localStorage.getItem('darkMode') === null) {
-                    document.documentElement.classList.toggle('dark', e.matches);
-                }
-            });
         })();
 
         if ('serviceWorker' in navigator) {
